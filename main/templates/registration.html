@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Registration Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;600&family=Dancing+Script:wght@500&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 32px;
+            margin-bottom: 25px;
+            color: #3b82f6;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+
+        input[type="text"], input[type="password"], input[type="email"], select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #3b82f6;
+            border-radius: 20px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        .redirect-link {
+            font-size: 14px;
+            margin-top: 15px;
+            color: #1e3a8a;
+        }
+
+        .redirect-link a {
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+
+        .redirect-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Join the Creative Hub</h1>
+        <form id="registrationForm" method="POST" action="/registration">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+            <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+            <input type="text" id="phone" name="phone" placeholder="Phone Number" required>
+            <select id="role" name="role" required>
+                <option value="">Select Role</option>
+                <option value="Artist">Artist</option>
+                <option value="Regular User">Regular User</option>
+            </select>
+            <input type="text" id="address" name="address" placeholder="Address" required>
+            <input type="email" id="email" name="email" placeholder="Email Address" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+            <button type="submit">Create Account</button>
+        </form>
+        <div class="redirect-link">
+            <p>Already have an account? <a href="/login">Login Here</a></p>
+        </div>
+    </div>
+
+    <!-- Flash message display -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+</body>
+</html>
+

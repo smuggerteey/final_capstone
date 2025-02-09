@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Our AI Assistant 🤖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+        /* Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Body Style */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 50px 20px;
+        }
+
+        /* Header Section */
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 48px;
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #34495e;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* Chatbox */
+        .chatbox {
+            width: 100%;
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .chatbox .user-message,
+        .chatbox .bot-message {
+            margin-bottom: 10px;
+        }
+
+        .chatbox .user-message {
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .chatbox .bot-message {
+            color: #34495e;
+        }
+
+        /* Message Input */
+        .message-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 25px;
+            background-color: #3b82f6;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .btn:hover {
+            background-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #6c7a89;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 36px;
+            }
+
+            .btn {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <h1>Chat with Our AI Assistant 🤖</h1>
+        <p>Ask any questions, and our AI assistant will assist you with quick responses.</p>
+
+        <!-- Chatbox -->
+        <div class="chatbox" id="chatbox">
+            <!-- User and bot messages will appear here -->
+        </div>
+
+        <!-- Message Input -->
+        <input type="text" id="inputMessage" class="message-input" placeholder="Type your message..." />
+        
+        <!-- Send Button -->
+        <button id="sendBtn" class="btn">Send</button>
+
+        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a> <!-- Link to the dashboard -->
+
+        <!-- Footer Section -->
+        <footer>
+            &copy; 2024 Digital Art & Creative Hub. All rights reserved. 😊
+        </footer>
+    </div>
+
+    <script>
+        // Sending a message to the chatbot
+        document.getElementById('sendBtn').addEventListener('click', function() {
+            const inputMessage = document.getElementById('inputMessage').value;
+            if (inputMessage.trim() !== "") {
+                appendMessage("You", inputMessage, "user-message");
+                document.getElementById('inputMessage').value = ""; // Clear input field
+
+                // Send the message to the backend (Flask)
+                fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input_text: inputMessage })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response) {
+                        appendMessage("AI", data.response, "bot-message");
+                    } else {
+                        appendMessage("AI", "Sorry, something went wrong. Please try again.", "bot-message");
+                    }
+                })
+                .catch(err => {
+                    appendMessage("AI", "Error: " + err, "bot-message");
+                });
+            }
+        });
+
+        // Function to append messages to the chatbox
+        function appendMessage(sender, message, className) {
+            const chatbox = document.getElementById('chatbox');
+            const newMessage = document.createElement('div');
+            newMessage.classList.add(className);
+            newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatbox.appendChild(newMessage);
+            chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the latest message
+        }
+    </script>
+</body>
+</html>

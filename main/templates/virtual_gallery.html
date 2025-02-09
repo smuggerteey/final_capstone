@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Gallery - Digital Art & Creative Showcase 🎨</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb);
+            color: #fff;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Info Box */
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        #info a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        #info a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-content {
+            position: relative;
+            max-width: 80%;
+            max-height: 80%;
+        }
+
+        #modal img, #modal video {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Button */
+        .button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background-color: #1e3a8a;
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2563eb;
+        }
+
+        /* Hotspot Style */
+        .hotspot {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ff5733;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .hotspot:hover {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.6, 5);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Gallery Floor
+        const floorGeometry = new THREE.PlaneGeometry(50, 50);
+        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        scene.add(floor);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Soft white light
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 10, 7.5);
+        scene.add(directionalLight);
+
+        // Artwork Setup
+        const loader = new THREE.TextureLoader();
+        const artworks = [
+            { type: 'image', url: "{{ url_for('static', filename='images/image1.jpeg') }}", position: { x: -3, y: 1, z: -5 } },
+            { type: 'image', url: "{{ url_for('static', filename='images/image2.jpeg') }}", position: { x: 0, y: 1, z: -5 } },
+            { type: 'image', url: "{{ url_for('static', filename='images/image3.jpeg') }}", position: { x: 3, y: 1, z: -5 } },
+            { type: 'video', url: "{{ url_for('static', filename='images/video1.mp4') }}", position: { x: 0, y: 1, z: -10 } },
+            { type: 'audio', url: "{{ url_for('static', filename='images/audio1.mp3') }}", position: { x: -3, y: 1, z: -10 } }
+        ];
+
+        artworks.forEach((art) => {
+            if (art.type === 'image') {
+                const texture = loader.load(
+                    art.url,
+                    undefined,
+                    undefined,
+                    (err) => console.error('Error loading texture:', err)
+                );
+                const material = new THREE.MeshBasicMaterial({ map: texture });
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+                mesh.position.set(art.position.x, art.position.y, art.position.z);
+                mesh.userData = { type: 'image', url: art.url }; // Store type and URL
+                mesh.onClick = () => openModal(art.url, 'image');
+                scene.add(mesh);
+            } else if (art.type === 'video') {
+                const video = document.createElement('video');
+                video.src = art.url;
+                video.load();
+                video.loop = true;
+                
+                const videoTexture = new THREE.VideoTexture(video);
+                const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), material);
+                mesh.position.set(art.position.x, art.position.y, art.position.z);
+                mesh.userData = { type: 'video', url: art.url }; // Store type and URL
+                mesh.onClick = () => openModal(art.url, 'video');
+                scene.add(mesh);
+            } else if (art.type === 'audio') {
+                const audio = document.createElement('audio');
+                audio.src = art.url;
+                audio.load();
+                audio.loop = true;
+                audio.userData = { type: 'audio', url: art.url }; // Store type and URL
+                // Not visible in scene, but audio will play
+            }
+        });
+
+        // Modal for displaying media
+        const modal = document.createElement('div');
+        modal.id = 'modal';
+        document.body.appendChild(modal);
+
+        const modalContent = document.createElement('div');
+        modalContent.id = 'modal-content';
+        modal.appendChild(modalContent);
+
+        modal.addEventListener('click', () => {
+            modal.style.display = 'none';
+            modalContent.innerHTML = ''; // Clear previous content
+        });
+
+        function openModal(url, type) {
+            modal.style.display = 'flex';
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = url;
+                modalContent.appendChild(img);
+            } else if (type === 'video') {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                video.play();
+                modalContent.appendChild(video);
+            } else if (type === 'audio') {
+                const audio = document.createElement('audio');
+                audio.src = url;
+                audio.controls = true;
+                audio.play();
+                modalContent.appendChild(audio);
+            }
+        }
+
+        // Hotspot Setup
+        const hotspots = [
+            { x: -2, y: 1, z: -6, target: 'room2' },
+            { x: 3, y: 1, z: -12, target: 'room3' }
+        ];
+
+        hotspots.forEach((hotspot) => {
+            const element = document.createElement('div');
+            element.classList.add('hotspot');
+            element.style.left = `${(hotspot.x / 50) * 100}%`;
+            element.style.top = `${(hotspot.z / -50) * 100}%`;
+            document.body.appendChild(element);
+            element.addEventListener('click', () => {
+                navigateToRoom(hotspot.target);
+            });
+        });
+
+        // Multi-Room Navigation
+        const rooms = {
+            room2: { x: -10, z: -5 },
+            room3: { x: 10, z: -15 }
+        };
+
+        function navigateToRoom(room) {
+            if (rooms[room]) {
+                camera.position.set(rooms[room].x, 1.6, rooms[room].z);
+            }
+        }
+
+        // AR Integration (example placeholder)
+        if (window.isSecureContext && 'XR' in window) {
+            const xrButton = document.createElement('button');
+            xrButton.textContent = 'Enter AR';
+            document.body.appendChild(xrButton);
+            xrButton.addEventListener('click', () => {
+                // AR initialization (placeholder for actual AR features)
+                alert('AR mode is under development!');
+            });
+        }
+
+        // Camera Movement
+        const keys = {};
+        document.addEventListener('keydown', (event) => (keys[event.key] = true));
+        document.addEventListener('keyup', (event) => (keys[event.key] = false));
+
+        function moveCamera() {
+            const speed = 0.1;
+            if (keys['w'] || keys['ArrowUp']) camera.position.z = Math.max(camera.position.z - speed, -25);
+            if (keys['s'] || keys['ArrowDown']) camera.position.z = Math.min(camera.position.z + speed, 25);
+            if (keys['a'] || keys['ArrowLeft']) camera.position.x = Math.max(camera.position.x - speed, -25);
+            if (keys['d'] || keys['ArrowRight']) camera.position.x = Math.min(camera.position.x + speed, 25);
+        }
+
+        // Responsive Resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Render Loop
+        function animate() {
+            moveCamera();
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Handle clicks on the 3D objects
+        window.addEventListener('click', (event) => {
+            const mouse = new THREE.Vector2();
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(scene.children);
+            if (intersects.length > 0) {
+                const intersectedObject = intersects[0].object;
+                if (intersectedObject.userData.type) {
+                    openModal(intersectedObject.userData.url, intersectedObject.userData.type);
+                }
+            }
+        });
+    </script>
+    <div id="info">
+        Use WASD or arrow keys to navigate, click to interact<br>
+        <a href="{{ url_for('dashboard') }}" class="button">Back to Dashboard</a>
+    </div>
+</body>
+
+</html>

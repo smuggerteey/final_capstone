@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Challenges</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 48px;
+            color: #3b82f6;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .challenges-container {
+            width: 100%;
+            max-width: 1100px;  /* Increased the max-width */
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 15px;  /* Increased padding for better readability */
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #3b82f6;
+            color: white;
+            font-size: 18px;
+        }
+
+        table td {
+            font-size: 16px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+        }
+
+        .back-btn a {
+            text-decoration: none;
+            padding: 12px 25px;  /* Adjusted padding */
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .back-btn a:hover {
+            background-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>View Challenges</h1>
+        <div class="challenges-container">
+            {% if challenges %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Challenge Name</th>
+                        <th>Description</th>
+                        <th>Deadline</th>
+                        <th>Points Reward</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for challenge in challenges %}
+                    <tr>
+                        <td>{{ challenge.name }}</td>
+                        <td>{{ challenge.description }}</td>
+                        <td>{{ challenge.deadline }}</td>
+                        <td>{{ challenge.points_reward }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No challenges available.</p>
+            {% endif %}
+        </div>
+
+        <div class="back-btn">
+            <a href="javascript:history.back()">Go Back</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

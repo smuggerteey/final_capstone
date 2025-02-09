@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&family=Pacifico&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 32px;
+            margin-bottom: 25px;
+            color: #3b82f6;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+        }
+
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #3b82f6;
+            border-radius: 20px;
+            font-size: 16px;
+            font-family: 'Poppins', sans-serif;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #1e3a8a;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: #3b82f6;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        .redirect-link {
+            font-size: 14px;
+            margin-top: 15px;
+            color: #1e3a8a;
+        }
+
+        .redirect-link a {
+            color: #1e3a8a;
+            text-decoration: none;
+        }
+
+        .redirect-link a:hover {
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            button {
+                font-size: 16px;
+            }
+
+            .remember-me {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Login</h1>
+        <form action="/login" method="POST" id="loginForm">
+            <input type="text" name="username" placeholder="Username" required>
+            <select name="role" required>
+                <option value="">Select Role</option>
+                <option value="Artist">Artist</option>
+                <option value="Regular User">Regular User</option>
+            </select>
+
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">Remember Me</label>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="redirect-link">
+            <p>Don't have an account? <a href="registration">Sign Up</a></p>
+        </div>    
+    </div>
+</body>
+</html>

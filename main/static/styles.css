@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Body Style */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 0 20px;
+    text-align: center;
+}
+
+/* Main Container */
+.container {
+    width: 100%;
+    max-width: 1200px; /* Increased width */
+    padding: 50px 20px;
+}
+
+/* Header Section */
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 48px;
+    color: #3b82f6;
+    margin-bottom: 20px;
+}
+
+p {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: #34495e;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+/* Button Styles */
+.btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 15px 30px;
+    border-radius: 25px;
+    background-color: #3b82f6;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.btn:hover {
+    background-color: #1e3a8a;
+    transform: scale(1.05);
+}
+
+/* Feature Section */
+.features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.feature {
+    flex: 1 1 300px;
+    background: rgba(255, 255, 255, 0.9);
+    margin: 15px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.feature:hover {
+    transform: translateY(-10px);
+}
+
+.feature h3 {
+    font-family: 'Playfair Display', serif;
+    color: #3b82f6;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.feature p {
+    color: #34495e;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Footer */
+footer {
+    margin-top: 50px;
+    font-size: 14px;
+    color: #6c7a89;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    .btn {
+        font-size: 16px;
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;600&family=Dancing+Script:wght@500&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0 20px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px; /* Increased width */
+    padding: 40px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 32px;
+    margin-bottom: 25px;
+    color: #3b82f6;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+    width: 100%;
+    padding: 15px;
+    margin: 12px 0;
+    border: 1px solid #3b82f6;
+    border-radius: 20px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+    border-color: #1e3a8a;
+    background-color: rgba(255, 255, 255, 1);
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 20px;
+    margin: 12px 0;
+    background-color: #3b82f6;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+    transform: scale(1.05);
+}
+
+.redirect-link {
+    font-size: 14px;
+    margin-top: 15px;
+    color: #1e3a8a;
+}
+
+.redirect-link a {
+    color: #1e3a8a;
+    text-decoration: none;
+}
+
+.redirect-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}

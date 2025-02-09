@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 20px;
+        }
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #3b82f6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3b82f6;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 20px auto 0;
+        }
+        button:hover {
+            background-color: #1e3a8a;
+        }
+        form {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Task Management</h1>
+        <p>Assign, review, and track tasks for your team.</p>
+        
+        <h2>Add New Task</h2>
+        <form id="taskForm">
+            <input type="text" placeholder="Task Name" required>
+            <input type="text" placeholder="Assigned To" required>
+            <button type="submit">Add Task</button>
+        </form>
+
+        <h2>Current Tasks</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="taskList">
+                <!-- Tasks will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <form action="/dashboard" method="get">
+            <button type="submit">Go Back</button>
+        </form>
+    </div>
+
+    <script>
+        const taskForm = document.getElementById('taskForm');
+        const taskList = document.getElementById('taskList');
+
+        taskForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const taskName = taskForm[0].value;
+            const assignedTo = taskForm[1].value;
+            const newRow = `<tr>
+                <td>${taskName}</td>
+                <td>${assignedTo}</td>
+                <td>Pending</td>
+            </tr>`;
+            taskList.insertAdjacentHTML('beforeend', newRow);
+            taskForm.reset();
+        });
+    </script>
+
+</body>
+</html>
