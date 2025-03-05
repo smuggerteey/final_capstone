@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h2 {
+            color: #3b82f6;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .flash.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .flash.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #1e3a8a;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Artist Verification</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('artist_verification', username=username) }}" method="POST">
+            <!-- Artist Type Dropdown -->
+            <label for="artistType">Artist Type:</label>
+            <select id="artistType" name="artistType" required>
+                <option value="">Select Artist Type</option>
+                <option value="Painter">Painter</option>
+                <option value="Photographer">Photographer</option>
+                <option value="Sculptor">Sculptor</option>
+                <option value="Digital Artist">Digital Artist</option>
+                <option value="Musician">Musician</option>
+                <option value="Writer">Writer</option>
+            </select>
+
+            <!-- Pre-Written Security Questions -->
+            <label>Security Question 1: What is the name of your first school?</label>
+            <input type="text" name="securityAnswer1" placeholder="Enter your answer" required>
+
+            <label>Security Question 2: What is your favorite artist or artwork?</label>
+            <input type="text" name="securityAnswer2" placeholder="Enter your answer" required>
+
+            <button type="submit">Submit Verification</button>
+        </form>
+    </div>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Verification Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h2 {
+            color: #3b82f6;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .status-pending {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .status-rejected {
+            background-color: #f5c6cb;
+            color: #721c24;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .approve-btn, .reject-btn {
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .approve-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background-color: #218838;
+        }
+
+        .reject-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Artist Verification Requests</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Artist Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artist in artists %}
+                <tr>
+                    <td>{{ artist.username }}</td>
+                    <td>{{ artist.artist_type }}</td>
+                    <td>
+                        {% if artist.status == 'Pending' %}
+                            <span class="status-pending">Pending</span>
+                        {% elif artist.status == 'Approved' %}
+                            <span class="status-approved">Approved</span>
+                        {% else %}
+                            <span class="status-rejected">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if artist.status == 'Pending' %}
+                            <form action="{{ url_for('approve_artist', username=artist.username) }}" method="POST" style="display:inline;">
+                                <button class="approve-btn" type="submit">Approve</button>
+                            </form>
+                            <form action="{{ url_for('reject_artist', username=artist.username) }}" method="POST" style="display:inline;">
+                                <button class="reject-btn" type="submit">Reject</button>
+                            </form>
+                        {% else %}
+                            <em>N/A</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
