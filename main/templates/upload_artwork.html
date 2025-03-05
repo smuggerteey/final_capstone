@@ -8,131 +8,141 @@
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
 
         /* Reset */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         /* Body and Container */
         body {
             font-family: 'Open Sans', sans-serif;
-            background: #f1f1f1;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            padding: 0 20px;
+            padding: 20px;
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
-            padding: 30px;
-            margin-top: 50px;
+            max-width: 900px; /* Increased width */
+            padding: 40px;
             background: #fff;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 15px;
-        }
-
-        /* Header Section */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            text-align: center;
+            margin-bottom: 20px; /* Added margin to separate from footer */
         }
 
         h1 {
             font-family: 'Pacifico', cursive;
             font-size: 36px;
             color: #3b82f6;
+            margin-bottom: 30px;
         }
 
-        /* Form Styling */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            text-align: left;
         }
 
         label {
             font-size: 16px;
             color: #34495e;
+            font-weight: bold;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
-        input[type="text"],
-        input[type="number"],
-        textarea,
-        input[type="file"] {
+        input, textarea {
             width: 100%;
-            padding: 10px;
+            padding: 14px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 8px;
+            transition: 0.3s;
         }
 
-        button[type="submit"],
-        .dashboard-btn {
+        input:focus, textarea:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        /* Drag and Drop Area */
+        .drag-drop-area {
+            border: 2px dashed #3b82f6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .drag-drop-area:hover {
+            background-color: #e0f0ff;
+        }
+
+        .preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .preview {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Buttons */
+        button, .dashboard-btn {
             background-color: #3b82f6;
             color: white;
             border: none;
-            padding: 12px 20px;
-            font-size: 16px;
+            padding: 14px;
+            font-size: 18px;
             border-radius: 8px;
             cursor: pointer;
             width: 100%;
-            text-align: center;
-            display: inline-block;
             text-decoration: none;
-            transition: background-color 0.3s;
+            transition: 0.3s;
+            font-weight: bold;
+            margin-top: 10px;
         }
 
-        button[type="submit"]:hover,
-        .dashboard-btn:hover {
+        button:hover, .dashboard-btn:hover {
             background-color: #2563eb;
         }
 
-        /* Dashboard Link Styling */
-        .dashboard-link {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
+        .dashboard-btn {
+            display: inline-block;
         }
 
-        /* Footer Section */
+        /* Footer */
         footer {
-            text-align: center;
-            margin-top: 40px;
+            margin-top: 20px;
+            font-size: 14px;
             color: #6c7a89;
+            text-align: center; /* Centered footer text */
+            width: 100%; /* Ensure footer takes full width */
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            .form-group input,
-            .form-group textarea,
-            .form-group button,
-            .form-group .dashboard-btn {
-                width: 100%;
-            }
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 28px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Main Container -->
     <div class="container">
-        <!-- Header Section -->
-        <header>
-            <h1>Upload Artwork</h1>
-        </header>
+        <h1>Upload Your Artwork</h1>
 
         <!-- Upload Artwork Form -->
-        <form action="{{ url_for('upload_artwork') }}" method="POST" enctype="multipart/form-data">
+        <form id="uploadForm" action="{{ url_for('upload_artwork') }}" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required>
@@ -140,11 +150,11 @@
 
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4" required></textarea>
+                <textarea id="description" name="description" rows="3" required></textarea>
             </div>
 
             <div class="form-group">
-                <label for="price">Price:</label>
+                <label for="price">Price ($):</label>
                 <input type="number" id="price" name="price" step="0.01" required>
             </div>
 
@@ -154,22 +164,77 @@
             </div>
 
             <div class="form-group">
-                <label for="media">Artwork Media (Image, Audio, Video):</label>
-                <input type="file" id="media" name="media" accept="image/*,audio/*,video/*" required>
+                <label>Upload Artwork (Image, Audio, Video):</label>
+                <div class="drag-drop-area" id="drag-drop-area">
+                    Drag and drop your files here or click to upload
+                    <input type="file" id="media" name="media" accept="image/*,audio/*,video/*" required style="display: none;">
+                </div>
+                <div class="preview-container">
+                    <img id="preview-image" class="preview" alt="Artwork Preview">
+                </div>
             </div>
 
-            <button type="submit">Upload</button>
+            <button type="submit">Upload & Register on Blockchain</button>
         </form>
 
-        <div class="dashboard-link">
-            <a href="{{ url_for('dashboard') }}" class="btn dashboard-btn">Back to Dashboard</a>
-        </div>
+        <a href="{{ url_for('marketplace') }}" class="dashboard-btn">Go to Marketplace</a>
     </div>
 
-    <!-- Footer Section -->
     <footer>
         &copy; 2024 Art Platform. All rights reserved.
     </footer>
+
+    <script>
+        const dragDropArea = document.getElementById('drag-drop-area');
+        const fileInput = document.getElementById('media');
+        const previewImage = document.getElementById('preview-image');
+
+        // Click to open file dialog
+        dragDropArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Handle drag and drop
+        dragDropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dragDropArea.style.backgroundColor = '#e0f0ff';
+        });
+
+        dragDropArea.addEventListener('dragleave', () => {
+            dragDropArea.style.backgroundColor = '';
+        });
+
+        dragDropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dragDropArea.style.backgroundColor = '';
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files; // Set the files to the input
+                previewFile(files[0]); // Preview the first file
+            }
+        });
+
+        // Preview uploaded image
+        fileInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            if (files.length > 0) {
+                previewFile(files[0]);
+            }
+        });
+
+        function previewFile(file) {
+            if (file && file.type.startsWith('image')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = "none";
+            }
+        }
+    </script>
 
 </body>
 </html>
