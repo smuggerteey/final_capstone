@@ -13,7 +13,6 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from datetime import datetime
 import os
-from config import DATABASE_CONFIG, BLOCKCHAIN_CONFIG
 from web3 import Web3
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
