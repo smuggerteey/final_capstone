@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Creative Hub 🎨</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: #fff;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar h2 {
+            color: #ffcc00;
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+
+        .sidebar a:hover {
+            background: #1f2d3d;
+            text-indent: 8px;
+        }
+
+        .content {
+            margin-left: 280px;
+            padding: 40px;
+            flex-grow: 1;
+            transition: margin-left 0.3s;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 34px;
+            color: #3b82f6;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .stat-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #67d8e5 0%, #3b82f6 100%);
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+
+        .stat-card h4 {
+            font-size: 18px;
+        }
+
+        .stat-card p {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .stat-card i {
+            font-size: 26px;
+        }
+
+        .btn {
+            display: block;
+            padding: 12px;
+            background: #3b82f6;
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+            color: #6c7a89;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                transition: left 0.3s ease-in-out;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .toggle-btn {
+                font-size: 24px;
+                cursor: pointer;
+                background: #2c3e50;
+                color: #fff;
+                padding: 10px;
+                border-radius: 5px;
+                position: fixed;
+                left: 15px;
+                top: 15px;
+                z-index: 1000;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="sidebar">
+    <h2>Admin Dashboard</h2>
+    <a href="{{ url_for('marketplace') }}"><i class="fas fa-image"></i> View Artwork</a>
+    <a href="{{ url_for('user_management') }}"><i class="fas fa-users"></i> User Management</a>
+    <a href="{{ url_for('task_management') }}"><i class="fas fa-image"></i> Artwork Management</a>
+    <a href="{{ url_for('create_challenges') }}"><i class="fas fa-plus-circle"></i> Create New Challenge</a>
+    <a href="{{ url_for('leaderboard') }}"><i class="fas fa-trophy"></i> View Leaderboard</a>
+    <a href="{{ url_for('display_challenges') }}"><i class="fas fa-list-alt"></i> Display Challenges</a>
+    <a href="{{ url_for('insights') }}"><i class="fas fa-chart-line"></i> Analytics</a>
+    <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Toggle Button for Sidebar -->
+<div class="toggle-btn" onclick="toggleSidebarMenu()">
+    <i class="fas fa-bars"></i>
+</div>
+
+<!-- Content -->
+<div class="content">
+    <h1>Welcome, smuggerteey 🎨</h1>
+    <p>Manage your creative hub effectively with the tools provided.</p>
+
+    <div class="card">
+        <h3>Overview</h3>
+        <div class="stat-card">
+            <div>
+                <h4>Total Users</h4>
+                <p>150</p>
+            </div>
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-card">
+            <div>
+                <h4>Artwork Submissions</h4>
+                <p>75</p>
+            </div>
+            <i class="fas fa-image"></i>
+        </div>
+        <div class="stat-card">
+            <div>
+                <h4>Active Projects</h4>
+                <p>5</p>
+            </div>
+            <i class="fas fa-tasks"></i>
+        </div>
+    </div>
+
+    <footer>&copy; 2024 Creative Hub. All rights reserved. 😊</footer>
+</div>
+
+<script>
+    function toggleSidebarMenu() {
+        document.querySelector('.sidebar').classList.toggle('show');
+    }
+</script>
+
+</body>
+</html>

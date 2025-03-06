@@ -1,11 +1,8 @@
-import hashlib
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import mysql.connector
-from opt_einsum import contract
 import pymysql
-import requests
 from werkzeug.utils import secure_filename
 import torch
 from flask_mail import Mail, Message # type: ignore
@@ -13,118 +10,18 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from flask_socketio import SocketIO, emit, join_room, leave_room, send
 from datetime import datetime
 import os
-from config import DATABASE_CONFIG, BLOCKCHAIN_CONFIG
-from web3 import Web3
+
+# Ensure the profile pictures directory exists
+if not os.path.exists('static/profile_pics'):
+    os.makedirs('static/profile_pics')
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
-import paypalrestsdk  
+import paypalrestsdk  # Make sure to install this if using PayPal
 
-
-# Etherscan API URL and your API key
-ETHERSCAN_API_URL = "https://api.etherscan.io/api"
-ETHERSCAN_API_KEY = "7574T1171VG588Q7X3QHYHMJS3FHXCHUJQ"  # Your Etherscan API key
-
-# Use a valid Ethereum address (ensure to replace with a real address)
-address = '0x36fa857f70b44fe2a210575ddd4944df'
-
-# Function to get balance from Etherscan
-def get_eth_balance(address):
-    params = {
-        'module': 'account',
-        'action': 'balance',
-        'address': address,
-        'tag': 'latest',
-        'apikey': ETHERSCAN_API_KEY
-    }
-    response = requests.get(ETHERSCAN_API_URL, params=params)
-    data = response.json()
-    
-    if data['status'] == '1':  # Status 1 means success
-        balance_wei = int(data['result'])
-        balance_eth = balance_wei / (10 ** 18)  # Convert Wei to Ether
-        return balance_eth
-    else:
-        print(f"Error: {data['message']}")
-        return None
-
-# Get the balance of the address
-balance = get_eth_balance(address)
-if balance is not None:
-    print(f"Balance: {balance} ETH")
-
-# Ensure the profile pictures directory exists
-if not os.path.exists('static/profile_pics'):
-    os.makedirs('static/profile_pics')
-
-
-# Ensure the profile pictures directory exists
-if not os.path.exists('static/profile_pics'):
-    os.makedirs('static/profile_pics')
-
-# Set up Flask app
 app = Flask(__name__)
-
 # Configure Flask-Mail
 mail = Mail(app)
 
-# Blockchain configuration
-BLOCKCHAIN_CONFIG = {
-    "node_url": "https://mainnet.infura.io/v3/36fa857f70b44fe2a210575ddd4944df",  # Infura URL
-    "contract_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",  # Example USDT contract address
-    "contract_abi": [  # Correctly formatted ABI
-        {
-            "constant": True,
-            "inputs": [],
-            "name": "name",
-            "outputs": [{"name": "", "type": "string"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [{"name": "_upgradedAddress", "type": "address"}],
-            "name": "deprecate",
-            "outputs": [],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
-            "name": "approve",
-            "outputs": [],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": True,
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [{"name": "", "type": "uint256"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        # Add more ABI entries as needed
-    ]
-}
-
-# Connect to Ethereum blockchain
-web3 = Web3(Web3.HTTPProvider(BLOCKCHAIN_CONFIG["node_url"]))
-
-# Check if connected
-if web3.is_connected():
-    print("Connected to Ethereum network")
-else:
-    print("Failed to connect to Ethereum network")
-
-# Example to get balance
-address = '0xdAC17F958D2ee523a2206206994597C13D831ec7'  # Replace with a valid Ethereum address
-balance = web3.eth.get_balance(address)
-print(f"Balance: {web3.from_wei(balance, 'ether')} ETH")
 
 # Set your secret key
 app.secret_key = 'tinotenda'  # Change this to a strong unique key
@@ -271,9 +168,7 @@ def login():
     return render_template('login.html')
 
 # Configure upload folder
-
-UPLOAD_FOLDER = "static/uploads"
-
+UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Ensure upload folder exists
@@ -492,66 +387,35 @@ def art_challenges():
     user_data = {'role': user.role} 
     return render_template('art_challenges.html', user=user, username=username, user_data=user_data)
 
-# ✅ Artwork Upload Route
-@app.route('/upload', methods=['GET', 'POST'])
+@app.route('/upload_artwork', methods=['GET', 'POST'])
 @login_required
 def upload_artwork():
     if request.method == 'POST':
-        title = request.form.get("title")
-        description = request.form.get("description")
-        price = request.form.get("price")
-        tags = request.form.get("tags")
-        media = request.files.get("media")
+        title = request.form['title']
+        description = request.form['description']
+        price = request.form['price']
+        tags = request.form['tags']
+        media = request.files['media']
 
-        if not title or not description or not price or not tags or not media:
-            flash("❌ Please fill in all fields and upload an artwork!", "error")
-            return redirect(url_for("upload_artwork"))
+        if media:
+            media_filename = secure_filename(media.filename)
+            media_path = os.path.join('uploads', media_filename)
+            media.save(media_path)
 
-        if media.filename == '':
-            flash("❌ No file selected!", "error")
-            return redirect(url_for("upload_artwork"))
-
-        # ✅ Save file securely
-        filename = secure_filename(media.filename)
-        file_path = os.path.join("static/uploads", filename)  # ✅ Store in static/uploads
-        media.save(file_path)
-
-        # ✅ Store artwork in the database
-        conn = create_connection()
-        cursor = conn.cursor()
-        try:
+            # Save artwork information to the database
+            conn = create_connection()
+            cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO artwork (title, description, price, tags, media, user_id)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, (title, description, price, tags, file_path, current_user.id))
+            """, (title, description, price, tags, media_path, current_user.id))
             conn.commit()
-            flash("✅ Artwork uploaded successfully!", "success")
-        except pymysql.MySQLError as e:
-            flash(f"❌ Database Error: {str(e)}", "error")
-            conn.rollback()
-        finally:
             cursor.close()
             conn.close()
 
-        return redirect(url_for('dashboard'))  # ✅ Redirect to dashboard
+            return redirect(url_for('art_challenges'))  # Redirect after successful upload
 
-    return render_template("upload_artwork.html")  # ✅ Render form for GET requests
-
-# ✅ Verify Artwork Authenticity
-@app.route('/verify/<artwork_id>', methods=['GET'])
-def verify_artwork(artwork_id):
-    conn = create_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT hash FROM Artworks WHERE id = %s", (artwork_id,))
-    artwork = cursor.fetchone()
-
-    if not artwork:
-        return jsonify({"status": "Not Found"}), 404
-
-    # ✅ Check blockchain for authenticity
-    exists = contract.functions.verifyArtwork(artwork["hash"]).call()
-    return jsonify({"authentic": exists}), 200
+    return render_template('upload_artwork.html')
 
 @app.route('/view_artwork')
 def view_artwork():

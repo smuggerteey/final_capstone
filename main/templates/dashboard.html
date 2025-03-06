@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Creative Hub 🎨</title>
+    <title>Artist Dashboard - Creative Hub 🎨</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
@@ -210,11 +210,10 @@
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <h2>User Dashboard</h2>
+    <h2> Artist Dashboard</h2>
     <a href="{{ url_for('art_challenges') }}"><i class="fas fa-paint-brush"></i> Art Challenges</a>
     <a href="{{ url_for('collaboration_hub') }}"><i class="fas fa-users"></i> Collaboration Hub</a>
     <a href="{{ url_for('marketplace') }}"><i class="fas fa-image"></i> View Artwork</a>
-    <a href="{{ url_for('insights') }}"><i class="fas fa-chart-line"></i> Insights</a>
     <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
     <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
 </div>
@@ -240,31 +239,6 @@
         </div>
         <div class="action-card">
             <a href="{{ url_for('chat') }}" class="btn">Chat with ArtBot <span style="padding-left: 5px;">💬</span></a>
-        </div>
-    </div>
-
-    <!-- Management Cards -->
-    <div class="card">
-        <h3>Manage Tasks</h3>
-        <p>Assign, review, and track tasks for your team.</p>
-        <div class="btn-container">
-            <a href="{{ url_for('task_management') }}" class="btn">Go to Task Management</a>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Settings</h3>
-        <p>Update application settings, user permissions, and more.</p>
-        <div class="btn-container">
-            <a href="{{ url_for('settings') }}" class="btn">Go to Settings</a>
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>User Management</h3>
-        <p>View and manage user accounts and their roles.</p>
-        <div class="btn-container">
-            <a href="{{ url_for('user_management') }}" class="btn">Go to User Management</a>
         </div>
     </div>
 

@@ -150,7 +150,7 @@
             </div>
         </div>
 
-        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a> <!-- Link to the dashboard -->
+        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">Back to Dashboard</a>
 
         <footer>&copy; 2024 Creative Hub. All rights reserved. 😊</footer>
     </div>

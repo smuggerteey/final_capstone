@@ -150,9 +150,8 @@
         <!-- Navigation Buttons -->
         <div class="btn-container">
             <a href="{{ url_for('leaderboard') }}" class="btn">View Leaderboard</a>
-            <a href="{{ url_for('create_challenges') }}" class="btn">Create New Challenge</a>
             <a href="{{ url_for('display_challenges') }}" class="btn">Display Challenges</a>
-            <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a> <!-- Link to the dashboard -->
+            <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">Back to Dashboard</a>
         </div>
 
         <footer>&copy; 2024 Creative Hub. All rights reserved. 😊</footer>
