@@ -4,77 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logout</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&family=Pacifico&display=swap');
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0 20px;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        h1 {
-            font-family: 'Pacifico', cursive;
-            font-size: 32px;
-            margin-bottom: 25px;
-            color: #3b82f6;
-        }
-
-        p {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 20px;
-            background-color: #3b82f6;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-            text-decoration: none;
-        }
-
-        button:hover {
-            background-color: #1e3a8a;
-            transform: scale(1.05);
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 28px;
-            }
-
-            button {
-                font-size: 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='logout_styles.css') }}">
 </head>
 <body>
     <div class="container">

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;600&family=Dancing+Script:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;700&family=Pacifico&display=swap');
 
 /* Body Style */
 body {
@@ -36,33 +36,11 @@ h1 {
     color: #3b82f6;
 }
 
-/* Form Styles */
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="email"],
-select {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid #3b82f6;
-    border-radius: 20px;
+/* Paragraph */
+p {
     font-size: 16px;
-    background-color: rgba(255, 255, 255, 0.7);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s, background-color 0.3s;
-}
-
-input:focus,
-select:focus {
-    border-color: #1e3a8a;
-    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    margin-bottom: 20px;
 }
 
 /* Button Styles */
@@ -77,27 +55,12 @@ button {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    text-decoration: none;
 }
 
 button:hover {
     background-color: #1e3a8a;
     transform: scale(1.05);
-}
-
-/* Redirect Link */
-.redirect-link {
-    font-size: 14px;
-    margin-top: 15px;
-    color: #1e3a8a;
-}
-
-.redirect-link a {
-    color: #1e3a8a;
-    text-decoration: none;
-}
-
-.redirect-link a:hover {
-    text-decoration: underline;
 }
 
 /* Responsive Design */

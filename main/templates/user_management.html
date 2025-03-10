@@ -5,70 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: #2c3e50;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            padding: 20px;
-        }
-        h1 {
-            font-family: 'Pacifico', cursive;
-            color: #3b82f6;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #3b82f6;
-            color: white;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #c0392b;
-        }
-        .back-button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .back-button-container button {
-            background-color: #3b82f6;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 10px;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .back-button-container button:hover {
-            background-color: #1e3a8a;
-            transform: scale(1.05);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='user.css') }}"> <!-- Link to external CSS -->
 </head>
 <body>
 

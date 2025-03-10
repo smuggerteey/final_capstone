@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* General Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+h1 {
+    font-family: 'Pacifico', cursive;
+    font-size: 36px;
+    color: #3b82f6;
+    margin-bottom: 20px;
+}
+
+/* Form Styles */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    color: #34495e;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #3b82f6;
+}
+
+textarea {
+    resize: none;
+}
+
+button {
+    padding: 12px;
+    background-color: #3b82f6;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+    transform: scale(1.05);
+}
+
+/* Back Button */
+.back-btn {
+    margin-top: 20px;
+}
+
+.back-btn a {
+    text-decoration: none;
+    padding: 10px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-btn a:hover {
+    background-color: #1e3a8a;
+    transform: scale(1.05);
+}
+
+/* Challenges Page */
+.challenges-container {
+    width: 100%;
+    max-width: 800px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.challenge-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.challenge-card h2 {
+    font-size: 20px;
+    color: #34495e;
+}
+
+.challenge-card p {
+    margin: 5px 0;
+}
+
+#loader {
+    font-size: 18px;
+    color: #3b82f6;
+    text-align: center;
+}

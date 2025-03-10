@@ -4,112 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&display=swap');
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column; min-height: 100vh; padding: 20px;
-        }
-        .container {
-            width: 100%; max-width: 800px;
-            padding: 30px; background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px; box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            font-family: 'Pacifico', cursive; font-size: 36px; color: #3b82f6; margin-bottom: 20px; text-align: center;
-        }
-
-        .tab-buttons {
-            display: flex; justify-content: center; margin-bottom: 20px;
-        }
-        .tab-buttons button {
-            background-color: #3b82f6; color: white; border: none; border-radius: 5px;
-            padding: 10px 15px; cursor: pointer; margin: 0 5px; transition: background-color 0.3s;
-        }
-        .tab-buttons button:hover {
-            background-color: #1e3a8a;
-        }
-
-        .chat-section { display: none; }
-        .active { display: block; }
-
-        .chat-box {
-            height: 400px; overflow-y: auto;
-            border: 1px solid #ddd; padding: 15px;
-            border-radius: 10px; background-color: #f9f9f9;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-
-        /* Message Styling */
-        .message {
-            max-width: 70%; padding: 10px;
-            border-radius: 15px; margin: 5px 0;
-            display: inline-block; word-wrap: break-word;
-            position: relative;
-        }
-        .message .timestamp {
-            font-size: 12px; color: #555;
-            margin-top: 3px; display: block;
-            text-align: right;
-        }
-
-        /* Styles for different users */
-        .message-other {
-            background-color: #e5e5e5; color: black;
-            align-self: flex-start;
-        }
-        .message-user {
-            background-color: #3b82f6; color: white;
-            align-self: flex-end;
-            text-align: right;
-        }
-
-        /* Input area */
-        .input-area {
-            display: flex; justify-content: space-between; margin-top: 15px;
-        }
-        input {
-            flex: 1; padding: 10px; border: 1px solid #ddd;
-            border-radius: 5px; margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px; border: none;
-            border-radius: 5px; cursor: pointer; transition: background-color 0.3s;
-        }
-        .send-button {
-            background-color: #3b82f6; color: white; font-weight: bold;
-        }
-        .send-button:hover {
-            background-color: #1e3a8a;
-        }
-
-        .dashboard-link {
-            text-decoration: none; color: white; background-color: #1e3a8a;
-            padding: 10px 20px; border-radius: 5px; font-weight: bold; display: block;
-            text-align: center; margin-top: 20px; transition: background-color 0.3s;
-        }
-        .dashboard-link:hover {
-            background-color: #3b82f6;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .input-area {
-                flex-direction: column;
-            }
-            input {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            .send-button {
-                width: 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='message.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
     <div class="container">
@@ -151,8 +47,6 @@
         <a href="/collaboration_hub" class="dashboard-link">Go Back</a>
     </div>
 
-    <!-- Socket.io for Real-Time Messaging -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
         const socket = io();
         const username = '{{ username }}';

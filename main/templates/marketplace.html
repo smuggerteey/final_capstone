@@ -4,158 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Art Marketplace | Digital Art & Creative Showcase 🎨</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Open Sans', sans-serif;
-            color: #2c3e50;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            text-align: center;
-            padding: 0 20px;
-            justify-content: space-between;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 50px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        h1 {
-            font-family: 'Pacifico', cursive;
-            font-size: 48px;
-            color: #3b82f6;
-            margin-bottom: 20px;
-        }
-
-        p {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            color: #34495e;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .artwork-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-            justify-items: center;
-            align-items: center;
-        }
-
-        .artwork-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            text-align: center;
-        }
-
-        .artwork-item:hover {
-            transform: translateY(-10px);
-        }
-
-        .artwork-image {
-            width: 100%;
-            border-radius: 10px;
-            height: 200px;
-            object-fit: cover;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .artwork-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            color: #3b82f6;
-            margin-top: 10px;
-        }
-
-        .artwork-price {
-            color: #27ae60;
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .btn-buy {
-            margin-top: 10px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            background-color: #3b82f6;
-            color: white;
-            font-size: 16px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .btn-buy:hover {
-            background-color: #1e3a8a;
-        }
-
-        .dashboard-link {
-            margin-top: 40px;
-        }
-
-        .dashboard-btn {
-            display: inline-block;
-            padding: 15px 30px;
-            border-radius: 25px;
-            background-color: #3b82f6;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            text-decoration: none;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .dashboard-btn:hover {
-            background-color: #1e3a8a;
-            transform: scale(1.05);
-        }
-
-        footer {
-            margin-top: 50px;
-            font-size: 14px;
-            color: #6c7a89;
-            text-align: center;
-            padding: 20px 0;
-            background-color: #fff;
-        }
-
-        @media (max-width: 768px) {
-            .artwork-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            }
-
-            h1 {
-                font-size: 36px;
-            }
-
-            p {
-                font-size: 18px;
-            }
-
-            .dashboard-btn {
-                font-size: 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='market.css') }}">
 </head>
 <body>
 
@@ -176,13 +25,15 @@
             <p>No artworks available at the moment.</p>
             {% endfor %}
         </div>
+
         <!-- Back to Dashboard -->
-<div class="dashboard-link">
-    <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
-       class="btn-dashboard">
-        🔙 Back to Dashboard
-    </a>
-</div>
+        <div class="dashboard-link">
+            <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
+               class="dashboard-btn">
+                🔙 Back to Dashboard
+            </a>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>

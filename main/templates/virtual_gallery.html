@@ -4,99 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Gallery - Digital Art & Creative Showcase 🎨</title>
-    <style>
-        /* General Styles */
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Open Sans', sans-serif;
-            background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb);
-            color: #fff;
-        }
-
-        canvas {
-            display: block;
-        }
-
-        /* Info Box */
-        #info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        #info a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        #info a:hover {
-            text-decoration: underline;
-        }
-
-        /* Modal Styles */
-        #modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-        }
-
-        #modal-content {
-            position: relative;
-            max-width: 80%;
-            max-height: 80%;
-        }
-
-        #modal img, #modal video {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        /* Button */
-        .button {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            background-color: #1e3a8a;
-            color: white;
-            font-size: 16px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: #2563eb;
-        }
-
-        /* Hotspot Style */
-        .hotspot {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #ff5733;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .hotspot:hover {
-            opacity: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='virtual.css') }}">
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -295,10 +203,10 @@
             }
         });
     </script>
+
     <div id="info">
         Use WASD or arrow keys to navigate, click to interact<br>
         <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">Back to Dashboard</a>
     </div>
 </body>
-
 </html>

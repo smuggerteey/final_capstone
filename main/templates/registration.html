@@ -4,104 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Registration</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;600&family=Dancing+Script:wght@500&display=swap');
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0 20px;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 600px;
-            padding: 40px;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        h1 {
-            font-family: 'Pacifico', cursive;
-            font-size: 32px;
-            margin-bottom: 25px;
-            color: #3b82f6;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            width: 100%;
-        }
-
-        input[type="text"], input[type="password"], input[type="email"], select {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #3b82f6;
-            border-radius: 20px;
-            font-size: 16px;
-            background-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: border-color 0.3s, background-color 0.3s;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 20px;
-            background-color: #3b82f6;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #1e3a8a;
-            transform: scale(1.05);
-        }
-
-        .redirect-link {
-            font-size: 14px;
-            margin-top: 15px;
-            color: #1e3a8a;
-        }
-
-        .redirect-link a {
-            color: #1e3a8a;
-            text-decoration: none;
-        }
-
-        .redirect-link a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 28px;
-            }
-
-            button {
-                font-size: 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
 </head>
 <body>
     <div class="container">
@@ -128,15 +31,15 @@
     </div>
 
     <script>
-document.getElementById("registrationForm").addEventListener("submit", function(event) {
-    var role = document.getElementById("role").value;
-    var username = document.querySelector("input[name='username']").value;
+        document.getElementById("registrationForm").addEventListener("submit", function(event) {
+            var role = document.getElementById("role").value;
+            var username = document.querySelector("input[name='username']").value;
 
-    if (role === "Artist") {
-        // ✅ Allow the form to submit to Flask first
-        this.action = "/registration?redirect=artist-verification";
-    }
-});
+            if (role === "Artist") {
+                // ✅ Allow the form to submit to Flask first
+                this.action = "/registration?redirect=artist-verification";
+            }
+        });
     </script>
 </body>
 </html>

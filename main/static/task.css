@@ -1,0 +1,68 @@
+/* Body Style */
+body {
+    font-family: 'Open Sans', sans-serif;
+    color: #2c3e50;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    padding: 20px;
+}
+
+/* Header */
+h1 {
+    font-family: 'Pacifico', cursive;
+    color: #3b82f6;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Main Container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #3b82f6;
+    color: white;
+}
+
+/* Button Styles */
+button {
+    padding: 10px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+    width: 100%;
+    max-width: 200px;
+    margin: 20px auto 0;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+}
+
+/* Form Styles */
+form {
+    text-align: center;
+}
