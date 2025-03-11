@@ -18,6 +18,13 @@ body {
     min-height: 100vh;
     padding: 20px;
     overflow-y: auto;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
 }
 
 /* Main Container */
@@ -26,11 +33,17 @@ body {
     max-width: 800px;
     padding: 40px;
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.85);
-    box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.482);
+    box-shadow: 0px 15px 40px rgb(5, 9, 251);
     text-align: center;
     backdrop-filter: blur(10px);
     margin-top: 20px;
+    transition: background 0.5s;
+}
+
+body.dark-mode .container {
+    background: rgba(17, 17, 17, 0.95); /* Darker background in dark mode */
+    box-shadow: 0px 15px 40px rgb(5, 9, 251);
 }
 
 /* Header */
@@ -41,11 +54,19 @@ h1 {
     color: #3b82f6; /* Changed to blue */
 }
 
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain color in dark mode */
+}
+
 p {
     font-size: 18px;
     color: #34495e;
     margin-bottom: 30px;
     line-height: 1.6;
+}
+
+body.dark-mode p {
+    color: #f4f4f9; /* Light color for paragraph text in dark mode */
 }
 
 /* Stats Section */
@@ -58,13 +79,17 @@ p {
 
 .stat-box {
     flex: 1 1 250px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(10, 9, 9, 0.961);
     padding: 20px;
     border-radius: 15px;
     text-align: center;
     backdrop-filter: blur(10px);
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 5px 10px #4101f1;
     transition: all 0.3s ease;
+}
+
+body.dark-mode .stat-box {
+    background: rgba(255, 255, 255, 0.25); /* Adjust background in dark mode */
 }
 
 .stat-box:hover {
@@ -83,6 +108,10 @@ p {
     font-size: 22px;
     font-weight: bold;
     color: #3b82f6;
+}
+
+body.dark-mode .stat-box p {
+    color: #f4f4f9; /* Light color for stats in dark mode */
 }
 
 /* Button */
@@ -107,11 +136,19 @@ p {
     transform: scale(1.05);
 }
 
+body.dark-mode .btn {
+    background-color: #4769ff; /* Lighter red for buttons in dark mode */
+}
+
 /* Footer */
 footer {
     margin-top: 40px;
     font-size: 14px;
     color: #e3e3e3;
+}
+
+body.dark-mode footer {
+    color: #f4f4f9; /* Light footer text in dark mode */
 }
 
 /* Responsive */
@@ -127,4 +164,28 @@ footer {
     .stat-box {
         flex: 1 1 100%;
     }
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }

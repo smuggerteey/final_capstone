@@ -4,6 +4,13 @@ body {
     color: #2c3e50;
     background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
     padding: 20px;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
 }
 
 /* Header */
@@ -14,15 +21,25 @@ h1 {
     margin-bottom: 20px;
 }
 
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain color in dark mode */
+}
+
 /* Main Container */
 .container {
     max-width: 800px;
     margin: 0 auto;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.436);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 30px rgb(48, 2, 254);
     margin-bottom: 20px;
+    transition: background 0.5s;
+}
+
+body.dark-mode .container {
+    background: rgba(0, 0, 0, 0.95); /* Darker background in dark mode */
+    box-shadow: 0px 10px 30px rgb(48, 2, 254);
 }
 
 /* Form Labels */
@@ -42,6 +59,14 @@ input[type="password"] {
     border-radius: 5px;
 }
 
+body.dark-mode input[type="text"],
+body.dark-mode input[type="email"],
+body.dark-mode input[type="password"] {
+    background: rgba(0, 0, 0, 0.2); /* Background for input fields in dark mode */
+    color: #f4f4f975; /* Light text color for input fields in dark mode */
+    border: 1px solid #555; /* Darker border in dark mode */
+}
+
 /* Button Styles */
 button {
     padding: 10px 20px;
@@ -57,6 +82,10 @@ button:hover {
     background-color: #1e3a8a;
 }
 
+body.dark-mode button {
+    background-color: #0c09ec; /* Lighter red for buttons in dark mode */
+}
+
 /* Back Button */
 .back-button {
     text-align: center;
@@ -67,4 +96,28 @@ button:hover {
     font-size: 16px;
     margin-top: 10px;
     display: inline-block;
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }

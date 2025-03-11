@@ -3,54 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Art Marketplace 🎨</title>
+    <title>Checkout</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='checkout.css') }}">
 </head>
 <body>
+    <button id="darkModeToggle" class="theme-toggle">🌙</button> <!-- Dark Mode Toggle Button -->
 
     <div class="container">
         <h1>Checkout</h1>
-        
-        <form action="/process_payment" method="POST">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
 
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
 
-            <label for="phone">Phone Number</label>
-            <input type="text" id="phone" name="phone" required>
-
-            <label for="address">Shipping Address</label>
-            <input type="text" id="address" name="address" required>
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" required>
 
             <div class="payment-method">
-                <label>Payment Method</label>
+                <h3>Payment Method</h3>
                 <div class="payment-option">
-                    <input type="radio" id="paypal" name="payment_method" value="paypal" required>
-                    <label for="paypal">PayPal</label>
+                    <label>
+                        <input type="radio" name="payment" value="credit" checked> Credit Card
+                    </label>
                 </div>
                 <div class="payment-option">
-                    <input type="radio" id="momo" name="payment_method" value="momo" required>
-                    <label for="momo">MoMo</label>
+                    <label>
+                        <input type="radio" name="payment" value="paypal"> PayPal
+                    </label>
                 </div>
+
                 <div class="payment-option">
-                    <input type="radio" id="credit_card" name="payment_method" value="credit_card" required>
-                    <label for="credit_card">Credit Card</label>
+                    <label>
+                        <input type="radio" name="payment" value="paypal"> Momo
+                    </label>
                 </div>
             </div>
 
-            <button type="submit" class="btn-checkout">Complete Purchase</button>
+            <a href="#" class="btn-checkout">Checkout</a>
         </form>
     </div>
 
-    <div>
-        <a href="{{ url_for('marketplace') }}" class="dashboard-btn">Back</a>
-    </div>
-
     <footer>
-        &copy; 2024 Creative Hub. All rights reserved. 😊
+        <a href="/dashboard" class="dashboard-btn">Go to Dashboard</a>
     </footer>
 
+    <script>
+        // Dark Mode Toggle Functionality
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️';
+        }
+
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'true');
+                document.getElementById('darkModeToggle').textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                document.getElementById('darkModeToggle').textContent = '🌙';
+            }
+        });
+    </script>
 </body>
 </html>

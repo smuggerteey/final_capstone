@@ -1,37 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+/* General Styles */
 body {
     font-family: 'Open Sans', sans-serif;
     color: #2c3e50;
     background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
     padding: 20px;
+    transition: background 0.5s, color 0.5s;
 }
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
+}
+
 h1 {
     font-family: 'Pacifico', cursive;
     color: #3b82f6;
     text-align: center;
     margin-bottom: 20px;
 }
+
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain color in dark mode */
+}
+
 .container {
     max-width: 800px;
     margin: 20px auto;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.39);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 30px #1e05fd;
+    transition: background 0.5s, box-shadow 0.5s;
 }
+
+body.dark-mode .container {
+    background: #0a0a0a; /* Darker background in dark mode */
+    box-shadow: 0px 10px 30px #3701fd; /* Lighter shadow in dark mode */
+    
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
+
 th, td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
+
 th {
     background-color: #3b82f6;
     color: white;
 }
+
+body.dark-mode th {
+    background-color: #1e3a8a; /* Darker header background in dark mode */
+    color: #f4f4f9; /* Light text color for header in dark mode */
+}
+
+td {
+    color: #34495e;
+}
+
+body.dark-mode td {
+    color: #f4f4f9; /* Light text color for table data in dark mode */
+}
+
 button {
     padding: 10px 20px;
     background-color: #e74c3c;
@@ -41,14 +81,21 @@ button {
     cursor: pointer;
     transition: background-color 0.3s;
 }
+
 button:hover {
     background-color: #c0392b;
 }
+
+body.dark-mode button {
+    background-color: #ff4757; /* Lighter red for buttons in dark mode */
+}
+
 .back-button-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
+
 .back-button-container button {
     background-color: #3b82f6;
     padding: 12px 25px;
@@ -56,7 +103,36 @@ button:hover {
     border-radius: 10px;
     transition: background-color 0.3s, transform 0.2s;
 }
+
 .back-button-container button:hover {
     background-color: #1e3a8a;
     transform: scale(1.05);
+}
+
+body.dark-mode .back-button-container button {
+    background-color: #3b82f6; /* Retain button color in dark mode */
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px #4901ff;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
