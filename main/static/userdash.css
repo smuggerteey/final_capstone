@@ -1,4 +1,3 @@
-/* styles.css */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
 
 /* Reset */
@@ -15,6 +14,13 @@ body {
     background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
     display: flex;
     min-height: 100vh;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
 }
 
 /* Sidebar Styles */
@@ -28,6 +34,11 @@ body {
     top: 0;
     left: 0;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.5s;
+}
+
+body.dark-mode .sidebar {
+    background: #1b1b1b; /* Darker sidebar in dark mode */
 }
 
 .sidebar h2 {
@@ -74,6 +85,10 @@ h1 {
     margin-bottom: 20px;
 }
 
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain header color in dark mode */
+}
+
 p {
     font-size: 18px;
     color: #34495e;
@@ -81,25 +96,34 @@ p {
     margin-bottom: 40px;
 }
 
+body.dark-mode p {
+    color: #f4f4f9; /* Light color for paragraphs in dark mode */
+}
+
 /* Action Buttons Styles */
 .action-buttons {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around; /* Center align buttons with space around */
-    align-items: center; /* Center items vertically */
+    justify-content: space-around;
+    align-items: center;
     margin-bottom: 40px;
-    gap: 20px; /* Maintain space between cards */
+    gap: 20px;
 }
 
 .action-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.447);
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 20px #011aff;
     transition: transform 0.2s;
     text-align: center;
-    flex: 1 1 180px; /* Responsive flex basis */
-    min-width: 180px; /* Minimum width for small screens */
+    flex: 1 1 180px;
+    min-width: 180px;
+}
+
+body.dark-mode .action-card {
+    background: #010101; /* Darker background for action cards */
+    box-shadow: 0px 10px 20px #1403fd; /* Lighter shadow in dark mode */
 }
 
 .action-card:hover {
@@ -115,15 +139,19 @@ p {
     font-weight: bold;
     text-decoration: none;
     transition: background-color 0.3s, transform 0.2s;
-    width: 100%; /* Full width */
-    display: flex; /* Make button a flex container */
-    justify-content: center; /* Center align content */
-    align-items: center; /* Center align content vertically */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn:hover {
     background-color: #1e3a8a;
     transform: scale(1.05);
+}
+
+body.dark-mode .btn {
+    background-color: #3b82f6; /* Retain button color in dark mode */
 }
 
 /* Features Section */
@@ -136,7 +164,7 @@ p {
 
 .feature {
     flex: 1 1 280px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.452);
     margin: 15px;
     padding: 30px;
     border-radius: 15px;
@@ -149,17 +177,29 @@ p {
     transform: translateY(-5px);
 }
 
+body.dark-mode .feature {
+    background: rgba(44, 62, 80, 0.9); /* Darker background for features */
+    box-shadow: 0px 10px 30px rgba(255, 255, 255, 0.1); /* Lighter shadow in dark mode */
+}
+
 .feature h3 {
     font-family: 'Playfair Display', serif;
     color: #3b82f6;
     margin-bottom: 10px;
-    font-size: 24px; /* Increased font size for heading */
+}
+
+body.dark-mode .feature h3 {
+    color: #3b82f6; /* Retain color in dark mode */
 }
 
 .feature p {
     color: #34495e;
     font-size: 16px;
     line-height: 1.5;
+}
+
+body.dark-mode .feature p {
+    color: #f4f4f9; /* Light color for descriptions in dark mode */
 }
 
 /* Footer */
@@ -172,6 +212,11 @@ footer {
     padding: 10px 0;
 }
 
+body.dark-mode footer {
+    color: hsla(240, 29%, 97%, 0.386); /* Light color for footer in dark mode */
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
         position: relative;
@@ -187,4 +232,28 @@ footer {
     .btn {
         font-size: 16px;
     }
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }

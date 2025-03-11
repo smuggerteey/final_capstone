@@ -14,6 +14,68 @@ body {
     background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
     display: flex;
     min-height: 100vh;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
+}
+
+body.dark-mode .sidebar {
+    background: #1a1a1a;
+    color: #f4f4f9;
+    box-shadow: 2px 0 10px #2d03fd; /* Subtle white shadow */
+}
+
+body.dark-mode .content {
+    background: rgba(44, 62, 80, 0.95);
+    color: #f4f4f9;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
+}
+
+body.dark-mode h1 {
+    color: #3b82f6;
+}
+
+body.dark-mode p {
+    color: #f4f4f9;
+}
+
+body.dark-mode .action-card {
+    background: hsl(208, 100%, 3%);
+    color: #f4f4f9;
+    box-shadow: 0px 10px 20px #0d0d0d; /* Subtle white shadow */
+}
+
+body.dark-mode .btn {
+    background-color: hsl(0, 0%, 6%);
+    color: white;
+    box-shadow: 0px 4px 6px rgba(65, 6, 243, 0.938); /* Subtle white shadow */
+}
+
+body.dark-mode .btn:hover {
+    background-color: hsl(240, 6%, 7%);
+    box-shadow: 0px 6px 12px #030bf8; /* Stronger shadow on hover */
+}
+
+body.dark-mode .feature {
+    background: #0e0e0f;
+    color: #f4f4f9;
+    box-shadow: 0px 10px 30px #0f03ef; /* Subtle white shadow */
+}
+
+body.dark-mode .feature h3 {
+    color: #3b82f6;
+}
+
+body.dark-mode .feature p {
+    color: #f4f4f9;
+}
+
+body.dark-mode footer {
+    color: #f4f4f9;
 }
 
 /* Sidebar Styles */
@@ -26,7 +88,8 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 0 10px rgb(41, 4, 249);
+    transition: background 0.5s, color 0.5s;
 }
 
 .sidebar h2 {
@@ -62,6 +125,7 @@ body {
     margin-left: 270px; /* Leave space for the sidebar */
     padding: 40px 20px;
     flex-grow: 1;
+    transition: background 0.5s, color 0.5s;
 }
 
 /* Header Section */
@@ -71,6 +135,7 @@ h1 {
     color: #3b82f6;
     text-align: center;
     margin-bottom: 20px;
+    transition: color 0.5s;
 }
 
 p {
@@ -78,27 +143,28 @@ p {
     color: #34495e;
     text-align: center;
     margin-bottom: 40px;
+    transition: color 0.5s;
 }
 
 /* Action Buttons Styles */
 .action-buttons {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around; /* Center align buttons with space around */
-    align-items: center; /* Center items vertically */
+    justify-content: space-around;
+    align-items: center;
     margin-bottom: 40px;
-    gap: 20px; /* Maintain space between cards */
+    gap: 20px;
 }
 
 .action-card {
-    background: rgba(255, 255, 255, 0.9);
+    background: #ffffff6e;
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
     text-align: center;
-    flex: 1 1 180px; /* Responsive flex basis */
-    min-width: 180px; /* Minimum width for small screens */
+    flex: 1 1 180px;
+    min-width: 180px;
 }
 
 .action-card:hover {
@@ -114,24 +180,15 @@ p {
     font-weight: bold;
     text-decoration: none;
     transition: background-color 0.3s, transform 0.2s;
-    width: 100%; /* Full width */
-    display: flex; /* Make button a flex container */
-    justify-content: center; /* Center align content */
-    align-items: center; /* Center align content vertically */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .btn:hover {
     background-color: #1e3a8a;
     transform: scale(1.05);
-}
-
-/* Card Styles */
-.card {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 20px;
-    margin: 20px 0; /* Increased margin for better spacing */
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Feature Section */
@@ -144,7 +201,7 @@ p {
 
 .feature {
     flex: 1 1 280px;
-    background: rgba(255, 255, 255, 0.9);
+    background: hsla(0, 0%, 100%, 0.363);
     margin: 15px;
     padding: 30px;
     border-radius: 15px;
@@ -161,7 +218,7 @@ p {
     font-family: 'Playfair Display', serif;
     color: #3b82f6;
     margin-bottom: 10px;
-    font-size: 24px; /* Increased font size for heading */
+    font-size: 24px;
 }
 
 .feature p {
@@ -178,8 +235,43 @@ footer {
     text-align: center;
     position: relative;
     padding: 10px 0;
+    transition: color 0.5s;
 }
 
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+body.dark-mode .theme-toggle {
+    background: rgba(0, 0, 0, 0.2);
+    color: hsla(240, 29%, 97%, 0.434);
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
         position: relative;

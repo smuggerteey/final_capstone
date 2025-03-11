@@ -9,6 +9,9 @@
 </head>
 <body>
 
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="theme-toggle">🌙</button>
+
     <div class="container">
         <h1>Leaderboard</h1>
 
@@ -36,6 +39,30 @@
     <div class="back-btn">
         <a href="/art_challenges">Go Back</a>
     </div>
+
+    <!-- JavaScript for Dark Mode -->
+    <script>
+        const toggleButton = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        // Check Local Storage for Dark Mode Preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            toggleButton.textContent = '☀️';
+        }
+
+        // Toggle Dark Mode
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'true');
+                toggleButton.textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                toggleButton.textContent = '🌙';
+            }
+        });
+    </script>
 
 </body>
 </html>

@@ -8,13 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
 </head>
 <body>
+    <button id="darkModeToggle" class="theme-toggle">🌙</button> <!-- Dark Mode Toggle Button -->
+
     <div class="container">
         <h1>Chat Room</h1>
         <div class="tab-buttons">
             <button onclick="switchChat('group-chat')">Group Chat</button>
             <button onclick="switchChat('private-chat')">Private Chat</button>
         </div>
-        
+
         <!-- Group Chat -->
         <div id="group-chat" class="chat-section active">
             <div class="chat-box" id="group-messages">
@@ -31,7 +33,7 @@
                 <button class="send-button" onclick="sendMessage('group')">Send</button>
             </div>
         </div>
-        
+
         <!-- Private Chat -->
         <div id="private-chat" class="chat-section">
             <div class="chat-box" id="private-messages">
@@ -43,14 +45,32 @@
                 <button class="send-button" onclick="sendMessage('private')">Send</button>
             </div>
         </div>
-        
+
         <a href="/collaboration_hub" class="dashboard-link">Go Back</a>
     </div>
 
     <script>
         const socket = io();
         const username = '{{ username }}';
-        
+
+        // Check Local Storage for Dark Mode Preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️';
+        }
+
+        // Toggle Dark Mode
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'true');
+                document.getElementById('darkModeToggle').textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                document.getElementById('darkModeToggle').textContent = '🌙';
+            }
+        });
+
         function switchChat(chatType) {
             document.querySelectorAll('.chat-section').forEach(section => section.classList.remove('active'));
             document.getElementById(chatType).classList.add('active');
@@ -73,7 +93,6 @@
         socket.on('receive_message', function(data) {
             let chatBox = document.getElementById(data.room === 'general' ? 'group-messages' : 'private-messages');
             const timestamp = new Date(data.timestamp).toLocaleTimeString();
-
             let messageClass = data.username === '{{ username }}' ? 'message-user' : 'message-other';
 
             chatBox.innerHTML += `

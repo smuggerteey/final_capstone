@@ -1,7 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
 
 /* Reset */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 /* Body and Container */
 body {
@@ -13,19 +17,32 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
 }
 
 .container {
     width: 100%;
     max-width: 900px; /* Increased width */
     padding: 40px;
-    background: #fff;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background: #ffffff80;
+    box-shadow: 0px 4px 10px #4401ff;
     border-radius: 15px;
     text-align: center;
     margin-bottom: 20px; /* Added margin to separate from footer */
 }
 
+body.dark-mode .container {
+    background: rgba(2, 2, 2, 0.95);
+    box-shadow: 0px 4px 10px hsl(251, 100%, 49%);
+}
+
+/* Header */
 h1 {
     font-family: 'Pacifico', cursive;
     font-size: 36px;
@@ -33,6 +50,11 @@ h1 {
     margin-bottom: 30px;
 }
 
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain color for dark mode */
+}
+
+/* Form Group */
 .form-group {
     margin-bottom: 25px;
     text-align: left;
@@ -46,6 +68,11 @@ label {
     margin-bottom: 8px;
 }
 
+body.dark-mode label {
+    color: #f4f4f9; /* Light color for dark mode */
+}
+
+/* Input and Textarea */
 input, textarea {
     width: 100%;
     padding: 14px;
@@ -73,6 +100,10 @@ input:focus, textarea:focus {
 
 .drag-drop-area:hover {
     background-color: #e0f0ff;
+}
+
+.body.dark-mode .drag-drop-area {
+    border-color: #f4f4f9; /* Light border in dark mode */
 }
 
 .preview-container {
@@ -123,6 +154,31 @@ footer {
     width: 100%; /* Ensure footer takes full width */
 }
 
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #000000;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px #3f02f5;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* Responsive Design */
 @media (max-width: 600px) {
     .container { padding: 20px; }
     h1 { font-size: 28px; }

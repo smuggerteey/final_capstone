@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
 </head>
 <body>
+    <!-- Dark Mode Toggle Button -->
+    <button id="themeToggle" class="theme-toggle">🌙</button>
+
+    <!-- Main Container -->
     <div class="container">
         <h1>Join the Creative Hub</h1>
         <form id="registrationForm" method="POST" action="/registration">
@@ -31,12 +35,34 @@
     </div>
 
     <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById("themeToggle");
+        const body = document.body;
+
+        // Check Local Storage for Dark Mode Preference
+        if (localStorage.getItem("dark-mode") === "enabled") {
+            body.classList.add("dark-mode");
+            themeToggle.textContent = "☀️";
+        }
+
+        // Toggle Dark Mode
+        themeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark-mode");
+            if (body.classList.contains("dark-mode")) {
+                localStorage.setItem("dark-mode", "enabled");
+                themeToggle.textContent = "☀️";
+            } else {
+                localStorage.setItem("dark-mode", "disabled");
+                themeToggle.textContent = "🌙";
+            }
+        });
+
+        // Form Submission Logic
         document.getElementById("registrationForm").addEventListener("submit", function(event) {
             var role = document.getElementById("role").value;
             var username = document.querySelector("input[name='username']").value;
 
             if (role === "Artist") {
-                // ✅ Allow the form to submit to Flask first
                 this.action = "/registration?redirect=artist-verification";
             }
         });

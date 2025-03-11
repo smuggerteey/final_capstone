@@ -17,6 +17,22 @@ body {
     min-height: 100vh;
     text-align: center;
     padding: 0 20px;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: hsla(240, 29%, 97%, 0.539);
+}
+
+body.dark-mode .portfolio-item {
+    background: #000000; /* Lighter background for dark mode */
+    box-shadow: 0px 10px 30px #2601f4; /* Subtle white shadow */
+}
+
+body.dark-mode .form-container {
+    background-color: rgba(44, 62, 80, 0.95);
 }
 
 /* Main Container */
@@ -85,10 +101,10 @@ h1 {
 }
 
 .portfolio-item {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.463);
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 30px #4400fe;
     transition: transform 0.2s;
 }
 
@@ -107,9 +123,9 @@ h1 {
 .form-container {
     margin: 40px 0;
     padding: 20px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: #ffffff6c;
     border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 30px #1403ff;
 }
 
 .form-container input,
@@ -121,6 +137,7 @@ h1 {
     border: 1px solid #ddd;
 }
 
+/* Button Styles */
 .form-container button {
     padding: 10px 20px;
     background-color: #3b82f6;
@@ -151,7 +168,7 @@ h1 {
     background-color: #3b82f6;
     border-radius: 10px;
     text-decoration: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgb(51, 1, 253);
     transition: background-color 0.3s, transform 0.2s;
 }
 
@@ -165,4 +182,28 @@ footer {
     margin-top: 50px;
     font-size: 14px;
     color: #6c7a89;
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px #4302f6;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }

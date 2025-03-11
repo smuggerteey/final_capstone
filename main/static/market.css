@@ -18,6 +18,40 @@ body {
     text-align: center;
     padding: 0 20px;
     justify-content: space-between;
+    transition: background 0.5s, color 0.5s;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
+}
+
+body.dark-mode .container {
+    background: rgba(10, 10, 10, 0.95);
+    box-shadow: 0px 10px 30px #4d03f8; /* Subtle white shadow */
+
+}
+
+body.dark-mode .artwork-item {
+    background: #070707; /* Lighter background for dark mode */
+    box-shadow: 0px 10px 30px #5704ff; /* Subtle white shadow */
+}
+
+body.dark-mode .artwork-title {
+    color: #3b82f6;
+}
+
+body.dark-mode .artwork-price {
+    color: #27ae60;
+}
+
+body.dark-mode .btn-buy {
+    background-color: #3b82f6;
+}
+
+body.dark-mode .btn-buy:hover {
+    background-color: #1e3a8a;
 }
 
 /* Main Container */
@@ -27,6 +61,8 @@ body {
     margin-top: 50px;
     margin-left: auto;
     margin-right: auto;
+    background: #d2c3c360;
+    box-shadow: 0px 10px 30px #4d03f8; /* Subtle white shadow */
 }
 
 /* Header */
@@ -41,9 +77,13 @@ h1 {
 p {
     font-family: 'Playfair Display', serif;
     font-size: 20px;
-    color: #34495e;
+    color: hwb(246 25% 51%);
     margin-bottom: 30px;
     line-height: 1.6;
+}
+/* Dark Mode Paragraph */
+body.dark-mode p {
+    color: #f4f4f9; /* Light color for dark mode */
 }
 
 /* Artwork Grid */
@@ -61,9 +101,10 @@ p {
     background: rgba(255, 255, 255, 0.9);
     padding: 20px;
     border-radius: 15px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 10px 30px #4704ff;
     transition: transform 0.2s;
     text-align: center;
+    
 }
 
 .artwork-item:hover {
@@ -142,7 +183,30 @@ footer {
     color: #6c7a89;
     text-align: center;
     padding: 20px 0;
-    background-color: #fff;
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 /* Responsive Design */

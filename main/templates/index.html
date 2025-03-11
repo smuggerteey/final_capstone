@@ -8,6 +8,9 @@
 </head>
 <body>
 
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="theme-toggle">🌙</button>
+
     <!-- Main Container -->
     <div class="container">
         <!-- Header Section -->
@@ -15,8 +18,10 @@
         <p>Step into a vibrant tapestry of imagination, where art meets innovation. Join a community where creativity flourishes, and every brushstroke, pixel, and idea comes alive.</p>
         
         <!-- Action Buttons -->
-        <a href="registration" class="btn">Begin Your Journey 🚀</a>
-        <a href="#features" class="btn">Discover Our World 🌎</a>
+        <div class="action-buttons">
+            <a href="registration" class="btn">Begin Your Journey 🚀</a>
+            <a href="#features" class="btn">Discover Our World 🌎</a>
+        </div>
 
         <!-- Features Section -->
         <div class="features" id="features">
@@ -51,6 +56,30 @@
     <footer>
         &copy; 2024 Creative Hub. All rights reserved. 😊
     </footer>
+
+    <!-- JavaScript for Dark Mode -->
+    <script>
+        const toggleButton = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        // Check Local Storage for Dark Mode Preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            toggleButton.textContent = '☀️';
+        }
+
+        // Toggle Dark Mode
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'true');
+                toggleButton.textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                toggleButton.textContent = '🌙';
+            }
+        });
+    </script>
 
 </body>
 </html>

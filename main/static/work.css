@@ -1,4 +1,3 @@
-/* styles.css */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
 
 /* Reset */
@@ -20,13 +19,28 @@ body {
     min-height: 100vh;
     padding: 0 20px;
     text-align: center;
+    transition: background 0.5s, color 0.5s;
 }
 
-/* Main Container */
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: #f4f4f9;
+}
+
 .container {
     width: 100%;
     max-width: 1000px;
     padding: 50px 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    box-shadow: 0px 10px 30px #4e02ff;
+    transition: background 0.5s, box-shadow 0.5s;
+}
+
+body.dark-mode .container {
+    background: rgba(0, 0, 0, 0.95); /* Darker background in dark mode */
+    box-shadow: 0px 10px 30px #5302f7; /* Subtle white shadow */
 }
 
 /* Header Section */
@@ -37,12 +51,20 @@ h1 {
     margin-bottom: 20px;
 }
 
+body.dark-mode h1 {
+    color: #3b82f6; /* Retain header color in dark mode */
+}
+
 p {
     font-family: 'Playfair Display', serif;
     font-size: 22px;
     color: #34495e;
     margin-bottom: 40px;
     line-height: 1.6;
+}
+
+body.dark-mode p {
+    color: #f4f4f9; /* Light color for paragraphs in dark mode */
 }
 
 /* Button Styles */
@@ -63,6 +85,10 @@ p {
 .btn:hover {
     background-color: #1e3a8a;
     transform: scale(1.05);
+}
+
+body.dark-mode .btn {
+    background-color: #3b82f6; /* Retain button color in dark mode */
 }
 
 /* Feature Section */
@@ -87,17 +113,29 @@ p {
     transform: translateY(-10px);
 }
 
+body.dark-mode .feature {
+    background: rgba(255, 255, 255, 0.1); /* Lighter background for dark mode */
+    box-shadow: 0px 10px 30px rgba(255, 255, 255, 0.1); /* Subtle white shadow in dark mode */
+}
+
 .feature h3 {
     font-family: 'Playfair Display', serif;
     color: #3b82f6;
     margin-bottom: 10px;
-    font-size: 22px;
+}
+
+body.dark-mode .feature h3 {
+    color: #3b82f6; /* Retain color in dark mode */
 }
 
 .feature p {
     color: #34495e;
     font-size: 16px;
     line-height: 1.5;
+}
+
+body.dark-mode .feature p {
+    color: #f4f4f9; /* Light color for descriptions in dark mode */
 }
 
 /* Footer */
@@ -107,6 +145,11 @@ footer {
     color: #6c7a89;
 }
 
+body.dark-mode footer {
+    color: #f4f4f9; /* Light color for footer in dark mode */
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
     h1 {
         font-size: 36px;
@@ -115,4 +158,28 @@ footer {
     .btn {
         font-size: 16px;
     }
+}
+
+/* Dark Mode Toggle Button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }

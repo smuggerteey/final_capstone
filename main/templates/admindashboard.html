@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
 </head>
 <body>
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="theme-toggle">🌙</button>
+
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>Admin Dashboard</h2>
@@ -60,7 +64,30 @@
         <footer>&copy; 2024 Creative Hub. All rights reserved. 😊</footer>
     </div>
 
+    <!-- JavaScript for Dark Mode -->
     <script>
+        const toggleButton = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        // Check Local Storage for Dark Mode Preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            toggleButton.textContent = '☀️';
+        }
+
+        // Toggle Dark Mode
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'true');
+                toggleButton.textContent = '☀️';
+            } else {
+                localStorage.setItem('darkMode', 'false');
+                toggleButton.textContent = '🌙';
+            }
+        });
+
+        // Toggle Sidebar Menu
         function toggleSidebarMenu() {
             document.querySelector('.sidebar').classList.toggle('show');
         }
