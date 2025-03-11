@@ -1,184 +1,173 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&family=Playfair+Display:wght@400;700&display=swap');
-
-/* Reset */
+/* Global Styles */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
 }
-
-/* Body Style */
 body {
-    font-family: 'Open Sans', sans-serif;
-    color: #2c3e50;
-    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    background-color: hwb(213 61% 13%);
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+.dark-mode {
+    background-color: #181818;
+    color: #f4f4f96b;
+}
+
+/* Chat Container */
+.chat-container {
+    display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    padding: 0 20px;
-    text-align: center;
-    transition: background 0.5s, color 0.5s;
-}
-
-/* Dark Mode Styles */
-body.dark-mode {
-    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-    color: #f4f4f9;
-}
-
-.container {
+    justify-content: space-between;
     width: 100%;
     max-width: 800px;
-    padding: 50px 20px;
-    background: #ffffff79;
-    border-radius: 15px;
-    box-shadow: 0px 10px 30px #2601fb;
-    transition: background 0.5s, box-shadow 0.5s;
+    height: 90vh;
+    background-color: hwb(240 71% 22% / 0.459);
+    border-radius: 20px;
+    box-shadow: 0 5px 15px #0101f9;
+    overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+.dark-mode .chat-container {
+    background-color: hsl(0, 0%, 4%);
+    box-shadow: 0 5px 15px #0101f9;
 }
 
-body.dark-mode .container {
-    background: rgba(44, 62, 80, 0.95); /* Darker background in dark mode */
-    box-shadow: 0px 10px 30px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
+/* Header */
+.chat-header {
+    padding: 20px;
+    background-color: rgba(30, 113, 181, 0.963);
+    color: #ffffff;
+    text-align: center;
 }
-
-/* Header Section */
-h1 {
-    font-family: 'Pacifico', cursive;
-    font-size: 48px;
-    color: #3b82f6;
-    margin-bottom: 20px;
+.dark-mode .chat-header {
+    background-color: #217bca;
 }
-
-body.dark-mode h1 {
-    color: #3b82f6; /* Retain header color in dark mode */
+.chat-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
 }
-
-p {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    color: #34495e;
-    margin-bottom: 40px;
-    line-height: 1.6;
-}
-
-body.dark-mode p {
-    color: #f4f4f9; /* Light color for paragraphs in dark mode */
+.chat-header p {
+    font-size: 0.9rem;
 }
 
 /* Chatbox */
 .chatbox {
-    width: 100%;
-    max-height: 400px;
-    overflow-y: auto;
-    background: rgba(255, 255, 255, 0.45);
-    border-radius: 15px;
+    flex: 1;
     padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0px 10px 30px #2a02f2;
-    text-align: left;
-    transition: background 0.5s, box-shadow 0.5s;
+    overflow-y: auto;
+    background: hsla(0, 0%, 98%, 0.349);
 }
-
-body.dark-mode .chatbox {
-    background: #000000; /* Lighter background for dark mode */
-    box-shadow: 0px 10px 30px #2f01fa; /* Subtle white shadow in dark mode */
+.dark-mode .chatbox {
+    background: #1e1e1e;
 }
-
-.chatbox .user-message,
-.chatbox .bot-message {
-    margin-bottom: 10px;
+.chatbox .message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
 }
-
 .chatbox .user-message {
-    font-weight: bold;
-    color: #3b82f6;
+    background-color: #4a90e2;
+    color: hsl(0, 0%, 100%);
+    margin-left: auto;
 }
-
+.dark-mode .chatbox .user-message {
+    background-color: #0074d9;
+}
 .chatbox .bot-message {
-    color: #34495e;
+    background-color: #e0e0e0;
+    color: #333;
+}
+.dark-mode .chatbox .bot-message {
+    background-color: #333;
+    color: #f4f4f9;
 }
 
-/* Message Input */
+/* Message Input Area */
+.message-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background-color: #ffffff;
+}
+.dark-mode .message-area {
+    background-color: #252525;
+    border-top: 1px solid #444;
+}
 .message-input {
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
-    border-radius: 25px;
+    flex: 1;
+    padding: 10px;
     border: 1px solid #ddd;
-    margin-bottom: 20px;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 1rem;
 }
-
-body.dark-mode .message-input {
-    border: 1px solid #555; /* Darker border in dark mode */
+.dark-mode .message-input {
+    background-color: #333;
+    color: #f4f4f9;
+    border-color: #444;
 }
-
-/* Button Styles */
 .btn {
-    display: inline-block;
-    padding: 15px 30px;
-    border-radius: 25px;
-    background-color: #3b82f6;
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s, transform 0.2s;
-    font-family: 'Open Sans', sans-serif;
+    padding: 10px 20px;
+    background-color: #4a90e2;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
-
 .btn:hover {
-    background-color: #1e3a8a;
-    transform: scale(1.05);
+    background-color: #3b7ac0;
+}
+.dark-mode .btn {
+    background-color: #0074d9;
+}
+.dark-mode .btn:hover {
+    background-color: #005bb5;
 }
 
-body.dark-mode .btn {
-    background-color: #3b82f6; /* Retain button color in dark mode */
+/* Back Button */
+.back-btn {
+    text-align: center;
+    margin: 10px;
+}
+.back-btn a {
+    text-decoration: none;
+    color: #4a90e2;
+    font-weight: bold;
+}
+.dark-mode .back-btn a {
+    color: #0074d9;
 }
 
 /* Footer */
-footer {
-    margin-top: 50px;
-    font-size: 14px;
-    color: #6c7a89;
+.chat-footer {
+    padding: 10px;
+    text-align: center;
+    font-size: 0.8rem;
+    background-color: #f4f4f9;
+}
+.dark-mode .chat-footer {
+    background-color: #181818;
 }
 
-body.dark-mode footer {
-    color: #f4f4f9; /* Light color for footer in dark mode */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 36px;
-    }
-
-    .btn {
-        font-size: 16px;
-    }
-}
-
-/* Dark Mode Toggle Button */
+/* Dark Mode Toggle */
 .theme-toggle {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(255, 255, 255, 0.2);
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+    font-size: 1.5rem;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: background 0.3s, transform 0.3s;
 }
-
-.theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+.dark-mode .theme-toggle {
+    color: #f4f4f9;
 }

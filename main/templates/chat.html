@@ -3,109 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Our AI Assistant 🤖</title>
+    <title>AI Assistant Chat</title>
+    <!-- Use Jinja2 `url_for` to reference the CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='chat.css') }}">
 </head>
 <body>
-    <button id="darkModeToggle" class="theme-toggle">🌙</button> <!-- Dark Mode Toggle Button -->
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" class="theme-toggle">🌙</button>
 
-    <!-- Main Container -->
+    <!-- Chat Container -->
     <div class="chat-container">
-        
-        <!-- Header Section -->
+        <!-- Header -->
         <header class="chat-header">
-            <h1>Chat with Our AI Assistant 🤖</h1>
-            <p>Ask any questions, and our AI assistant will assist you with quick responses.</p>
+            <h1>AI Assistant 🤖</h1>
+            <p>Your smart assistant is here to help you.</p>
         </header>
 
-        <!-- Chatbox Section -->
+        <!-- Chatbox -->
         <main class="chatbox" id="chatbox" aria-live="polite">
-            <!-- User and bot messages will be dynamically added here -->
+            <!-- Messages will be dynamically added here -->
         </main>
 
-        <!-- Message Input Section -->
+        <!-- Message Input Area -->
         <div class="message-area">
             <input type="text" id="inputMessage" class="message-input" placeholder="Type your message..." aria-label="Chat input">
             <button id="sendBtn" class="btn">Send</button>
         </div>
 
-        <!-- Navigation Button -->
+        <!-- Back Button -->
         <div class="back-btn">
-            <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">
-                Back to Dashboard
-            </a>
+            <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">Back to Dashboard</a>
         </div>
 
-        <!-- Footer Section -->
+        <!-- Footer -->
         <footer class="chat-footer">
-            &copy; 2024 Digital Art & Creative Hub. All rights reserved. 😊
+            &copy; 2024 Digital Art & Creative Hub. All rights reserved.
         </footer>
-
     </div>
 
+    <!-- Embedded JavaScript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const sendBtn = document.getElementById("sendBtn");
             const inputMessage = document.getElementById("inputMessage");
             const chatbox = document.getElementById("chatbox");
+            const darkModeToggle = document.getElementById("darkModeToggle");
 
-            // Function to append messages
+            // Append a message to the chatbox
             function appendMessage(sender, message, className) {
                 const newMessage = document.createElement("div");
-                newMessage.classList.add(className);
+                newMessage.classList.add("message", className);
                 newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
                 chatbox.appendChild(newMessage);
                 chatbox.scrollTop = chatbox.scrollHeight; // Auto-scroll to the latest message
             }
 
-            // Send message function
+            // Send a message
             function sendMessage() {
-                const messageText = inputMessage.value.trim();
-                if (messageText === "") return; // Prevent sending empty messages
+                const message = inputMessage.value.trim();
+                if (!message) return;
 
-                appendMessage("You", messageText, "user-message");
-                inputMessage.value = ""; // Clear input field
+                // Add user message to the chatbox
+                appendMessage("You", message, "user-message");
+                inputMessage.value = ""; // Clear the input field
 
-                // Send message to the backend
+                // Send the message to the backend
                 fetch("/predict", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ input_text: messageText })
+                    body: JSON.stringify({ input_text: message }),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    const reply = data.response || "Sorry, something went wrong. Please try again.";
-                    appendMessage("AI", reply, "bot-message");
-                })
-                .catch(error => {
-                    appendMessage("AI", "Error: " + error.message, "bot-message");
-                });
+                    .then((response) => response.json())
+                    .then((data) => {
+                        // Add AI bot's response to the chatbox
+                        appendMessage("AI", data.response || "Sorry, something went wrong.", "bot-message");
+                    })
+                    .catch(() => {
+                        // Handle errors
+                        appendMessage("AI", "Error processing your message.", "bot-message");
+                    });
             }
 
-            // Event listeners
+            // Event listeners for sending messages
             sendBtn.addEventListener("click", sendMessage);
-            inputMessage.addEventListener("keypress", function(event) {
-                if (event.key === "Enter") sendMessage();
+            inputMessage.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendMessage();
+            });
+
+            // Dark mode toggle functionality
+            if (localStorage.getItem("darkMode") === "true") {
+                document.body.classList.add("dark-mode");
+                darkModeToggle.textContent = "☀️";
+            }
+
+            darkModeToggle.addEventListener("click", () => {
+                document.body.classList.toggle("dark-mode");
+                const isDarkMode = document.body.classList.contains("dark-mode");
+                localStorage.setItem("darkMode", isDarkMode);
+                darkModeToggle.textContent = isDarkMode ? "☀️" : "🌙";
             });
         });
-
-        // Dark Mode Toggle Functionality
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
-        }
-
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                document.getElementById('darkModeToggle').textContent = '☀️';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                document.getElementById('darkModeToggle').textContent = '🌙';
-            }
-        });
     </script>
-
 </body>
 </html>
