@@ -27,7 +27,7 @@ body {
     width: 100%;
     max-width: 800px;
     height: 90vh;
-    background-color: hwb(240 71% 22% / 0.459);
+    background: #ffffff76;
     border-radius: 20px;
     box-shadow: 0 5px 15px #0101f9;
     overflow: hidden;
