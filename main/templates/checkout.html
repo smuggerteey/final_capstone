@@ -46,7 +46,11 @@
     </div>
 
     <footer>
-        <a href="/dashboard" class="dashboard-btn">Go to Dashboard</a>
+        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
+           class="btn" 
+           style="background-color: #4f83e4; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px;">
+            Back to Dashboard
+        </a>
     </footer>
 
     <script>

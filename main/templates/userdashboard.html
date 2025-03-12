@@ -3,9 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - User Hub 🎨</title>
+    <title>Dashboard - User Hub �</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='userdash.css') }}"> <!-- Link to external CSS -->
+    <style>
+        /* Chatbot Button Styling */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff; /* Blue color */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px; /* Rounded edges */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for a floating effect */
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+            z-index: 1000; /* Ensure it stays on top */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .chatbot-btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        .chatbot-btn i {
+            font-size: 20px; /* Icon size */
+        }
+    </style>
 </head>
 <body>
     <button id="darkModeToggle" class="theme-toggle">🌙</button> <!-- Dark Mode Toggle Button -->
@@ -35,9 +63,6 @@
             <div class="action-card">
                 <a href="{{ url_for('virtual_gallery') }}" class="btn">Virtual Gallery <span style="padding-left: 5px;">🖼️</span></a>
             </div>
-            <div class="action-card">
-                <a href="{{ url_for('chat') }}" class="btn">Chat with ArtBot <span style="padding-left: 5px;">💬</span></a>
-            </div>
         </div>
 
         <!-- Features Section -->
@@ -55,6 +80,11 @@
                 <p>Update your personal information and preferences.</p>
             </div>
         </div>
+
+        <!-- Chatbot Button -->
+        <a href="{{ url_for('chat') }}" class="chatbot-btn">
+            <i class="fas fa-comment-dots"></i> Chat with ArtBot
+        </a>
 
         <footer>
             &copy; 2024 User Hub. All rights reserved. 😊

@@ -31,7 +31,7 @@
         <div class="dashboard-link">
             <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
                class="dashboard-btn">
-                🔙 Back to Dashboard
+                Back to Dashboard
             </a>
         </div>
     </div>
