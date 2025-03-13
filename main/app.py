@@ -225,10 +225,25 @@ def on_leave(data):
         'username': 'System'
     }, room=room)
 
-# Routes
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Example user data
+    user_data = {
+        'username': 'example_user',
+        'role': 'Artist'  # or 'User' or 'Admin'
+    }
+    return render_template('index.html', user_data=user_data)
+
+@app.route('/sketchboard')
+def sketchboard():
+    # Example user data
+    user_data = {
+        'username': 'example_user',
+        'role': 'Artist'  # or 'User' or 'Admin'
+    }
+    return render_template('sketchboard.html', user_data=user_data)
+
+    app.run(debug=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
