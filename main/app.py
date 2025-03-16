@@ -19,6 +19,12 @@ from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 import paypalrestsdk  
 
+from twilio.rest import Client
+import sendgrid
+from sendgrid.helpers.mail import Mail, Email, To, Content
+import ssl
+import logging
+
 
 # Etherscan API URL and your API key
 ETHERSCAN_API_URL = "https://api.etherscan.io/api"
@@ -161,6 +167,79 @@ def get_user_id(username):
     cursor.close()
     conn.close()
     return user[0] if user else None
+
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
+TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
+TWILIO_PHONE_NUMBER = '+2330203419613'  # Format: +1234567890
+SENDGRID_API_KEY = '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'  # For email messaging
+
+
+# Enable debug logging
+logging.basicConfig(level=logging.DEBUG)
+
+# WhatsApp Messaging
+def send_whatsapp_message(to, message):
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    try:
+        message = client.messages.create(
+            body=message,
+            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
+            to=f'whatsapp:{to}'
+        )
+        print(f"WhatsApp message sent to {to}: {message.sid}")
+        return True
+    except Exception as e:
+        print(f"Failed to send WhatsApp message: {e}")
+        return False
+
+# Email Messaging
+def send_email(to_email, subject, content):
+    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
+    from_email = Email("tynochagaka@gmail.com")  # Replace with your sender email
+    to_email = To(to_email)
+    content = Content("text/plain", content)  # Use "text/html" for HTML emails
+    
+    # Disable SSL verification (not recommended for production)
+    context = ssl._create_unverified_context()
+    
+    try:
+        response = sg.client.mail.send.post(request_body=mail.get(), ssl_context=context)
+        print(f"Email sent to {to_email}: {response.status_code}")
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
+
+# Routes
+@app.route('/send_whatsapp', methods=['POST'])
+def send_whatsapp():
+    data = request.json
+    to = data.get('to')
+    message = data.get('message')
+    
+    if not to or not message:
+        return jsonify({'error': 'Missing "to" or "message" in request'}), 400
+    
+    if send_whatsapp_message(to, message):
+        return jsonify({'success': 'WhatsApp message sent successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to send WhatsApp message'}), 500
+
+@app.route('/send_email', methods=['POST'])
+def send_email_route():
+    data = request.json
+    to_email = data.get('to_email')
+    subject = data.get('subject')
+    content = data.get('content')
+    
+    if not to_email or not subject or not content:
+        return jsonify({'error': 'Missing "to_email", "subject", or "content" in request'}), 400
+    
+    if send_email(to_email, subject, content):
+        return jsonify({'success': 'Email sent successfully'}), 200
+    else:
+        return jsonify({'error': 'Failed to send email'}), 500
 
 
 # User model

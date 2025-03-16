@@ -79,11 +79,11 @@ button {
 }
 
 button:hover {
-    background-color: #1e3a8a;
+    background-color: rgb(60, 125, 221); 
 }
 
 body.dark-mode button {
-    background-color: #0c09ec; /* Lighter red for buttons in dark mode */
+    background-color: rgb(60, 125, 221); 
 }
 
 /* Back Button */

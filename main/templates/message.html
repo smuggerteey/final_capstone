@@ -46,6 +46,22 @@
             </div>
         </div>
 
+        <!-- WhatsApp and Email Messaging Options -->
+        <div class="messaging-options">
+            <h2>Send Message via:</h2>
+            <div class="whatsapp-option">
+                <input id="whatsapp-number" placeholder="Enter WhatsApp number (e.g., +1234567890)" required>
+                <textarea id="whatsapp-message" placeholder="Type your WhatsApp message..." required></textarea>
+                <button class="send-button" onclick="sendWhatsApp()">Send via WhatsApp</button>
+            </div>
+            <div class="email-option">
+                <input id="email-address" placeholder="Enter recipient email" required>
+                <input id="email-subject" placeholder="Email subject" required>
+                <textarea id="email-content" placeholder="Type your email content..." required></textarea>
+                <button class="send-button" onclick="sendEmail()">Send via Email</button>
+            </div>
+        </div>
+
         <a href="/collaboration_hub" class="dashboard-link">Go Back</a>
     </div>
 
@@ -104,6 +120,58 @@
 
             chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
         });
+
+        // WhatsApp Messaging
+        function sendWhatsApp() {
+            const to = document.getElementById('whatsapp-number').value.trim();
+            const message = document.getElementById('whatsapp-message').value.trim();
+
+            if (!to || !message) {
+                return alert('Please enter a WhatsApp number and message!');
+            }
+
+            fetch('/send_whatsapp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to, message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.success || data.error);
+                if (data.success) {
+                    document.getElementById('whatsapp-number').value = '';
+                    document.getElementById('whatsapp-message').value = '';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Email Messaging
+        function sendEmail() {
+            const to_email = document.getElementById('email-address').value.trim();
+            const subject = document.getElementById('email-subject').value.trim();
+            const content = document.getElementById('email-content').value.trim();
+
+            if (!to_email || !subject || !content) {
+                return alert('Please fill all email fields!');
+            }
+
+            fetch('/send_email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ to_email, subject, content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.success || data.error);
+                if (data.success) {
+                    document.getElementById('email-address').value = '';
+                    document.getElementById('email-subject').value = '';
+                    document.getElementById('email-content').value = '';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 </body>
 </html>

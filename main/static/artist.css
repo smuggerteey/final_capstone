@@ -239,29 +239,30 @@ footer {
     padding: 10px 0;
     transition: color 0.5s;
 }
-
 /* Dark Mode Toggle Button */
 .theme-toggle {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 10px; /* Distance from the top */
+    left: 21%; /* Center horizontally */
+    transform: translateX(-21%); /* Center alignment */
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
+    border-radius: 21%;
+    width: 35px; /* Smaller size */
+    height: 35px; /* Smaller size */
+    font-size: 18px; /* Smaller font */
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: background 0.3s, transform 0.3s;
+    transform-origin: center; /* Ensure scaling happens from the center */
 }
 
 .theme-toggle:hover {
     background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+    transform: translateX(-60%) scale(1.1); /* Apply both translate and scale */
 }
 
 body.dark-mode .theme-toggle {
@@ -316,3 +317,16 @@ body.dark-mode .theme-toggle:hover {
 .chatbot-btn i {
     font-size: 20px; /* Icon size */
 }
+
+        /* Profile Button Styling */
+        .profile-link {
+            position: absolute; /* Fixed position */
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }

@@ -95,7 +95,7 @@ button:hover {
 }
 
 body.dark-mode button {
-    background-color: #474dff; /* Lighter red for buttons in dark mode */
+    background-color: rgb(60, 125, 221); /* Lighter red for buttons in dark mode */
 }
 
 /* Form Styles */
