@@ -21,7 +21,7 @@ body {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
-    background-color: hwb(210 63% 13%);
+    background-color: #ffffff76;
     box-shadow: 0px 10px 30px hsl(243, 98%, 49%);
     border-radius: 15px;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -300,4 +300,26 @@ footer {
 #goBackBtn:hover {
     background-color: #0056b3;
     transform: translateY(-2px);
+}
+/* Back Button */
+.back-btn {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    align-items: center; /* Aligns content vertically */
+}
+
+.back-btn a {
+    text-decoration: none;
+    padding: 12px 25px;  /* Adjusted padding */
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.back-btn a:hover {
+    background-color: #1e3a8a;
+    transform: scale(1.05);
 }

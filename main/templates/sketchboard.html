@@ -5,16 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Hub 🎨</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='sketchboard.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Smooth transitions and animations */
+        body {
+            transition: background-color 0.5s, color 0.5s;
+        }
+        .badge {
+            transition: transform 0.3s ease;
+        }
+        .badge:hover {
+            transform: scale(1.1);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive Buttons */
+        #goBackBtn, .dashboard-link .btn {
+            display: none; /* Hidden by default */
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #goBackBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #goBackBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .dashboard-link .btn {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .dashboard-link .btn:hover {
+            background-color: #218838;
+        }
+
+        /* Blue Button Styles */
+        .blue-button {
+            background-color: #007bff; /* Blue background */
+            color: white; /* White text */
+            padding: 10px 20px; /* Padding for better appearance */
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 16px; /* Font size */
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        .blue-button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+
+        .blue-button:active {
+            background-color: #004080; /* Even darker blue on click */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            #goBackBtn, .dashboard-link .btn {
+                width: 100%;
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #goBackBtn, .dashboard-link .btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <button id="darkModeToggle" class="theme-toggle">🌙</button> <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" class="theme-toggle">🌙</button>
 
-    <!-- Main Container -->
     <div class="container">
         <h1>Creative Hub 🎨</h1>
-        <p>Explore your creativity with our drawing board, voice recording, video recording, and notepad for poetry and writings!</p>
+        <p>Explore your creativity with our gamified drawing board, voice recording, video recording, and notepad for poetry and writings!</p>
+        
+        <!-- Leaderboard -->
+        <div id="leaderboard">
+            <h2>🏆 Leaderboard</h2>
+            <ol id="leaderboardList"></ol>
+        </div>
 
-        <!-- Navigation Links -->
+        <!-- Badges -->
+        <div id="badges">
+            <h2>🎖️ Badges</h2>
+            <div id="badgeList"></div>
+        </div>
+
+        <!-- Points Display -->
+        <div id="totalPoints">Total Points: 0</div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar" style="width: 0%;"></div>
+        </div>
+
+        <!-- Navigation -->
         <div class="navigation">
             <a href="#" class="nav-link" data-target="drawing-board">Drawing Board</a>
             <a href="#" class="nav-link" data-target="voice-recording">Voice Recording</a>
@@ -25,12 +129,8 @@
         <!-- Content Area -->
         <div id="contentArea"></div>
 
-        <!-- Go Back Button -->
-        <button id="goBackBtn" style="display: none;">Go Back to Workshop</button>
-
-        <!-- Dashboard Link -->
-        <div class="dashboard-link" style="display: none;">
-            <a href="{{ url_for('workshops') }}" class="btn">Workshops & Tutorials <span style="padding-left: 5px;">🎓</span></a>
+        <div class="back-btn">
+            <a href="javascript:history.back()">Go Back</a>
         </div>
 
         <!-- Footer -->
@@ -38,33 +138,85 @@
     </div>
 
     <script>
-        // Dark Mode Toggle Functionality
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
+        let totalPoints = 0;
+        let leaderboard = [];
+        let badges = [];
+        let dailyChallenges = [
+            { task: "Draw a cat", points: 50 },
+            { task: "Record a song", points: 30 },
+            { task: "Write a poem", points: 20 },
+        ];
+
+        // Update Points Display
+        function updatePoints(points) {
+            totalPoints += points;
+            document.getElementById('totalPoints').innerText = `Total Points: ${totalPoints}`;
+            updateProgressBar();
+            updateLeaderboard();
+            checkBadges();
         }
 
+        // Update Progress Bar
+        function updateProgressBar() {
+            const progressBar = document.querySelector('.progress-bar');
+            const progress = (totalPoints % 1000) / 10;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Update Leaderboard
+        function updateLeaderboard() {
+            leaderboard.push({ name: "User", points: totalPoints });
+            leaderboard.sort((a, b) => b.points - a.points);
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = leaderboard.slice(0, 5).map((entry, index) => `
+                <li>${index + 1}. ${entry.name} - ${entry.points} points</li>
+            `).join('');
+        }
+
+        // Check Badges
+        function checkBadges() {
+            if (totalPoints >= 100 && !badges.includes("First Drawing")) {
+                badges.push("First Drawing");
+                alert("🎉 You earned the 'First Drawing' badge!");
+                updateBadges();
+            }
+            if (totalPoints >= 500 && !badges.includes("Master Artist")) {
+                badges.push("Master Artist");
+                alert("🎉 You earned the 'Master Artist' badge!");
+                updateBadges();
+            }
+        }
+
+        // Update Badges
+        function updateBadges() {
+            const badgeList = document.getElementById('badgeList');
+            badgeList.innerHTML = badges.map(badge => `
+                <div class="badge">${badge}</div>
+            `).join('');
+        }
+
+        // Dark Mode Toggle
         document.getElementById('darkModeToggle').addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                document.getElementById('darkModeToggle').textContent = '☀️';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                document.getElementById('darkModeToggle').textContent = '🌙';
-            }
+            document.getElementById('darkModeToggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         });
 
-        // AJAX Function to Load Sections
+        // Load Sections
         function loadSection(section) {
             const contentArea = document.getElementById('contentArea');
-            const goBackBtn = document.getElementById('goBackBtn');
-            contentArea.innerHTML = ''; // Clear previous content
+            contentArea.innerHTML = '';
 
             if (section === 'drawing-board') {
                 contentArea.innerHTML = `
                     <section class="section">
                         <h2>Drawing Board 🎨</h2>
+                        <p>Draw freely or try to match the given object to earn points!</p>
+                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
+                        <div class="mode-toggle">
+                            <button id="freeDrawMode">Free Draw</button>
+                            <button id="objectGameMode">Object Drawing Game</button>
+                        </div>
                         <canvas id="drawingCanvas" width="800" height="600"></canvas>
                         <div class="tools">
                             <button id="clearCanvas">Clear Canvas</button>
@@ -72,40 +224,41 @@
                             <input type="color" id="colorPicker" value="#000000">
                             <input type="range" id="brushSize" min="1" max="50" value="5">
                             <button id="takePicture">Take Picture</button>
+                            <button id="submitDrawing">Submit Drawing</button>
                         </div>
                     </section>
                 `;
                 initDrawingBoard();
-                goBackBtn.style.display = 'none'; // Hide the button
-                document.querySelector('.dashboard-link').style.display = 'none'; // Hide dashboard link
             } else if (section === 'voice-recording') {
                 contentArea.innerHTML = `
                     <section class="section">
                         <h2>Voice Recording 🎤</h2>
+                        <p>Lip-sync the given song to earn points!</p>
+                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
                         <div class="button-group">
                             <button id="startRecord">Start Recording</button>
                             <button id="stopRecord" disabled>Stop Recording</button>
                         </div>
                         <audio id="audioPlayback" controls></audio>
+                        <button id="submitVoice">Submit Recording</button>
                     </section>
                 `;
                 initVoiceRecording();
-                goBackBtn.style.display = 'none'; // Hide the button
-                document.querySelector('.dashboard-link').style.display = 'none'; // Hide dashboard link
             } else if (section === 'video-recording') {
                 contentArea.innerHTML = `
                     <section class="section">
                         <h2>Video Recording 🎥</h2>
+                        <p>Complete the dance challenge to earn points!</p>
+                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
                         <div class="button-group">
                             <button id="startVideoRecord">Start Recording</button>
                             <button id="stopVideoRecord" disabled>Stop Recording</button>
                         </div>
                         <video id="videoPreview" controls></video>
+                        <button id="submitVideo">Submit Video</button>
                     </section>
                 `;
                 initVideoRecording();
-                goBackBtn.style.display = 'none'; // Hide the button
-                document.querySelector('.dashboard-link').style.display = 'none'; // Hide dashboard link
             } else if (section === 'notepad') {
                 contentArea.innerHTML = `
                     <section class="section">
@@ -114,63 +267,36 @@
                         <div class="notepad-tools">
                             <button id="saveNote">Save Note</button>
                             <button id="clearNote">Clear Note</button>
+                            <button id="submitNote">Submit Note</button>
                         </div>
+                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
                     </section>
                 `;
                 initNotepad();
-                goBackBtn.style.display = 'none'; // Hide the button
-                document.querySelector('.dashboard-link').style.display = 'none'; // Hide dashboard link
             }
-            goBackBtn.style.display = 'block'; // Show the Go Back button
+            document.getElementById('goBackBtn').style.display = 'block';
+            document.querySelector('.dashboard-link').style.display = 'block';
         }
 
-        // Go Back Button Functionality
-        document.getElementById('goBackBtn').addEventListener('click', () => {
-            const workshopLink = "{{ url_for('workshops') }}"; // Replace with the actual URL
-            window.location.href = workshopLink; // Redirect to workshops page
-        });
-
-        // Initialize Drawing Board Functionality
+        // Initialize Drawing Board with Fabric.js
         function initDrawingBoard() {
-            const canvas = document.getElementById('drawingCanvas');
-            const ctx = canvas.getContext('2d');
-            let isDrawing = false;
-            let isErasing = false;
+            const canvas = new fabric.Canvas('drawingCanvas');
+            canvas.isDrawingMode = true;
 
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
+            document.getElementById('colorPicker').addEventListener('change', (e) => {
+                canvas.freeDrawingBrush.color = e.target.value;
+            });
 
-            function startDrawing(e) {
-                isDrawing = true;
-                draw(e);
-            }
-
-            function draw(e) {
-                if (!isDrawing) return;
-                ctx.lineWidth = document.getElementById('brushSize').value;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = isErasing ? '#ffffff' : document.getElementById('colorPicker').value;
-
-                ctx.lineTo(e.offsetX, e.offsetY);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(e.offsetX, e.offsetY);
-            }
-
-            function stopDrawing() {
-                isDrawing = false;
-                ctx.beginPath();
-            }
+            document.getElementById('brushSize').addEventListener('input', (e) => {
+                canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
+            });
 
             document.getElementById('clearCanvas').addEventListener('click', () => {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.clear();
             });
 
             document.getElementById('eraser').addEventListener('click', () => {
-                isErasing = !isErasing;
-                document.getElementById('eraser').classList.toggle('active', isErasing);
+                canvas.freeDrawingBrush.color = '#ffffff';
             });
 
             document.getElementById('takePicture').addEventListener('click', () => {
@@ -180,76 +306,91 @@
                 link.download = 'sketchboard-image.png';
                 link.click();
             });
+
+            document.getElementById('submitDrawing').addEventListener('click', () => {
+                alert("Drawing submitted! You earn 20 points.");
+                updatePoints(20);
+            });
         }
 
-        // Initialize Voice Recording Functionality
+        // Initialize Voice Recording
         function initVoiceRecording() {
             let audioRecorder;
             let audioChunks = [];
 
             document.getElementById('startRecord').addEventListener('click', async () => {
-                audioChunks = [];
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioRecorder = new MediaRecorder(stream);
-                audioRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-                audioRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    document.getElementById('audioPlayback').src = audioUrl;
-                };
-                audioRecorder.start();
-                document.getElementById('stopRecord').disabled = false;
+                try {
+                    audioChunks = [];
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioRecorder = new MediaRecorder(stream);
+                    audioRecorder.ondataavailable = event => audioChunks.push(event.data);
+                    audioRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
+                    };
+                    audioRecorder.start();
+                    document.getElementById('stopRecord').disabled = false;
+                } catch (error) {
+                    alert("Error accessing microphone. Please ensure permissions are granted.");
+                }
             });
 
             document.getElementById('stopRecord').addEventListener('click', () => {
                 audioRecorder.stop();
                 document.getElementById('stopRecord').disabled = true;
             });
+
+            document.getElementById('submitVoice').addEventListener('click', () => {
+                alert('Voice recording submitted! You earn 50 points.');
+                updatePoints(50);
+            });
         }
 
-        // Initialize Video Recording Functionality
+        // Initialize Video Recording
         function initVideoRecording() {
             let videoRecorder;
             let videoChunks = [];
 
             document.getElementById('startVideoRecord').addEventListener('click', async () => {
-                videoChunks = [];
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('videoPreview').srcObject = stream;
-                videoRecorder = new MediaRecorder(stream);
-                videoRecorder.ondataavailable = event => {
-                    videoChunks.push(event.data);
-                };
-                videoRecorder.onstop = () => {
-                    const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
-                    const videoUrl = URL.createObjectURL(videoBlob);
-                    document.getElementById('videoPreview').src = videoUrl;
-                    document.getElementById('videoPreview').srcObject = null;
-                };
-                videoRecorder.start();
-                document.getElementById('stopVideoRecord').disabled = false;
+                try {
+                    videoChunks = [];
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    document.getElementById('videoPreview').srcObject = stream;
+                    videoRecorder = new MediaRecorder(stream);
+                    videoRecorder.ondataavailable = event => videoChunks.push(event.data);
+                    videoRecorder.onstop = () => {
+                        const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
+                        document.getElementById('videoPreview').src = URL.createObjectURL(videoBlob);
+                        document.getElementById('videoPreview').srcObject = null;
+                    };
+                    videoRecorder.start();
+                    document.getElementById('stopVideoRecord').disabled = false;
+                } catch (error) {
+                    alert("Error accessing camera. Please ensure permissions are granted.");
+                }
             });
 
             document.getElementById('stopVideoRecord').addEventListener('click', () => {
                 videoRecorder.stop();
                 document.getElementById('stopVideoRecord').disabled = true;
             });
+
+            document.getElementById('submitVideo').addEventListener('click', () => {
+                alert('Video submitted! You earn 50 points.');
+                updatePoints(50);
+            });
         }
 
-        // Initialize Notepad Functionality
+        // Initialize Notepad
         function initNotepad() {
             const notepadText = document.getElementById('notepadText');
 
             document.getElementById('saveNote').addEventListener('click', () => {
                 const note = notepadText.value;
                 if (note.trim()) {
-                    const blob = new Blob([note], { type: 'text/plain' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'notepad-note.txt';
-                    link.click();
+                    localStorage.setItem('savedNote', note);
+                    alert('Note saved locally!');
+                    updatePoints(10);
                 } else {
                     alert('Please write something before saving!');
                 }
@@ -258,14 +399,30 @@
             document.getElementById('clearNote').addEventListener('click', () => {
                 notepadText.value = '';
             });
+
+            document.getElementById('submitNote').addEventListener('click', () => {
+                const note = notepadText.value;
+                if (note.trim()) {
+                    const points = Math.min(Math.floor(note.length / 10), 100);
+                    alert(`Note submitted! You earn ${points} points.`);
+                    updatePoints(points);
+                } else {
+                    alert('Please write something before submitting!');
+                }
+            });
+
+            // Load saved note
+            const savedNote = localStorage.getItem('savedNote');
+            if (savedNote) {
+                notepadText.value = savedNote;
+            }
         }
 
         // Load Default Section
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const target = this.getAttribute('data-target');
-                loadSection(target);
+                loadSection(this.getAttribute('data-target'));
             });
         });
 

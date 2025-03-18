@@ -32,7 +32,7 @@
 
         <div class="dashboard-link">
             <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">Back to Dashboard</a>
-            <a href="{{ url_for('sketchboard') }}" class="btn">Go to Sketchboard</a> <!-- Add this line -->
+
         </div>
 
         <footer>&copy; 2024 Creative Hub. All rights reserved. 😊</footer>

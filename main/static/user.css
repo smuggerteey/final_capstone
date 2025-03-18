@@ -74,7 +74,7 @@ body.dark-mode td {
 
 button {
     padding: 10px 20px;
-    background-color: #e74c3c;
+    background-color: #2745df;
     color: white;
     border: none;
     border-radius: 5px;
@@ -83,11 +83,11 @@ button {
 }
 
 button:hover {
-    background-color: #c0392b;
+    background-color: #2745df;
 }
 
 body.dark-mode button {
-    background-color: #ff4757; /* Lighter red for buttons in dark mode */
+    background-color: #2745df;
 }
 
 .back-button-container {

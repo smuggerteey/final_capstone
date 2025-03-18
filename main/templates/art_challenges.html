@@ -36,6 +36,7 @@
         <div class="btn-container">
             <a href="{{ url_for('leaderboard') }}" class="btn">View Leaderboard</a>
             <a href="{{ url_for('display_challenges') }}" class="btn">Display Challenges</a>
+            <a href="{{ url_for('sketchboard') }}" class="btn">Go to Sketchboard</a> <!-- Add this line -->
             <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn">Back to Dashboard</a>
         </div>
 

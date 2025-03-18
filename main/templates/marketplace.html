@@ -11,7 +11,7 @@
 
     <div class="container">
         <h1>Welcome to the Art Marketplace 🖼️</h1>
-        <p>Browse and explore a wide range of creative artworks for sale. Find the perfect piece to enhance your space or collection.</p>
+        <p>Browse and explore a wide range of creative artworks for sale.</p>
 
         <!-- Artwork Grid -->
         <div class="artwork-grid">
@@ -26,15 +26,15 @@
             <p>No artworks available at the moment.</p>
             {% endfor %}
         </div>
-
-        <!-- Back to Dashboard -->
-        <div class="dashboard-link">
-            <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
-               class="dashboard-btn">
-                Back to Dashboard
-            </a>
-        </div>
     </div>
+
+            <!-- Back to Dashboard -->
+            <div class="dashboard-link">
+                <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
+                   class="dashboard-btn">
+                    Back to Dashboard
+                </a>
+            </div>
 
     <!-- Footer -->
     <footer>
