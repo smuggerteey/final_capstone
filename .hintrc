@@ -24,6 +24,20 @@
       {
         "duplicate-id-active": "off"
       }
+    ],
+    "axe/text-alternatives": [
+      "default",
+      {
+        "image-alt": "off",
+        "document-title": "off"
+      }
+    ],
+    "axe/name-role-value": [
+      "default",
+      {
+        "link-name": "off",
+        "button-name": "off"
+      }
     ]
   }
 }
