@@ -110,6 +110,43 @@
             border: 1px solid #ccc;
             resize: vertical;
         }
+
+        .table-responsive {
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .table tbody + tbody {
+            border-top: 2px solid #dee2e6;
+        }
+
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered th, .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
 
@@ -124,7 +161,7 @@
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
             <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -162,17 +199,36 @@
                 <!-- Leaderboard -->
                 <div id="leaderboard" class="mb-5 wow fadeInUp" data-wow-delay="0.3s">
                     <h2>🏆 Leaderboard</h2>
-                    <ol id="leaderboardList" class="list-group"></ol>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Username</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for player in leaderboard_data %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>{{ player.username }}</td>
+                                    <td>{{ player.score }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <!-- Badges -->
                 <div id="badges" class="mb-5 wow fadeInUp" data-wow-delay="0.5s">
-                    <h2>🎖️ Badges</h2>
+                    <h2></h2>
                     <div id="badgeList" class="d-flex flex-wrap gap-2"></div>
                 </div>
 
                 <!-- Points Display -->
-                <div id="totalPoints" class="mb-4 wow fadeInUp" data-wow-delay="0.7s">Total Points: 0</div>
+                <div id="totalPoints" class="mb-4 wow fadeInUp" data-wow-delay="0.7s"></div>
 
                 <!-- Progress Bar -->
                 <div class="progress-container mb-5 wow fadeInUp" data-wow-delay="0.9s">
@@ -191,13 +247,48 @@
             <!-- Content Area -->
             <div id="contentArea" class="wow fadeInUp" data-wow-delay="1.3s"></div>
 
-            <!-- Back Button -->
-            <div class="text-center mt-5 wow fadeInUp" data-wow-delay="1.5s">
-                <a href="javascript:history.back()" class="btn btn-secondary py-3 px-5">Go Back</a>
-            </div>
         </div>
     </div>
     <!-- Creative Hub Section End -->
+
+        <!-- Challenges Section Start -->
+        <div class="container-xxl py-5">
+            <div class="container">
+                <h1 class="text-center mb-5">View Challenges</h1>
+                <div class="challenges-container">
+                    {% if challenges %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Challenge Name</th>
+                                <th>Description</th>
+                                <th>Deadline</th>
+                                <th>Points Reward</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for challenge in challenges %}
+                            <tr>
+                                <td>{{ challenge.name }}</td>
+                                <td>{{ challenge.description }}</td>
+                                <td>{{ challenge.deadline }}</td>
+                                <td>{{ challenge.points_reward }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center">No challenges available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Challenges Section End -->
+
+                    <!-- Back Button -->
+                    <div class="text-center mt-5 wow fadeInUp" data-wow-delay="1.5s">
+                        <a href="javascript:history.back()" class="btn btn-secondary py-3 px-5">Go Back</a>
+                    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -280,298 +371,304 @@
 
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-    <!-- Creative Hub Script -->
-    <script>
-        let totalPoints = 0;
-        let leaderboard = [];
-        let badges = [];
-        let dailyChallenges = [
-            { task: "Draw a cat", points: 50 },
-            { task: "Record a song", points: 30 },
-            { task: "Write a poem", points: 20 },
-        ];
-
-        // Update Points Display
-        function updatePoints(points) {
-            totalPoints += points;
-            document.getElementById('totalPoints').innerText = `Total Points: ${totalPoints}`;
-            updateProgressBar();
-            updateLeaderboard();
-            checkBadges();
-        }
-
-        // Update Progress Bar
-        function updateProgressBar() {
-            const progressBar = document.querySelector('.progress-bar');
-            const progress = (totalPoints % 1000) / 10;
-            progressBar.style.width = `${progress}%`;
-        }
-
-        // Update Leaderboard
-        function updateLeaderboard() {
-            leaderboard.push({ name: "User", points: totalPoints });
-            leaderboard.sort((a, b) => b.points - a.points);
-            const leaderboardList = document.getElementById('leaderboardList');
-            leaderboardList.innerHTML = leaderboard.slice(0, 5).map((entry, index) => `
-                <li class="list-group-item">${index + 1}. ${entry.name} - ${entry.points} points</li>
-            `).join('');
-        }
-
-        // Check Badges
-        function checkBadges() {
-            if (totalPoints >= 100 && !badges.includes("First Drawing")) {
-                badges.push("First Drawing");
-                alert("🎉 You earned the 'First Drawing' badge!");
-                updateBadges();
+    
+        <script>
+            let totalPoints = 0;
+            let leaderboard = [];
+            let badges = [];
+    
+            // Assume user_data is passed from Flask
+            const username = '{{ user_data.username }}';  // Ensure this is set
+    
+            function updatePoints(points) {
+                totalPoints += points;
+                document.getElementById('totalPoints').innerText = `Total Points: ${totalPoints}`;
+                updateProgressBar();
+                updateLeaderboard();
+                checkBadges();
+    
+                fetch('/update_points', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username: username, points: points }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Points updated successfully');
+                    } else {
+                        console.error('Failed to update points:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
-            if (totalPoints >= 500 && !badges.includes("Master Artist")) {
-                badges.push("Master Artist");
-                alert("🎉 You earned the 'Master Artist' badge!");
-                updateBadges();
+    
+            function updateProgressBar() {
+                const progressBar = document.querySelector('.progress-bar');
+                const progress = (totalPoints % 1000) / 10;
+                progressBar.style.width = `${progress}%`;
             }
-        }
-
-        // Update Badges
-        function updateBadges() {
-            const badgeList = document.getElementById('badgeList');
-            badgeList.innerHTML = badges.map(badge => `
-                <div class="badge bg-primary p-2 rounded">${badge}</div>
-            `).join('');
-        }
-
-        // Dark Mode Toggle
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            document.getElementById('darkModeToggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-        });
-
-        // Load Sections
-        function loadSection(section) {
-            const contentArea = document.getElementById('contentArea');
-            contentArea.innerHTML = '';
-
-            if (section === 'drawing-board') {
-                contentArea.innerHTML = `
-                    <section class="section">
-                        <h2>Drawing Board 🎨</h2>
-                        <p>Draw freely or try to match the given object to earn points!</p>
-                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                        <div class="mode-toggle">
-                            <button id="freeDrawMode" class="btn btn-primary">Free Draw</button>
-                            <button id="objectGameMode" class="btn btn-primary">Object Drawing Game</button>
-                        </div>
-                        <canvas id="drawingCanvas" width="800" height="600"></canvas>
-                        <div class="tools">
-                            <button id="clearCanvas" class="btn btn-secondary">Clear Canvas</button>
-                            <button id="eraser" class="btn btn-secondary">Eraser</button>
-                            <input type="color" id="colorPicker" value="#000000">
-                            <input type="range" id="brushSize" min="1" max="50" value="5">
-                            <button id="takePicture" class="btn btn-success">Take Picture</button>
-                            <button id="submitDrawing" class="btn btn-success">Submit Drawing</button>
-                        </div>
-                    </section>
-                `;
-                initDrawingBoard();
-            } else if (section === 'voice-recording') {
-                contentArea.innerHTML = `
-                    <section class="section">
-                        <h2>Voice Recording 🎤</h2>
-                        <p>Lip-sync the given song to earn points!</p>
-                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                        <div class="button-group">
-                            <button id="startRecord" class="btn btn-primary">Start Recording</button>
-                            <button id="stopRecord" class="btn btn-primary" disabled>Stop Recording</button>
-                        </div>
-                        <audio id="audioPlayback" controls></audio>
-                        <button id="submitVoice" class="btn btn-success">Submit Recording</button>
-                    </section>
-                `;
-                initVoiceRecording();
-            } else if (section === 'video-recording') {
-                contentArea.innerHTML = `
-                    <section class="section">
-                        <h2>Video Recording 🎥</h2>
-                        <p>Complete the dance challenge to earn points!</p>
-                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                        <div class="button-group">
-                            <button id="startVideoRecord" class="btn btn-primary">Start Recording</button>
-                            <button id="stopVideoRecord" class="btn btn-primary" disabled>Stop Recording</button>
-                        </div>
-                        <video id="videoPreview" controls></video>
-                        <button id="submitVideo" class="btn btn-success">Submit Video</button>
-                    </section>
-                `;
-                initVideoRecording();
-            } else if (section === 'notepad') {
-                contentArea.innerHTML = `
-                    <section class="section">
-                        <h2>Notepad for Poetry & Writings 📝</h2>
-                        <textarea id="notepadText" placeholder="Write your poetry or thoughts here..."></textarea>
-                        <div class="notepad-tools">
-                            <button id="saveNote" class="btn btn-primary">Save Note</button>
-                            <button id="clearNote" class="btn btn-secondary">Clear Note</button>
-                            <button id="submitNote" class="btn btn-success">Submit Note</button>
-                        </div>
-                        <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                    </section>
-                `;
-                initNotepad();
+    
+            function updateLeaderboard() {
+                fetch('/get_leaderboard')
+                    .then(response => response.json())
+                    .then(data => {
+                        const leaderboardList = document.getElementById('leaderboardList');
+                        leaderboardList.innerHTML = data.map((entry, index) => `
+                            <li class="list-group-item">${index + 1}. ${entry.username} - ${entry.score} points</li>
+                        `).join('');
+                    });
             }
-        }
-
-        // Initialize Drawing Board with Fabric.js
-        function initDrawingBoard() {
-            const canvas = new fabric.Canvas('drawingCanvas');
-            canvas.isDrawingMode = true;
-
-            document.getElementById('colorPicker').addEventListener('change', (e) => {
-                canvas.freeDrawingBrush.color = e.target.value;
-            });
-
-            document.getElementById('brushSize').addEventListener('input', (e) => {
-                canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
-            });
-
-            document.getElementById('clearCanvas').addEventListener('click', () => {
-                canvas.clear();
-            });
-
-            document.getElementById('eraser').addEventListener('click', () => {
-                canvas.freeDrawingBrush.color = '#ffffff';
-            });
-
-            document.getElementById('takePicture').addEventListener('click', () => {
-                const image = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                link.href = image;
-                link.download = 'sketchboard-image.png';
-                link.click();
-            });
-
-            document.getElementById('submitDrawing').addEventListener('click', () => {
-                alert("Drawing submitted! You earn 20 points.");
-                updatePoints(20);
-            });
-        }
-
-        // Initialize Voice Recording
-        function initVoiceRecording() {
-            let audioRecorder;
-            let audioChunks = [];
-
-            document.getElementById('startRecord').addEventListener('click', async () => {
-                try {
-                    audioChunks = [];
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    audioRecorder = new MediaRecorder(stream);
-                    audioRecorder.ondataavailable = event => audioChunks.push(event.data);
-                    audioRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                        document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
-                    };
-                    audioRecorder.start();
-                    document.getElementById('stopRecord').disabled = false;
-                } catch (error) {
-                    alert("Error accessing microphone. Please ensure permissions are granted.");
+    
+            function checkBadges() {
+                if (totalPoints >= 100 && !badges.includes("First Drawing")) {
+                    badges.push("First Drawing");
+                    alert("🎉 You earned the 'First Drawing' badge!");
+                    updateBadges();
                 }
-            });
-
-            document.getElementById('stopRecord').addEventListener('click', () => {
-                audioRecorder.stop();
-                document.getElementById('stopRecord').disabled = true;
-            });
-
-            document.getElementById('submitVoice').addEventListener('click', () => {
-                alert('Voice recording submitted! You earn 50 points.');
-                updatePoints(50);
-            });
-        }
-
-        // Initialize Video Recording
-        function initVideoRecording() {
-            let videoRecorder;
-            let videoChunks = [];
-
-            document.getElementById('startVideoRecord').addEventListener('click', async () => {
-                try {
-                    videoChunks = [];
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    document.getElementById('videoPreview').srcObject = stream;
-                    videoRecorder = new MediaRecorder(stream);
-                    videoRecorder.ondataavailable = event => videoChunks.push(event.data);
-                    videoRecorder.onstop = () => {
-                        const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
-                        document.getElementById('videoPreview').src = URL.createObjectURL(videoBlob);
-                        document.getElementById('videoPreview').srcObject = null;
-                    };
-                    videoRecorder.start();
-                    document.getElementById('stopVideoRecord').disabled = false;
-                } catch (error) {
-                    alert("Error accessing camera. Please ensure permissions are granted.");
+                if (totalPoints >= 500 && !badges.includes("Master Artist")) {
+                    badges.push("Master Artist");
+                    alert("🎉 You earned the 'Master Artist' badge!");
+                    updateBadges();
                 }
-            });
-
-            document.getElementById('stopVideoRecord').addEventListener('click', () => {
-                videoRecorder.stop();
-                document.getElementById('stopVideoRecord').disabled = true;
-            });
-
-            document.getElementById('submitVideo').addEventListener('click', () => {
-                alert('Video submitted! You earn 50 points.');
-                updatePoints(50);
-            });
-        }
-
-        // Initialize Notepad
-        function initNotepad() {
-            const notepadText = document.getElementById('notepadText');
-
-            document.getElementById('saveNote').addEventListener('click', () => {
-                const note = notepadText.value;
-                if (note.trim()) {
-                    localStorage.setItem('savedNote', note);
-                    alert('Note saved locally!');
-                    updatePoints(10);
-                } else {
-                    alert('Please write something before saving!');
-                }
-            });
-
-            document.getElementById('clearNote').addEventListener('click', () => {
-                notepadText.value = '';
-            });
-
-            document.getElementById('submitNote').addEventListener('click', () => {
-                const note = notepadText.value;
-                if (note.trim()) {
-                    const points = Math.min(Math.floor(note.length / 10), 100);
-                    alert(`Note submitted! You earn ${points} points.`);
-                    updatePoints(points);
-                } else {
-                    alert('Please write something before submitting!');
-                }
-            });
-
-            // Load saved note
-            const savedNote = localStorage.getItem('savedNote');
-            if (savedNote) {
-                notepadText.value = savedNote;
             }
-        }
-
-        // Load Default Section
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                loadSection(this.getAttribute('data-target'));
-            });
-        });
-
-        // Load the drawing board by default
-        loadSection('drawing-board');
-    </script>
-</body>
-
-</html>
+    
+            function updateBadges() {
+                const badgeList = document.getElementById('badgeList');
+                badgeList.innerHTML = badges.map(badge => `
+                    <div class="badge bg-primary p-2 rounded">${badge}</div>
+                `).join('');
+            }
+    
+            // Load sections and initialize functionality
+            function loadSection(section) {
+                const contentArea = document.getElementById('contentArea');
+                contentArea.innerHTML = '';
+    
+                if (section === 'drawing-board') {
+                    contentArea.innerHTML = `
+                        <section class="section">
+                            <h2>Drawing Board 🎨</h2>
+                            <p>Draw freely or try to match the given object to earn points!</p>
+                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
+                            <div class="mode-toggle">
+                                <button id="freeDrawMode" class="btn btn-primary">Free Draw</button>
+                                <button id="objectGameMode" class="btn btn-primary">Object Drawing Game</button>
+                            </div>
+                            <canvas id="drawingCanvas" width="800" height="600"></canvas>
+                            <div class="tools">
+                                <button id="clearCanvas" class="btn btn-secondary">Clear Canvas</button>
+                                <button id="eraser" class="btn btn-secondary">Eraser</button>
+                                <input type="color" id="colorPicker" value="#000000">
+                                <input type="range" id="brushSize" min="1" max="50" value="5">
+                                <button id="takePicture" class="btn btn-success">Take Picture</button>
+                                <button id="submitDrawing" class="btn btn-success">Submit Drawing</button>
+                            </div>
+                        </section>
+                    `;
+                    initDrawingBoard();
+                } else if (section === 'voice-recording') {
+                    contentArea.innerHTML = `
+                        <section class="section">
+                            <h2>Voice Recording 🎤</h2>
+                            <p>Lip-sync the given song to earn points!</p>
+                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
+                            <div class="button-group">
+                                <button id="startRecord" class="btn btn-primary">Start Recording</button>
+                                <button id="stopRecord" class="btn btn-primary" disabled>Stop Recording</button>
+                            </div>
+                            <audio id="audioPlayback" controls></audio>
+                            <button id="submitVoice" class="btn btn-success">Submit Recording</button>
+                        </section>
+                    `;
+                    initVoiceRecording();
+                } else if (section === 'video-recording') {
+                    contentArea.innerHTML = `
+                        <section class="section">
+                            <h2>Video Recording 🎥</h2>
+                            <p>Complete the dance challenge to earn points!</p>
+                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
+                            <div class="button-group">
+                                <button id="startVideoRecord" class="btn btn-primary">Start Recording</button>
+                                <button id="stopVideoRecord" class="btn btn-primary" disabled>Stop Recording</button>
+                            </div>
+                            <video id="videoPreview" controls></video>
+                            <button id="submitVideo" class="btn btn-success">Submit Video</button>
+                            </section>
+                        `;
+                        initVideoRecording();
+                    } else if (section === 'notepad') {
+                        contentArea.innerHTML = `
+                            <section class="section">
+                                <h2>Notepad for Poetry & Writings 📝</h2>
+                                <textarea id="notepadText" placeholder="Write your poetry or thoughts here..."></textarea>
+                                <div class="notepad-tools">
+                                    <button id="saveNote" class="btn btn-primary">Save Note</button>
+                                    <button id="clearNote" class="btn btn-secondary">Clear Note</button>
+                                    <button id="submitNote" class="btn btn-success">Submit Note</button>
+                                </div>
+                                <div id="pointsDisplay">Total Points: ${totalPoints}</div>
+                            </section>
+                        `;
+                        initNotepad();
+                    }
+                }
+        
+                // Initialize Drawing Board with Fabric.js
+                function initDrawingBoard() {
+                    const canvas = new fabric.Canvas('drawingCanvas');
+                    canvas.isDrawingMode = true;
+        
+                    document.getElementById('colorPicker').addEventListener('change', (e) => {
+                        canvas.freeDrawingBrush.color = e.target.value;
+                    });
+        
+                    document.getElementById('brushSize').addEventListener('input', (e) => {
+                        canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
+                    });
+        
+                    document.getElementById('clearCanvas').addEventListener('click', () => {
+                        canvas.clear();
+                    });
+        
+                    document.getElementById('eraser').addEventListener('click', () => {
+                        canvas.freeDrawingBrush.color = '#ffffff';
+                    });
+        
+                    document.getElementById('takePicture').addEventListener('click', () => {
+                        const image = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = image;
+                        link.download = 'sketchboard-image.png';
+                        link.click();
+                    });
+        
+                    document.getElementById('submitDrawing').addEventListener('click', () => {
+                        alert("Drawing submitted! You earn 20 points.");
+                        updatePoints(20);
+                    });
+                }
+        
+                // Initialize Voice Recording
+                function initVoiceRecording() {
+                    let audioRecorder;
+                    let audioChunks = [];
+        
+                    document.getElementById('startRecord').addEventListener('click', async () => {
+                        try {
+                            audioChunks = [];
+                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            audioRecorder = new MediaRecorder(stream);
+                            audioRecorder.ondataavailable = event => audioChunks.push(event.data);
+                            audioRecorder.onstop = () => {
+                                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                                document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
+                            };
+                            audioRecorder.start();
+                            document.getElementById('stopRecord').disabled = false;
+                        } catch (error) {
+                            alert("Error accessing microphone. Please ensure permissions are granted.");
+                        }
+                    });
+        
+                    document.getElementById('stopRecord').addEventListener('click', () => {
+                        audioRecorder.stop();
+                        document.getElementById('stopRecord').disabled = true;
+                    });
+        
+                    document.getElementById('submitVoice').addEventListener('click', () => {
+                        alert('Voice recording submitted! You earn 50 points.');
+                        updatePoints(50);
+                    });
+                }
+        
+                // Initialize Video Recording
+                function initVideoRecording() {
+                    let videoRecorder;
+                    let videoChunks = [];
+        
+                    document.getElementById('startVideoRecord').addEventListener('click', async () => {
+                        try {
+                            videoChunks = [];
+                            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                            document.getElementById('videoPreview').srcObject = stream;
+                            videoRecorder = new MediaRecorder(stream);
+                            videoRecorder.ondataavailable = event => videoChunks.push(event.data);
+                            videoRecorder.onstop = () => {
+                                const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
+                                document.getElementById('videoPreview').src = URL.createObjectURL(videoBlob);
+                                document.getElementById('videoPreview').srcObject = null;
+                            };
+                            videoRecorder.start();
+                            document.getElementById('stopVideoRecord').disabled = false;
+                        } catch (error) {
+                            alert("Error accessing camera. Please ensure permissions are granted.");
+                        }
+                    });
+        
+                    document.getElementById('stopVideoRecord').addEventListener('click', () => {
+                        videoRecorder.stop();
+                        document.getElementById('stopVideoRecord').disabled = true;
+                    });
+        
+                    document.getElementById('submitVideo').addEventListener('click', () => {
+                        alert('Video submitted! You earn 50 points.');
+                        updatePoints(50);
+                    });
+                }
+        
+                // Initialize Notepad
+                function initNotepad() {
+                    const notepadText = document.getElementById('notepadText');
+        
+                    document.getElementById('saveNote').addEventListener('click', () => {
+                        const note = notepadText.value;
+                        if (note.trim()) {
+                            localStorage.setItem('savedNote', note);
+                            alert('Note saved locally!');
+                            updatePoints(10);
+                        } else {
+                            alert('Please write something before saving!');
+                        }
+                    });
+        
+                    document.getElementById('clearNote').addEventListener('click', () => {
+                        notepadText.value = '';
+                    });
+        
+                    document.getElementById('submitNote').addEventListener('click', () => {
+                        const note = notepadText.value;
+                        if (note.trim()) {
+                            const points = Math.min(Math.floor(note.length / 10), 100);
+                            alert(`Note submitted! You earn ${points} points.`);
+                            updatePoints(points);
+                        } else {
+                            alert('Please write something before submitting!');
+                        }
+                    });
+        
+                    // Load saved note
+                    const savedNote = localStorage.getItem('savedNote');
+                    if (savedNote) {
+                        notepadText.value = savedNote;
+                    }
+                }
+        
+                // Load Default Section
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        loadSection(this.getAttribute('data-target'));
+                    });
+                });
+        
+                // Load the drawing board by default
+                loadSection('drawing-board');
+            </script>
+        </body>
+        
+        </html>

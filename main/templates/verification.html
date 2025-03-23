@@ -28,6 +28,61 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <!-- Custom CSS for Artist Verification -->
+    <style>
+        .verification-section {
+            background-color: #f9f9f9;
+            padding: 50px 0;
+        }
+        .terms-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .security-features {
+            margin-top: 30px;
+        }
+        .security-features ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar div {
+            height: 100%;
+            background-color: #007bff;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .dark-mode .terms-section {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .dark-mode .form-control {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #444;
+        }
+        .dark-mode .form-control:focus {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            border-color: #666;
+        }
+        .dark-mode .alert {
+            background-color: #333;
+            color: #ffffff;
+            border-color: #444;
+        }
+    </style>
 </head>
 
 <body>
@@ -64,13 +119,15 @@
     </nav>
 
     <!-- Artist Verification Section Start -->
-    <div class="container-xxl py-5">
+    <div class="container-xxl py-5 verification-section">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h2 class="mb-4">Artist Verification</h2>
+                <p class="mb-5">Complete the form below to verify your identity and authenticate your artwork.</p>
             </div>
+
             <div class="row justify-content-center wow fadeInUp" data-wow-delay="0.3s">
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
@@ -79,8 +136,8 @@
                         {% endif %}
                     {% endwith %}
 
-                    <form action="{{ url_for('artist_verification', username=username) }}" method="POST">
-                        <!-- Artist Type Dropdown -->
+                    <form action="{{ url_for('artist_verification', username=username) }}" method="POST" enctype="multipart/form-data">
+                        <!-- Artist Information -->
                         <div class="form-group mb-4">
                             <label for="artistType" class="form-label">Artist Type:</label>
                             <select id="artistType" name="artistType" class="form-control" required>
@@ -94,7 +151,44 @@
                             </select>
                         </div>
 
-                        <!-- Pre-Written Security Questions -->
+                        <div class="form-group mb-4">
+                            <label for="artworkDescription" class="form-label">Artwork Type Description:</label>
+                            <textarea id="artworkDescription" name="artworkDescription" class="form-control" rows="4" placeholder="Describe your artwork in detail" required></textarea>
+                        </div>
+
+                        <!-- Artwork Provenance -->
+                        <div class="form-group mb-4">
+                            <label for="artworkProvenance" class="form-label">Artwork Provenance:</label>
+                            <textarea id="artworkProvenance" name="artworkProvenance" class="form-control" rows="4" placeholder="Provide the history and origin of your artwork" required></textarea>
+                        </div>
+
+                        <!-- Upload Artwork Images -->
+                        <div class="form-group mb-4">
+                            <label for="artworkImages" class="form-label">Upload Artwork Sample Images:</label>
+                            <input type="file" id="artworkImages" name="artworkImages" class="form-control" accept="image/*" multiple required>
+                            <small class="form-text text-muted">Upload high-quality images of your artwork (max 5 images).</small>
+                        </div>
+
+                        <!-- Certificate of Authenticity -->
+                        <div class="form-group mb-4">
+                            <label for="certificateOfAuthenticity" class="form-label">Certificate of Authenticity (COA):</label>
+                            <input type="file" id="certificateOfAuthenticity" name="certificateOfAuthenticity" class="form-control" accept=".pdf,.doc,.docx" required>
+                            <small class="form-text text-muted">Upload a PDF or Word document.</small>
+                        </div>
+
+                        <!-- Social Media Links -->
+                        <div class="form-group mb-4">
+                            <label for="socialMediaLinks" class="form-label">Social Media Links:</label>
+                            <input type="text" id="socialMediaLinks" name="socialMediaLinks" class="form-control" placeholder="Enter links to your social media profiles (e.g., Instagram, Twitter)">
+                        </div>
+
+                        <!-- Artwork Tags -->
+                        <div class="form-group mb-4">
+                            <label for="artworkTags" class="form-label">Artwork Tags:</label>
+                            <input type="text" id="artworkTags" name="artworkTags" class="form-control" placeholder="Enter tags or keywords related to your artwork (e.g., abstract, modern, portrait)">
+                        </div>
+
+                        <!-- Security Questions -->
                         <div class="form-group mb-4">
                             <label class="form-label">Security Question 1: What is the name of your first school?</label>
                             <input type="text" name="securityAnswer1" class="form-control" placeholder="Enter your answer" required>
@@ -105,84 +199,152 @@
                             <input type="text" name="securityAnswer2" class="form-control" placeholder="Enter your answer" required>
                         </div>
 
+                        <!-- Terms and Conditions -->
+                        <div class="terms-section mb-4">
+                            <h4 class="mb-3">Terms and Conditions</h4>
+                            <p>By submitting this form, you agree to the following terms:</p>
+                            <ul>
+                                <li>You certify that all information provided is accurate and truthful.</li>
+                                <li>You grant Creative Showcase the right to verify your identity and artwork authenticity.</li>
+                                <li>You agree to comply with all platform rules and guidelines.</li>
+                                <li>Any false information may result in account suspension or legal action.</li>
+                            </ul>
+                            <div class="form-check">
+                                <input type="checkbox" id="agreeTerms" name="agreeTerms" class="form-check-input" required>
+                                <label for="agreeTerms" class="form-check-label">I agree to the terms and conditions.</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-primary py-3 px-5">Submit Verification</button>
                         </div>
                     </form>
                 </div>
             </div>
+
+            <!-- Verification Status -->
+            <div class="verification-status mt-5 wow fadeInUp" data-wow-delay="0.4s">
+                <h4 class="mb-4">Verification Status</h4>
+                <div class="alert alert-info">
+                    Your verification is currently <strong>pending</strong>. We will notify you once it is complete.
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="faq-section mt-5 wow fadeInUp" data-wow-delay="0.5s">
+                <h4 class="mb-4">Frequently Asked Questions</h4>
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                How long does verification take?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Verification typically takes 3-5 business days. We will notify you via email once it is complete.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                What documents are required for verification?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You need to provide high-quality images of your artwork and a Certificate of Authenticity (COA).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Features Section -->
+            <div class="security-features mt-5 wow fadeInUp" data-wow-delay="0.6s">
+                <h4 class="mb-4">Security Features</h4>
+                <p>We take your security seriously. Here are the measures we use to protect your information:</p>
+                <ul>
+                    <li><strong>Encryption:</strong> All data is encrypted during transmission and storage.</li>
+                    <li><strong>Two-Factor Authentication (2FA):</strong> Optional 2FA for added account security.</li>
+                    <li><strong>Secure File Uploads:</strong> Artwork images are stored securely and cannot be accessed by unauthorized users.</li>
+                    <li><strong>Regular Audits:</strong> Our systems undergo regular security audits to ensure compliance with industry standards.</li>
+                </ul>
+            </div>
         </div>
     </div>
     <!-- Artist Verification Section End -->
 
-   <!-- Footer Start -->
-   <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Quick Link</h4>
-                <a class="btn btn-link" href="">About Us</a>
-                <a class="btn btn-link" href="">Contact Us</a>
-                <a class="btn btn-link" href="">Privacy Policy</a>
-                <a class="btn btn-link" href="">Terms & Condition</a>
-                <a class="btn btn-link" href="">FAQs & Help</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Contact</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                <div class="d-flex pt-2">
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Gallery</h4>
-                <div class="row g-2 pt-2">
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Newsletter</h4>
-                <p>Sign Up For News.</p>
-                <div class="position-relative mx-auto" style="max-width: 400px;">
-                    <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                    <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="copyright">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <div class="footer-menu">
-                        <a href="">Home</a>
-                        <a href="">Cookies</a>
-                        <a href="">Help</a>
-                        <a href="">FQAs</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Footer End -->
 
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Gallery</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Sign Up For News.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -201,19 +363,25 @@
     <!-- Dark Mode Toggle Script -->
     <script>
         // Dark Mode Toggle Functionality
+        const darkModeToggle = document.createElement('button');
+        darkModeToggle.id = 'darkModeToggle';
+        darkModeToggle.className = 'btn btn-secondary position-fixed bottom-0 end-0 m-3';
+        darkModeToggle.textContent = '🌙';
+        document.body.appendChild(darkModeToggle);
+
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
+            darkModeToggle.textContent = '☀️';
         }
 
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
+        darkModeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 localStorage.setItem('darkMode', 'true');
-                document.getElementById('darkModeToggle').textContent = '☀️';
+                darkModeToggle.textContent = '☀️';
             } else {
                 localStorage.setItem('darkMode', 'false');
-                document.getElementById('darkModeToggle').textContent = '🌙';
+                darkModeToggle.textContent = '🌙';
             }
         });
     </script>

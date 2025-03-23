@@ -107,8 +107,6 @@
 
             <!-- Navigation Buttons -->
             <div class="text-center mt-5">
-                <a href="{{ url_for('leaderboard') }}" class="btn btn-primary py-3 px-5 me-3">View Leaderboard</a>
-                <a href="{{ url_for('display_challenges') }}" class="btn btn-primary py-3 px-5 me-3">Display Challenges</a>
                 <a href="{{ url_for('sketchboard') }}" class="btn btn-primary py-3 px-5 me-3">Go to Sketchboard</a>
                 <a href="{{ url_for('workshops') }}" class="btn btn-primary py-3 px-5 me-3">Go to Workshop</a>
                 <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn btn-primary py-3 px-5">Back to Dashboard</a>

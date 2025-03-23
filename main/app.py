@@ -26,38 +26,6 @@ import ssl
 import logging
 
 
-# Etherscan API URL and your API key
-ETHERSCAN_API_URL = "https://api.etherscan.io/api"
-ETHERSCAN_API_KEY = "7574T1171VG588Q7X3QHYHMJS3FHXCHUJQ"  # Your Etherscan API key
-
-# Use a valid Ethereum address (ensure to replace with a real address)
-address = '0x36fa857f70b44fe2a210575ddd4944df'
-
-# Function to get balance from Etherscan
-def get_eth_balance(address):
-    params = {
-        'module': 'account',
-        'action': 'balance',
-        'address': address,
-        'tag': 'latest',
-        'apikey': ETHERSCAN_API_KEY
-    }
-    response = requests.get(ETHERSCAN_API_URL, params=params)
-    data = response.json()
-    
-    if data['status'] == '1':  # Status 1 means success
-        balance_wei = int(data['result'])
-        balance_eth = balance_wei / (10 ** 18)  # Convert Wei to Ether
-        return balance_eth
-    else:
-        print(f"Error: {data['message']}")
-        return None
-
-# Get the balance of the address
-balance = get_eth_balance(address)
-if balance is not None:
-    print(f"Balance: {balance} ETH")
-
 # Ensure the profile pictures directory exists
 if not os.path.exists('static/profile_pics'):
     os.makedirs('static/profile_pics')
@@ -72,65 +40,6 @@ app = Flask(__name__)
 
 # Configure Flask-Mail
 mail = Mail(app)
-
-# Blockchain configuration
-BLOCKCHAIN_CONFIG = {
-    "node_url": "https://mainnet.infura.io/v3/36fa857f70b44fe2a210575ddd4944df",  # Infura URL
-    "contract_address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",  # Example USDT contract address
-    "contract_abi": [  # Correctly formatted ABI
-        {
-            "constant": True,
-            "inputs": [],
-            "name": "name",
-            "outputs": [{"name": "", "type": "string"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [{"name": "_upgradedAddress", "type": "address"}],
-            "name": "deprecate",
-            "outputs": [],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [{"name": "_spender", "type": "address"}, {"name": "_value", "type": "uint256"}],
-            "name": "approve",
-            "outputs": [],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": True,
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [{"name": "", "type": "uint256"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        # Add more ABI entries as needed
-    ]
-}
-
-# Connect to Ethereum blockchain
-web3 = Web3(Web3.HTTPProvider(BLOCKCHAIN_CONFIG["node_url"]))
-
-# Check if connected
-if web3.is_connected():
-    print("Connected to Ethereum network")
-else:
-    print("Failed to connect to Ethereum network")
-
-# Example to get balance
-address = '0xdAC17F958D2ee523a2206206994597C13D831ec7'  # Replace with a valid Ethereum address
-balance = web3.eth.get_balance(address)
-print(f"Balance: {web3.from_wei(balance, 'ether')} ETH")
 
 # Set your secret key
 app.secret_key = 'tinotenda'  # Change this to a strong unique key
@@ -153,6 +62,41 @@ def create_connection():
     except mysql.connector.Error as e:
         print(f"The error '{e}' occurred")
     return conn
+
+def get_user_data(username):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        print(f"Fetching data for username: {username}")  # Debug statement
+        
+        cursor.execute("SELECT username, role FROM users WHERE username = %s", (username,))
+        user_data = cursor.fetchone()
+        
+        print(f"User data fetched: {user_data}")  # Debug statement
+        
+        cursor.close()
+        connection.close()
+        
+        return user_data
+    except Exception as e:
+        print(f"Error fetching user data: {e}")  # Debug statement
+        return None
+    
+def get_leaderboard():
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        cursor.execute("SELECT username, score FROM leaderboard ORDER BY score DESC LIMIT 10")
+        leaderboard_data = cursor.fetchall()
+        return leaderboard_data
+    except mysql.connector.Error as e:
+        print(f"Error fetching leaderboard data: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -313,16 +257,66 @@ def home():
     }
     return render_template('index.html', user_data=user_data)
 
-@app.route('/sketchboard')
-def sketchboard():
-    # Example user data
-    user_data = {
-        'username': 'example_user',
-        'role': 'Artist'  # or 'User' or 'Admin'
-    }
-    return render_template('sketchboard.html', user_data=user_data)
 
-    app.run(debug=True)
+@app.route('/sketchboard')
+@login_required
+def sketchboard():
+    try:
+        # Fetch user data
+        user_data = get_user_data(current_user.username)
+        
+        # Fetch leaderboard data
+        leaderboard_data = get_leaderboard()
+        
+        # Fetch challenges data
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM Challenges")
+        challenges = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        
+        # Render the sketchboard template with user_data, leaderboard_data, and challenges
+        return render_template('sketchboard.html', user_data=user_data, leaderboard_data=leaderboard_data, challenges=challenges)
+    except Exception as e:
+        print(f"Error in sketchboard route: {e}")  # Debug statement
+        flash('An error occurred while loading the sketchboard.', 'error')
+        return redirect(url_for('index'))  # Redirect to a safe page
+
+
+@app.route('/update_points', methods=['POST'])
+def update_points():
+    data = request.get_json()
+    username = data.get('username')
+    points = data.get('points')
+
+    if not username or not points:
+        return jsonify({'error': 'Missing username or points'}), 400
+
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Check if the user already has a score entry
+        cursor.execute("SELECT score FROM leaderboard WHERE username = %s", (username,))
+        result = cursor.fetchone()
+
+        if result:
+            # Update existing score
+            new_score = result[0] + points
+            cursor.execute("UPDATE leaderboard SET score = %s WHERE username = %s", (new_score, username))
+        else:
+            # Insert new score entry
+            cursor.execute("INSERT INTO leaderboard (username, score) VALUES (%s, %s)", (username, points))
+
+        conn.commit()
+        return jsonify({'success': True})
+    except mysql.connector.Error as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -519,7 +513,7 @@ def get_leaderboard():
     cursor = conn.cursor(dictionary=True)
     
     # Fetch leaderboard data sorted by score in descending order
-    cursor.execute("SELECT username, score FROM leaderboard ORDER BY score DESC LIMIT 3")
+    cursor.execute("SELECT username, score FROM leaderboard ORDER BY score DESC LIMIT 10")
     leaderboard_data = cursor.fetchall()
     
     cursor.close()
@@ -530,8 +524,25 @@ def get_leaderboard():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    leaderboard_data = get_leaderboard()  # Fetch leaderboard data
-    return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        
+        print("Fetching leaderboard data...")  # Debug statement
+        
+        cursor.execute("SELECT username, score FROM leaderboard ORDER BY score DESC LIMIT 10")
+        leaderboard_data = cursor.fetchall()
+        
+        print(f"Leaderboard data fetched: {leaderboard_data}")  # Debug statement
+        
+        cursor.close()
+        connection.close()
+        
+        return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
+    except Exception as e:
+        print(f"Error fetching leaderboard data: {e}")  # Debug statement
+        flash('An error occurred while fetching the leaderboard.', 'error')
+        return redirect(url_for('index'))  # Redirect to a safe page
 
 
 @app.route('/submit_challenge/<int:challenge_id>', methods=['POST'])
