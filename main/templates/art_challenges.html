@@ -109,11 +109,16 @@
             <div class="text-center mt-5">
                 <a href="{{ url_for('sketchboard') }}" class="btn btn-primary py-3 px-5 me-3">Go to Sketchboard</a>
                 <a href="{{ url_for('workshops') }}" class="btn btn-primary py-3 px-5 me-3">Go to Workshop</a>
-                <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" class="btn btn-primary py-3 px-5">Back to Dashboard</a>
             </div>
         </div>
     </div>
     <!-- Art Challenges Section End -->
+
+    <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.5s">
+        <form action="/dashboard" method="get">
+            <button type="submit" class="btn btn-secondary py-3 px-5">Back to Dashboard</button>
+        </form>
+    </div>
 
    <!-- Footer Start -->
    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">

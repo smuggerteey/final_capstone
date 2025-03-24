@@ -1,6 +1,6 @@
 import hashlib
 import MySQLdb
-from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
+from flask import Flask, request, jsonify, render_template, redirect, session, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import mysql.connector
@@ -692,11 +692,54 @@ def create_challenges():
 
     return render_template('create_challenges.html')  # Render the form for GET requests
 
+@app.route('/art_challenges')
+def art_challenges():
+    user = get_current_user()  # Function to get the logged-in user
+    username = user.username
+    user_data = {'role': user.role} 
+    return render_template('art_challenges.html', user=user, username=username, user_data=user_data)
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+# Route: Log user interactions
+@app.route('/log_interaction', methods=['POST'])
+def log_interaction():
+    user_id = session.get('user_id', 'guest')  # Track session user
+    data = request.json
+    page_name = data.get("page")
+    interaction_type = data.get("interaction")
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO user_interactions (user_id, page_name, interaction_type) VALUES (%s, %s, %s)",
+        (user_id, page_name, interaction_type),
+    )
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Interaction logged successfully"})
+
+# Route: Analyze interactions and return recommendations
+@app.route('/get_recommendations')
+def get_recommendations():
+    user_id = session.get('user_id', 'guest')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT page_name, COUNT(*) as visits FROM user_interactions WHERE user_id = %s GROUP BY page_name ORDER BY visits DESC LIMIT 3",
+        (user_id,)
+    )
+    top_pages = cursor.fetchall()
+    conn.close()
+
+    recommendations = [page[0] for page in top_pages]
+    return jsonify({"recommended_pages": recommendations})
 
 
 # ✅ Artwork Upload Route

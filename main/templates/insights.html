@@ -28,6 +28,25 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        .stat-box {
+            border-radius: 10px;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .display-5 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4e73df;
+        }
+    </style>
 </head>
 
 <body>
@@ -75,98 +94,57 @@
                 <div class="col-lg-4 col-md-6 text-center">
                     <div class="stat-box bg-light p-4">
                         <h3 class="mb-3">Views 👀</h3>
-                        <p class="display-5">{{ views }}</p>
+                        <p class="display-5">{{ "{:,}".format(views) }}</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 text-center">
                     <div class="stat-box bg-light p-4">
                         <h3 class="mb-3">Likes ❤️</h3>
-                        <p class="display-5">{{ likes }}</p>
+                        <p class="display-5">{{ "{:,}".format(likes) }}</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 text-center">
                     <div class="stat-box bg-light p-4">
                         <h3 class="mb-3">Shares 🔄</h3>
-                        <p class="display-5">{{ shares }}</p>
+                        <p class="display-5">{{ "{:,}".format(shares) }}</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Charts Section -->
+            <div class="container mt-5 wow fadeInUp" data-wow-delay="0.7s">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Engagement Overview</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="engagementChart" width="100%" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Top Artworks</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="topArtworksChart" width="100%" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.5s">
-                <form action="/admindashboard" method="get">
-                    <button type="submit" class="btn btn-secondary py-3 px-5">Go Back</button>
-                </form>
+                <a href="{{ url_for('admindashboard') }}" class="btn btn-secondary py-3 px-5">Go Back</a>
             </div>
         </div>
     </div>
     <!-- Insights & Analytics Section End -->
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Gallery</h4>
-                    <div class="row g-2 pt-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="copyright">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FQAs</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
+    
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -182,25 +160,29 @@
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Dark Mode Toggle Script -->
-    <script>
-        // Dark Mode Toggle Functionality
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
-        }
-
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                document.getElementById('darkModeToggle').textContent = '☀️';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                document.getElementById('darkModeToggle').textContent = '🌙';
+        <script>
+            function logInteraction(page, interaction) {
+                fetch("/log_interaction", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ page: page, interaction: interaction })
+                });
             }
-        });
-    </script>
-</body>
-
-</html>
+    
+            function getRecommendations() {
+                fetch("/get_recommendations")
+                .then(response => response.json())
+                .then(data => {
+                    let recDiv = document.getElementById("recommendations");
+                    recDiv.innerHTML = "Recommended Pages: " + data.recommended_pages.join(", ");
+                });
+            }
+    
+            window.onload = function () {
+                logInteraction("Home Page", "visit");
+                getRecommendations();
+            };
+        </script>
+    </head>
+    </html>
+    
