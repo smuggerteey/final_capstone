@@ -92,7 +92,9 @@
                 </div>
             </div>
             <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.5s">
-                <a href="{{ url_for('admindashboard') }}" class="btn btn-primary py-3 px-5">Back to Dashboard</a>
+                <form action="/admindashboard" method="get">
+                    <button type="submit" class="btn btn-secondary py-3 px-5">Go Back</button>
+                </form>
             </div>
         </div>
     </div>

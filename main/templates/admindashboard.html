@@ -45,11 +45,11 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
-            <!-- Profile and Logout Buttons -->
-            <div class="d-flex align-items-center">
-                <a href="{{ url_for('profile') }}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block"><i class="fas fa-user"></i> Profile</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-danger py-4 px-lg-5 d-none d-lg-block ms-3"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
+                <!-- Profile and Logout Buttons -->
+                <div class="d-flex align-items-center">
+                    <a href="{{ url_for('profile') }}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block"><i class="fas fa-user"></i> Profile</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-danger py-4 px-lg-5 d-none d-lg-block ms-3"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -65,45 +65,59 @@
                         <h2 class="mb-4">Admin Dashboard</h2>
                         <a href="{{ url_for('marketplace') }}" class="d-block mb-3"><i class="fas fa-image me-2"></i>View Artwork</a>
                         <a href="{{ url_for('user_management') }}" class="d-block mb-3"><i class="fas fa-users me-2"></i>User Management</a>
-                        <a href="{{ url_for('task_management') }}" class="d-block mb-3"><i class="fas fa-image me-2"></i>Artwork Management</a>
+                        <a href="{{ url_for('artwork_management') }}" class="d-block mb-3"><i class="fas fa-image me-2"></i>Artwork Management</a>
                         <a href="{{ url_for('create_challenges') }}" class="d-block mb-3"><i class="fas fa-plus-circle me-2"></i>Create New Challenge</a>
                         <a href="{{ url_for('leaderboard') }}" class="d-block mb-3"><i class="fas fa-trophy me-2"></i>View Leaderboard</a>
                         <a href="{{ url_for('display_challenges') }}" class="d-block mb-3"><i class="fas fa-list-alt me-2"></i>Display Challenges</a>
                         <a href="{{ url_for('insights') }}" class="d-block mb-3"><i class="fas fa-chart-line me-2"></i>Analytics</a>
                         <a href="{{ url_for('settings') }}" class="d-block mb-3"><i class="fas fa-cog me-2"></i>Settings</a>
-                    
                     </div>
                 </div>
 
                 <!-- Content -->
                 <div class="col-lg-9">
-                    <h1 class="mb-4">Welcome, smuggerteey 🎨</h1>
+                    <h1 class="mb-4">Welcome, Admin 🎨</h1>
                     <p class="mb-4">Manage your creative hub effectively with the tools provided.</p>
 
-                    <div class="row g-4">
-                        <!-- Stat Cards -->
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center">
-                                <h4>Total Users</h4>
-                                <p class="display-4">150</p>
-                                <i class="fas fa-users fa-3x text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center">
-                                <h4>Artwork Submissions</h4>
-                                <p class="display-4">75</p>
-                                <i class="fas fa-image fa-3x text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center">
-                                <h4>Active Projects</h4>
-                                <p class="display-4">5</p>
-                                <i class="fas fa-tasks fa-3x text-primary"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Stat Cards and Recent Submissions -->
+<div class="row g-4">
+    <!-- Total Users Card -->
+    <div class="col-md-4">
+        <div class="card bg-light p-4 rounded text-center total-users">
+            <h4>Total Users</h4>
+            <p class="display-4">0</p> <!-- Placeholder for dynamic data -->
+            <i class="fas fa-users fa-3x text-primary"></i>
+        </div>
+    </div>
+
+    <!-- Artwork Submissions Card -->
+    <div class="col-md-4">
+        <div class="card bg-light p-4 rounded text-center total-artwork">
+            <h4>Artwork Submissions</h4>
+            <p class="display-4">0</p> <!-- Placeholder for dynamic data -->
+            <i class="fas fa-image fa-3x text-primary"></i>
+        </div>
+    </div>
+
+    <!-- Active Projects Card -->
+    <div class="col-md-4">
+        <div class="card bg-light p-4 rounded text-center active-projects">
+            <h4>Active Projects</h4>
+            <p class="display-4">0</p> <!-- Placeholder for dynamic data -->
+            <i class="fas fa-tasks fa-3x text-primary"></i>
+        </div>
+    </div>
+
+    <!-- Recent Submissions Card -->
+    <div class="col-md-12 mt-4">
+        <div class="card bg-light p-4 rounded">
+            <h2 class="text-center mb-4">Recent Artwork Submissions</h2>
+            <ul id="recent-submissions-list" class="list-group">
+                <!-- Recent submissions data will be dynamically inserted here -->
+            </ul>
+        </div>
+    </div>
+</div>
                 </div>
             </div>
         </div>
@@ -194,31 +208,71 @@
 
     <!-- Admin Dashboard Script -->
     <script>
-        const toggleButton = document.getElementById('darkModeToggle');
-        const body = document.body;
+        // Fetch statistics from the backend
+        async function fetchStatistics() {
+            try {
+                const response = await fetch('/get_statistics');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch statistics');
+                }
+                const data = await response.json();
 
-        // Check Local Storage for Dark Mode Preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            body.classList.add('dark-mode');
-            toggleButton.textContent = '☀️';
-        }
-
-        // Toggle Dark Mode
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                toggleButton.textContent = '☀️';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                toggleButton.textContent = '🌙';
+                // Update the UI with the fetched data
+                document.querySelector('.total-users .display-4').textContent = data.total_users;
+                document.querySelector('.total-artwork .display-4').textContent = data.total_artwork;
+                document.querySelector('.active-projects .display-4').textContent = data.active_projects;
+            } catch (error) {
+                console.error('Error fetching statistics:', error);
             }
-        });
-
-        // Toggle Sidebar Menu
-        function toggleSidebarMenu() {
-            document.querySelector('.sidebar').classList.toggle('show');
         }
+
+        // Fetch leaderboard data
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch('/get_leaderboard');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch leaderboard');
+                }
+                const data = await response.json();
+
+                // Update the UI with the fetched leaderboard data
+                const leaderboardList = document.getElementById('leaderboard-list');
+                leaderboardList.innerHTML = data.map(user => `
+                    <li class="list-group-item">${user.username} - ${user.score} points</li>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+            }
+        }
+
+        // Fetch recent submissions
+        async function fetchRecentSubmissions() {
+            try {
+                const response = await fetch('/get_recent_submissions');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recent submissions');
+                }
+                const data = await response.json();
+
+                // Update the UI with the fetched recent submissions
+                const submissionsList = document.getElementById('recent-submissions-list');
+                submissionsList.innerHTML = data.map(submission => `
+                                    <li class="list-group-item">
+                    <strong>${submission.title}</strong> by ${submission.username}<br>
+                    <small class="text-muted">${submission.created_at}</small>
+                </li>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching recent submissions:', error);
+            }
+        }
+
+        // Call the functions when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStatistics();
+            fetchLeaderboard();
+            fetchRecentSubmissions();
+        });
     </script>
 </body>
 </html>

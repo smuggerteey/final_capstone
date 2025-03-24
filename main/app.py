@@ -1,4 +1,5 @@
 import hashlib
+import MySQLdb
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -521,6 +522,105 @@ def get_leaderboard():
     
     return leaderboard_data
 
+@app.route('/get_statistics')
+@login_required
+def get_statistics():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch total users
+        cursor.execute("SELECT COUNT(*) AS total_users FROM Users")
+        total_users = cursor.fetchone()['total_users']
+
+        # Fetch total artwork submissions
+        cursor.execute("SELECT COUNT(*) AS total_artwork FROM Artwork")
+        total_artwork = cursor.fetchone()['total_artwork']
+
+        # Fetch active projects (e.g., challenges with a deadline in the future)
+        cursor.execute("SELECT COUNT(*) AS active_projects FROM Challenges WHERE deadline > %s", (datetime.utcnow(),))
+        active_projects = cursor.fetchone()['active_projects']
+
+        cursor.close()
+        conn.close()
+
+        # Return the statistics as JSON
+        return jsonify({
+            'total_users': total_users,
+            'total_artwork': total_artwork,
+            'active_projects': active_projects
+        })
+    except Exception as e:
+        print(f"Error fetching statistics: {e}")
+        return jsonify({'error': 'Failed to fetch statistics'}), 500
+    
+@app.route('/get_recent_submissions')
+@login_required
+def get_recent_submissions():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch recent submissions with dates
+        cursor.execute("""
+            SELECT Artwork.title, Users.username, Artwork.created_at 
+            FROM Artwork 
+            JOIN Users ON Artwork.user_id = Users.id 
+            ORDER BY Artwork.created_at DESC 
+            LIMIT 5
+        """)
+        recent_submissions = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        # Format the dates for better readability
+        for submission in recent_submissions:
+            submission['created_at'] = submission['created_at'].strftime('%Y-%m-%d %H:%M:%S')
+
+        return jsonify(recent_submissions)
+    except Exception as e:
+        print(f"Error fetching recent submissions: {e}")
+        return jsonify({'error': 'Failed to fetch recent submissions'}), 500
+@app.route('/get_users')
+@login_required
+def get_users():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Fetch all users
+        cursor.execute("SELECT id, username, email, role FROM Users")
+        users = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify(users)
+    except Exception as e:
+        print(f"Error fetching users: {e}")
+        return jsonify({'error': 'Failed to fetch users'}), 500
+    
+@app.route('/remove_user/<int:user_id>', methods=['DELETE'])
+@login_required
+def remove_user(user_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Delete the user
+        cursor.execute("DELETE FROM Users WHERE id = %s", (user_id,))
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error removing user: {e}")
+        return jsonify({'error': 'Failed to remove user'}), 500
+    
+
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
@@ -598,12 +698,6 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route('/art_challenges')
-def art_challenges():
-    user = get_current_user()  # Function to get the logged-in user
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('art_challenges.html', user=user, username=username, user_data=user_data)
 
 # ✅ Artwork Upload Route
 @app.route('/upload', methods=['GET', 'POST'])
@@ -776,12 +870,89 @@ def virtual_gallery():
     user_data = {'role': user.role} 
     return render_template('virtual_gallery.html', user=user, username=username, user_data=user_data)
 
+@app.route('/delete_artwork', methods=['DELETE'])
+def delete_artwork():
+    artwork_id = request.args.get('id')
+    
+    if not artwork_id:
+        return jsonify({'success': False, 'error': 'No ID provided'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM artwork WHERE id = %s", (artwork_id,))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/create_challenge', methods=['POST'])
+def create_challenge():
+    name = request.form['name']
+    description = request.form['description']
+    deadline = request.form['deadline']
+    points_reward = request.form['points_reward']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO challenges (name, description, deadline, points_reward) VALUES (%s, %s, %s, %s)",
+                   (name, description, deadline, points_reward))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return redirect(url_for('challenges'))
+
+@app.route('/display_challenges', methods=['POST'])
+def edit_challenge():
+    challenge_id = request.form['id']
+    name = request.form['name']
+    description = request.form['description']
+    deadline = request.form['deadline']
+    points_reward = request.form['points_reward']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE challenges SET name=%s, description=%s, deadline=%s, points_reward=%s WHERE id=%s",
+                   (name, description, deadline, points_reward, challenge_id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return render_template('display.html')
+
+@app.route('/display_challenges', methods=['POST'])
+def delete_challenge():
+    challenge_id = request.form['id']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM challenges WHERE id=%s", (challenge_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return render_template('display.html')
+
+
 @app.route('/task_management')
-def task_management():
-    user = get_current_user()  # Function to get the logged-in user
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('task_management.html', user=user, username=username, user_data=user_data)
+def artwork_management():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    cursor.execute("SELECT id, user_id, title, description FROM artwork")
+    artworks = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('task_management.html', artworks=artworks)
+
 
 @app.route('/settings')
 def settings():
