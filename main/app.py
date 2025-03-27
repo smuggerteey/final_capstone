@@ -1043,7 +1043,8 @@ PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
 def pay():
     data = request.json
     email = data.get("email")
-    amount = data.get("amount")  # Amount in kobo (100 NGN = 10000)
+    amount = data.get("amount")
+    currency = "GHS"
 
     if not email or not amount:
         return jsonify({"error": "Email and amount are required"}), 400
@@ -1055,7 +1056,8 @@ def pay():
     
     payload = {
         "email": email,
-        "amount": int(amount) * 100  # Convert to kobo
+        "amount": int(amount) * 100,  # Convert to kobo
+        "currency": currency
     }
 
     response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
@@ -1400,7 +1402,7 @@ def process_payment():
             "transactions": [{
                 "amount": {
                     "total": str(total_amount),
-                    "currency": "USD"
+                    "currency": "GHS"
                 },
                 "description": "Purchase of artwork"
             }]
