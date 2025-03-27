@@ -4,137 +4,1360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Gallery - Digital Art & Creative Showcase 🎨</title>
+    <title>Virtual Gallery - Immersive Digital Art Experience 🖼️✨</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
 
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-
+    <style>
+        /* Enhanced Gallery Styles with Spices */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        
+        /* Floating particles background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+        
+        #modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            background: rgba(20, 20, 30, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(100, 150, 255, 0.5);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        #modal-content img, #modal-content video {
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 100;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px gold;
+            transition: all 0.3s ease;
+        }
+        
+        .hotspot:hover {
+            transform: translate(-50%, -50%) scale(1.3);
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        #gallery-ui {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 40, 0.85);
+            padding: 12px 20px;
+            border-radius: 15px;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #gallery-ui button {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #gallery-ui button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #gallery-ui button i {
+            font-size: 16px;
+        }
+        
+        #artwork-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(30, 30, 40, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+            display: none;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #artwork-info h4 {
+            margin: 0 0 8px 0;
+            color: #a777e3;
+            font-size: 18px;
+        }
+        
+        #artwork-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        #artwork-info button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        #artwork-info button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        #gallery-minimap {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 180px;
+            height: 180px;
+            background: rgba(30, 30, 40, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: none;
+        }
+        
+        #minimap-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        #gallery-selector {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 30, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 1000;
+            display: none;
+            flex-wrap: wrap;
+            max-width: 900px;
+            justify-content: center;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.5s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .gallery-option {
+            width: 180px;
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-option:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .gallery-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+        }
+        
+        .gallery-option span {
+            position: relative;
+            background: transparent;
+            color: white;
+            width: 100%;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 1;
+        }
+        
+        #dashboard-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 100;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #dashboard-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        #info {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 40, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #info i {
+            color: #a777e3;
+        }
+        
+        body.dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        #dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(30, 30, 40, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #dark-mode-toggle:hover {
+            transform: rotate(30deg);
+            background: rgba(40, 40, 50, 0.9);
+        }
+        
+        /* Floating audio player for video/audio artworks */
+        #audio-player {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(30, 30, 40, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 100;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        #audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        #audio-controls button {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        #audio-controls button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        #volume-slider {
+            width: 80px;
+        }
+        
+        /* Loading screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease-out;
+        }
+        
+        #loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #a777e3;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        #loading-text {
+            color: white;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        
+        /* Floating labels for rooms */
+        .room-label {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0.9;
+            font-size: 18px;
+        }
+        
+        /* Interactive elements */
+        .interactive-element {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 90;
+        }
+        
+        .interactive-element:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Floating art info bubbles */
+        .art-bubble {
+            position: absolute;
+            background: rgba(30, 30, 40, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            max-width: 150px;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 80;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Enhanced tooltips */
+        [data-tooltip] {
+            position: relative;
+        }
+        
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 40, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+        
+        [data-tooltip]:hover::after {
+            opacity: 1;
+        }
+        
+        /* Animated background elements */
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div id="loading-spinner"></div>
+        <div id="loading-text">Loading Virtual Gallery Experience...</div>
+    </div>
+
+    <!-- Floating particles background -->
+    <div id="particles-js"></div>
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="dark-mode-toggle" data-tooltip="Toggle Dark Mode">🌙</button>
+
+    <!-- Three.js Canvas will be inserted here -->
+    
+    <!-- Gallery UI Elements -->
+    <div id="gallery-ui">
+        <button onclick="navigateToRoom('main')" data-tooltip="Main Hall">
+            <i class="fas fa-landmark"></i> Main
+        </button>
+        <button onclick="navigateToRoom('contemporary')" data-tooltip="Contemporary Art">
+            <i class="fas fa-palette"></i> Contemporary
+        </button>
+        <button onclick="navigateToRoom('digital')" data-tooltip="Digital Art">
+            <i class="fas fa-laptop-code"></i> Digital
+        </button>
+        <button onclick="navigateToRoom('photography')" data-tooltip="Photography">
+            <i class="fas fa-camera"></i> Photography
+        </button>
+        <button onclick="toggleMinimap()" data-tooltip="Toggle Map (M)">
+            <i class="fas fa-map"></i> Map
+        </button>
+        <button onclick="toggleFullscreen()" data-tooltip="Fullscreen (F)">
+            <i class="fas fa-expand"></i> Fullscreen
+        </button>
+        <button onclick="showGallerySelector()" data-tooltip="Switch Gallery (G)">
+            <i class="fas fa-exchange-alt"></i> Switch
+        </button>
+    </div>
+    
+    <div id="artwork-info">
+        <h4 id="artwork-title">Artwork Title</h4>
+        <p id="artwork-artist">Artist Name</p>
+        <p id="artwork-description">Description goes here</p>
+        <button onclick="document.getElementById('artwork-info').style.display = 'none'">
+            <i class="fas fa-times"></i> Close
+        </button>
+    </div>
+    
+    <div id="gallery-minimap">
+        <canvas id="minimap-canvas" width="180" height="180"></canvas>
+    </div>
+    
+    <div id="gallery-selector">
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1578926375605-eaf7559b1458?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('main')">
+            <span>Main Gallery</span>
+        </div>
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('contemporary')">
+            <span>Contemporary Art</span>
+        </div>
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('digital')">
+            <span>Digital Art</span>
+        </div>
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('photography')">
+            <span>Photography</span>
+        </div>
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('sculpture')">
+            <span>Sculpture Garden</span>
+        </div>
+        <div class="gallery-option" style="background-image: url('https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');" onclick="navigateToRoom('user')">
+            <span>User Gallery</span>
         </div>
     </div>
-    <!-- Spinner End -->
-
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
-                    </div>
-                </div>
-                <a href="" class="nav-item nav-link">Contact</a>
-            </div>
+    
+    <div id="info">
+        <i class="fas fa-info-circle"></i> Use arrow keys to navigate, click to interact
+    </div>
+    
+    <!-- Audio Player -->
+    <div id="audio-player">
+        <div id="audio-controls">
+            <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+            <button id="mute-btn"><i class="fas fa-volume-up"></i></button>
         </div>
-    </nav>
+    </div>
+    
+    <!-- Back to Dashboard Button -->
+    <a id="dashboard-button" href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
 
+    <!-- Three.js and other libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.11.4/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- GLTF loader for 3D models -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.min.js"></script>
+    
     <script>
+        // Hide loading screen when everything is loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 1000);
+            }, 1500);
+        });
+
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#a777e3"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#6e8efb",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
         // Scene setup
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
+        scene.background = new THREE.Color(0xf0f0f0);
+        scene.fog = new THREE.FogExp2(0xf0f0f0, 0.002);
 
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(0, 1.6, 5);
 
-        const renderer = new THREE.WebGLRenderer();
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1;
+        document.body.insertBefore(renderer.domElement, document.body.firstChild);
 
-        // Gallery Floor
-        const floorGeometry = new THREE.PlaneGeometry(50, 50);
-        const floorMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+        // Add floating shapes to background
+        for (let i = 0; i < 10; i++) {
+            const shape = document.createElement('div');
+            shape.className = 'floating-shape';
+            shape.style.width = `${Math.random() * 200 + 100}px`;
+            shape.style.height = shape.style.width;
+            shape.style.left = `${Math.random() * 100}%`;
+            shape.style.top = `${Math.random() * 100}%`;
+            shape.style.background = `linear-gradient(45deg, hsl(${Math.random() * 360}, 70%, 60%), hsl(${Math.random() * 360}, 70%, 60%))`;
+            shape.style.animationDuration = `${Math.random() * 20 + 10}s`;
+            shape.style.animationDelay = `${Math.random() * 5}s`;
+            document.body.appendChild(shape);
+        }
+
+        // Gallery Floor with enhanced texture
+        const floorGeometry = new THREE.PlaneGeometry(100, 100);
+        const floorTexture = new THREE.TextureLoader().load('https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');
+        floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+        floorTexture.repeat.set(10, 10);
+        floorTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        
+        const floorMaterial = new THREE.MeshStandardMaterial({ 
+            map: floorTexture,
+            roughness: 0.8,
+            metalness: 0.2,
+            side: THREE.DoubleSide
+        });
+        
         const floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
         scene.add(floor);
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Soft white light
+        // Enhanced Walls with decorations
+        function createWall(width, height, position, rotation, hasDeco = true) {
+            const wallGeometry = new THREE.PlaneGeometry(width, height);
+            
+            // Create wall material with subtle texture
+            const wallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff,
+                side: THREE.DoubleSide,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            
+            const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+            wall.position.set(position.x, position.y, position.z);
+            wall.rotation.set(rotation.x, rotation.y, rotation.z);
+            wall.receiveShadow = true;
+            
+            // Add wall decorations (paintings, signs, etc.)
+            if (hasDeco) {
+                const decoGeometry = new THREE.BoxGeometry(width * 0.8, 0.1, height * 0.1);
+                const decoMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0x333333,
+                    roughness: 0.8,
+                    metalness: 0.2
+                });
+                const deco = new THREE.Mesh(decoGeometry, decoMaterial);
+                
+                // Position decoration based on wall orientation
+                if (rotation.y === Math.PI/2) { // Side wall
+                    deco.position.set(position.x, position.y * 0.7, position.z + (Math.random() > 0.5 ? -0.1 : 0.1));
+                } else { // Front/back wall
+                    deco.position.set(position.x + (Math.random() > 0.5 ? -width * 0.3 : width * 0.3), position.y * 0.7, position.z);
+                }
+                
+                scene.add(deco);
+            }
+            
+            return wall;
+        }
+
+        // Add walls to create rooms with enhanced design
+        const walls = [
+            createWall(30, 10, {x: -15, y: 5, z: 0}, {x: 0, y: Math.PI/2, z: 0}), // Left wall
+            createWall(30, 10, {x: 15, y: 5, z: 0}, {x: 0, y: Math.PI/2, z: 0}),  // Right wall
+            createWall(30, 10, {x: 0, y: 5, z: -15}, {x: 0, y: 0, z: 0}),         // Back wall
+            createWall(30, 10, {x: 0, y: 5, z: 15}, {x: 0, y: 0, z: 0}),          // Front wall
+            
+            // Contemporary art room walls
+            createWall(30, 10, {x: -45, y: 5, z: 0}, {x: 0, y: Math.PI/2, z: 0}, false),
+            createWall(30, 10, {x: -15, y: 5, z: -30}, {x: 0, y: 0, z: 0}, false),
+            
+            // Digital art room walls
+            createWall(30, 10, {x: 45, y: 5, z: 0}, {x: 0, y: Math.PI/2, z: 0}, false),
+            createWall(30, 10, {x: 15, y: 5, z: -30}, {x: 0, y: 0, z: 0}, false),
+            
+            // Photography room walls
+            createWall(30, 10, {x: 0, y: 5, z: -45}, {x: 0, y: 0, z: 0}, false),
+            createWall(30, 10, {x: -30, y: 5, z: -15}, {x: 0, y: Math.PI/2, z: 0}, false)
+        ];
+
+        walls.forEach(wall => scene.add(wall));
+
+        // Add room labels
+        const roomLabels = [
+            { text: "Main Gallery", position: { x: 0, y: 8, z: -14.5 } },
+            { text: "Contemporary Art", position: { x: -30, y: 8, z: -14.5 } },
+            { text: "Digital Art", position: { x: 30, y: 8, z: -14.5 } },
+            { text: "Photography", position: { x: 0, y: 8, z: -44.5 } },
+            { text: "Sculpture Garden", position: { x: 0, y: 8, z: 14.5 } }
+        ];
+
+        roomLabels.forEach(label => {
+            const labelElement = document.createElement('div');
+            labelElement.className = 'room-label';
+            labelElement.textContent = label.text;
+            labelElement.style.left = `${(label.position.x / 100 + 0.5) * 100}%`;
+            labelElement.style.top = `${(-label.position.z / 100 + 0.5) * 100}%`;
+            document.body.appendChild(labelElement);
+        });
+
+        // Enhanced Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
         scene.add(ambientLight);
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
         directionalLight.position.set(5, 10, 7.5);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 50;
+        directionalLight.shadow.camera.left = -20;
+        directionalLight.shadow.camera.right = 20;
+        directionalLight.shadow.camera.top = 20;
+        directionalLight.shadow.camera.bottom = -20;
+        directionalLight.shadow.bias = -0.0001;
         scene.add(directionalLight);
 
-        // Artwork Setup
-        const loader = new THREE.TextureLoader();
-        const artworks = [
-            { type: 'image', url: "{{ url_for('static', filename='images/image1.jpeg') }}", position: { x: -3, y: 1, z: -5 } },
-            { type: 'image', url: "{{ url_for('static', filename='images/image2.jpeg') }}", position: { x: 0, y: 1, z: -5 } },
-            { type: 'image', url: "{{ url_for('static', filename='images/image3.jpeg') }}", position: { x: 3, y: 1, z: -5 } },
-            { type: 'video', url: "{{ url_for('static', filename='images/video1.mp4') }}", position: { x: 0, y: 1, z: -10 } },
-            { type: 'audio', url: "{{ url_for('static', filename='images/audio1.mp3') }}", position: { x: -3, y: 1, z: -10 } }
-        ];
+        // Add accent lights
+        const accentLight1 = new THREE.PointLight(0x6e8efb, 0.8, 20);
+        accentLight1.position.set(-10, 5, -5);
+        accentLight1.castShadow = true;
+        scene.add(accentLight1);
 
-        artworks.forEach((art) => {
-            if (art.type === 'image') {
-                const texture = loader.load(
-                    art.url,
-                    undefined,
-                    undefined,
-                    (err) => console.error('Error loading texture:', err)
-                );
-                const material = new THREE.MeshBasicMaterial({ map: texture });
-                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
-                mesh.position.set(art.position.x, art.position.y, art.position.z);
-                mesh.userData = { type: 'image', url: art.url }; // Store type and URL
-                scene.add(mesh);
-            } else if (art.type === 'video') {
-                const video = document.createElement('video');
-                video.src = art.url;
-                video.load();
-                video.loop = true;
+        const accentLight2 = new THREE.PointLight(0xa777e3, 0.8, 20);
+        accentLight2.position.set(10, 5, -5);
+        accentLight2.castShadow = true;
+        scene.add(accentLight2);
+
+        // Add ceiling lights
+        for (let x = -12; x <= 12; x += 6) {
+            for (let z = -12; z <= 12; z += 6) {
+                const light = new THREE.PointLight(0xffffff, 0.5, 10);
+                light.position.set(x, 9, z);
+                scene.add(light);
                 
-                const videoTexture = new THREE.VideoTexture(video);
-                const material = new THREE.MeshBasicMaterial({ map: videoTexture });
-                const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), material);
-                mesh.position.set(art.position.x, art.position.y, art.position.z);
-                mesh.userData = { type: 'video', url: art.url }; // Store type and URL
-                scene.add(mesh);
-            } else if (art.type === 'audio') {
-                const audio = document.createElement('audio');
-                audio.src = art.url;
-                audio.load();
-                audio.loop = true;
-                audio.userData = { type: 'audio', url: art.url }; // Store type and URL
-                // Not visible in scene, but audio will play
+                // Light fixture
+                const fixtureGeometry = new THREE.SphereGeometry(0.3, 16, 8);
+                const fixtureMaterial = new THREE.MeshStandardMaterial({ 
+                    color: 0xffffcc,
+                    emissive: 0xffffcc,
+                    emissiveIntensity: 0.3
+                });
+                const fixture = new THREE.Mesh(fixtureGeometry, fixtureMaterial);
+                fixture.position.set(x, 9.3, z);
+                scene.add(fixture);
             }
-        });
+        }
+
+        // Artwork Setup with enhanced features
+        const loader = new THREE.TextureLoader();
+        const artworks = {
+            main: [
+                { 
+                    type: 'image', 
+                    url: "{{ url_for('static', filename='images/image1.jpeg') }}", 
+                    position: { x: -3, y: 1, z: -5 },
+                    title: "Sunset Reflections",
+                    artist: "Jane Doe",
+                    description: "Oil on canvas, 2022. This piece captures the tranquil beauty of a sunset over the ocean, with vibrant hues blending seamlessly into the horizon.",
+                    audio: "{{ url_for('static', filename='audio/ambient1.mp3') }}"
+                },
+                { 
+                    type: 'image', 
+                    url: "{{ url_for('static', filename='images/image2.jpeg') }}", 
+                    position: { x: 0, y: 1, z: -5 },
+                    title: "Urban Chaos",
+                    artist: "John Smith",
+                    description: "Acrylic on canvas, 2021. A dynamic representation of city life, with bold strokes and contrasting colors that evoke the energy of urban environments.",
+                    audio: "{{ url_for('static', filename='audio/city.mp3') }}"
+                },
+                { 
+                    type: 'image', 
+                    url: "{{ url_for('static', filename='images/image3.jpeg') }}", 
+                    position: { x: 3, y: 1, z: -5 },
+                    title: "Mountain Serenity",
+                    artist: "Emily Chen",
+                    description: "Watercolor, 2023. Delicate washes of color depict the peaceful majesty of mountain ranges at dawn.",
+                    audio: "{{ url_for('static', filename='audio/nature.mp3') }}"
+                }
+            ],
+            contemporary: [
+                { 
+                    type: 'image', 
+                    url: "https://images.unsplash.com/photo-1578926375605-eaf7559b1458?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+                    position: { x: -18, y: 1, z: -5 },
+                    title: "Abstract Thoughts",
+                    artist: "Maria Rodriguez",
+                    description: "Mixed media, 2022. This experimental piece combines unconventional materials to explore the boundaries of artistic expression.",
+                    audio: "{{ url_for('static', filename='audio/abstract.mp3') }}"
+                },
+                { 
+                    type: 'image', 
+                    url: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+                    position: { x: -15, y: 1, z: -5 },
+                    title: "Color Explosion",
+                    artist: "David Kim",
+                    description: "Acrylic on canvas, 2021. A vibrant celebration of color and form that challenges traditional composition.",
+                    audio: "{{ url_for('static', filename='audio/colorful.mp3') }}"
+                },
+                { 
+                    type: 'interactive', 
+                    url: "{{ url_for('static', filename='images/interactive1.png') }}", 
+                    position: { x: -12, y: 1, z: -5 },
+                    title: "Digital Mirror",
+                    artist: "Interactive Team",
+                    description: "Interactive installation, 2023. This piece responds to viewer movement, creating a dynamic digital reflection."
+                }
+            ],
+            digital: [
+                { 
+                    type: 'image', 
+                    url: "https://images.unsplash.com/photo-1626785774573-4b799315345d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+                    position: { x: 18, y: 1, z: -5 },
+                    title: "Digital Dreams",
+                    artist: "Alex Johnson",
+                    description: "Digital painting, 2023. Created entirely with digital tools, this piece explores the intersection of technology and creativity.",
+                    audio: "{{ url_for('static', filename='audio/digital.mp3') }}"
+                },
+                { 
+                    type: 'video', 
+                    url: "{{ url_for('static', filename='images/video1.mp4') }}", 
+                    position: { x: 15, y: 1, z: -5 },
+                    title: "Motion Graphics",
+                    artist: "Sarah Williams",
+                    description: "Digital animation, 2022. A mesmerizing loop of abstract forms and colors in constant motion.",
+                    audio: "{{ url_for('static', filename='audio/electronic.mp3') }}"
+                },
+                { 
+                    type: '3d', 
+                    url: "https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf", 
+                    position: { x: 12, y: 1, z: -5 },
+                    title: "Digital Sculpture",
+                    artist: "3D Art Collective",
+                    description: "3D model, 2023. This piece showcases the potential of digital sculpting in contemporary art."
+                }
+            ],
+            photography: [
+                { 
+                    type: 'image', 
+                    url: "https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+                    position: { x: 0, y: 1, z: -18 },
+                    title: "Wildlife Portrait",
+                    artist: "Michael Brown",
+                    description: "Photograph, 2021. Captured in the wild, this intimate portrait reveals the beauty of nature's creatures.",
+                    audio: "{{ url_for('static', filename='audio/wildlife.mp3') }}"
+                },
+                { 
+                    type: 'image', 
+                    url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60", 
+                    position: { x: -3, y: 1, z: -18 },
+                    title: "Urban Landscape",
+                    artist: "Lisa Wong",
+                    description: "Photograph, 2020. A striking composition of city architecture and human activity.",
+                    audio: "{{ url_for('static', filename='audio/urban.mp3') }}"
+                },
+                { 
+                    type: '360', 
+                    url: "{{ url_for('static', filename='images/panorama.jpg') }}", 
+                    position: { x: 3, y: 1, z: -18 },
+                    title: "Panoramic View",
+                    artist: "Panorama Team",
+                    description: "360° photograph, 2022. Explore this immersive landscape by dragging the image."
+                }
+            ],
+            sculpture: [
+                { 
+                    type: '3d', 
+                    url: "https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf", 
+                    position: { x: 0, y: 1, z: 10 },
+                    title: "Sculpture Study",
+                    artist: "Robert Stone",
+                    description: "3D model, 2023. A detailed study of form and texture in virtual space."
+                },
+                { 
+                    type: 'interactive', 
+                    url: "{{ url_for('static', filename='images/interactive2.png') }}", 
+                    position: { x: -3, y: 1, z: 10 },
+                    title: "Kinetic Sculpture",
+                    artist: "Interactive Team",
+                    description: "Interactive installation, 2023. Move around to see this piece from different perspectives."
+                }
+            ],
+            user: [
+                {% if user_data['role'] == 'Artist' %}
+                { 
+                    type: 'image', 
+                    url: "{{ url_for('static', filename='uploads/' + username + '/artwork1.jpg') }}", 
+                    position: { x: 0, y: 1, z: 5 },
+                    title: "My Artwork",
+                    artist: "{{ username }}",
+                    description: "Personal creation. This piece represents my artistic vision and creative journey."
+                }
+                {% endif %}
+            ]
+        };
+
+        // Load artworks for the current room
+        let currentRoom = 'main';
+        let artworkMeshes = [];
+        let currentAudio = null;
+
+        function loadArtworks(room) {
+            // Remove existing artworks
+            artworkMeshes.forEach(mesh => scene.remove(mesh));
+            artworkMeshes = [];
+            
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.getElementById('audio-player').style.display = 'none';
+            }
+            
+            if (!artworks[room]) return;
+            
+            artworks[room].forEach((art, index) => {
+                // Add floating info bubble near each artwork
+                const bubble = document.createElement('div');
+                bubble.className = 'art-bubble';
+                bubble.textContent = art.title;
+                bubble.id = `bubble-${room}-${index}`;
+                document.body.appendChild(bubble);
+                
+                // Position bubble based on artwork position
+                updateBubblePosition(bubble, art.position);
+                
+                if (art.type === 'image') {
+                    const texture = loader.load(
+                        art.url,
+                        undefined,
+                        undefined,
+                        (err) => console.error('Error loading texture:', err)
+                    );
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    
+                    const material = new THREE.MeshStandardMaterial({ 
+                        map: texture,
+                        roughness: 0.3,
+                        metalness: 0.1,
+                        emissive: 0x000000,
+                        emissiveIntensity: 0
+                    });
+                    
+                    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+                    mesh.position.set(art.position.x, art.position.y, art.position.z);
+                    mesh.rotation.y = Math.PI; // Face towards center
+                    mesh.userData = art; // Store all artwork data
+                    mesh.castShadow = true;
+                    scene.add(mesh);
+                    artworkMeshes.push(mesh);
+                    
+                    // Add glowing frame that lights up when hovered
+                    const frameGeometry = new THREE.BoxGeometry(2.1, 2.1, 0.1);
+                    const frameMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x8B4513, // Wooden color
+                        roughness: 0.5,
+                        metalness: 0.3,
+                        emissive: 0x8B4513,
+                        emissiveIntensity: 0
+                    });
+                    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+                    frame.position.set(art.position.x, art.position.y, art.position.z - 0.05);
+                    frame.castShadow = true;
+                    frame.userData = { isFrame: true, parent: mesh };
+                    scene.add(frame);
+                    artworkMeshes.push(frame);
+                    
+                    // Add hover effect
+                    mesh.userData.hoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0.3;
+                        material.emissiveIntensity = 0.1;
+                        bubble.style.opacity = '1';
+                    };
+                    
+                    mesh.userData.unhoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0;
+                        material.emissiveIntensity = 0;
+                        bubble.style.opacity = '0';
+                    };
+                    
+                } else if (art.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = art.url;
+                    video.load();
+                    video.loop = true;
+                    video.muted = true; // Muted by default to avoid autoplay issues
+                    
+                    const videoTexture = new THREE.VideoTexture(video);
+                    videoTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    
+                    const material = new THREE.MeshStandardMaterial({ 
+                        map: videoTexture,
+                        roughness: 0.3,
+                        metalness: 0.1
+                    });
+                    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(3, 2), material);
+                    mesh.position.set(art.position.x, art.position.y, art.position.z);
+                    mesh.rotation.y = Math.PI; // Face towards center
+                    mesh.userData = art;
+                    mesh.castShadow = true;
+                    scene.add(mesh);
+                    artworkMeshes.push(mesh);
+                    
+                    // Add high-tech frame
+                    const frameGeometry = new THREE.BoxGeometry(3.1, 2.1, 0.1);
+                    const frameMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x333333,
+                        roughness: 0.2,
+                        metalness: 0.8,
+                        emissive: 0x00aaff,
+                        emissiveIntensity: 0.1
+                    });
+                    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+                    frame.position.set(art.position.x, art.position.y, art.position.z - 0.05);
+                    frame.castShadow = true;
+                    frame.userData = { isFrame: true, parent: mesh };
+                    scene.add(frame);
+                    artworkMeshes.push(frame);
+                    
+                    // Add hover effect
+                    mesh.userData.hoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0.5;
+                        bubble.style.opacity = '1';
+                    };
+                    
+                    mesh.userData.unhoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0.1;
+                        bubble.style.opacity = '0';
+                    };
+                    
+                } else if (art.type === '3d') {
+                    // Load 3D model (simplified example)
+                    const geometry = new THREE.BoxGeometry(1, 1, 1);
+                    const material = new THREE.MeshStandardMaterial({ 
+                        color: 0x00ff00,
+                        roughness: 0.7,
+                        metalness: 0.3
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(art.position.x, art.position.y, art.position.z);
+                    mesh.scale.set(0.5, 0.5, 0.5);
+                    mesh.userData = art;
+                    mesh.castShadow = true;
+                    scene.add(mesh);
+                    artworkMeshes.push(mesh);
+                    
+                    // Add pedestal with glowing base
+                    const pedestalGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.5, 32);
+                    const pedestalMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x888888,
+                        roughness: 0.8,
+                        metalness: 0.2,
+                        emissive: 0x888888,
+                        emissiveIntensity: 0
+                    });
+                    const pedestal = new THREE.Mesh(pedestalGeometry, pedestalMaterial);
+                    pedestal.position.set(art.position.x, art.position.y - 0.75, art.position.z);
+                    pedestal.castShadow = true;
+                    pedestal.userData = { isPedestal: true, parent: mesh };
+                    scene.add(pedestal);
+                    artworkMeshes.push(pedestal);
+                    
+                    // Add hover effect
+                    mesh.userData.hoverEffect = () => {
+                        pedestalMaterial.emissiveIntensity = 0.3;
+                        bubble.style.opacity = '1';
+                    };
+                    
+                    mesh.userData.unhoverEffect = () => {
+                        pedestalMaterial.emissiveIntensity = 0;
+                        bubble.style.opacity = '0';
+                    };
+                    
+                } else if (art.type === 'interactive') {
+                    // Interactive artwork - changes when clicked
+                    const texture = loader.load(art.url);
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    
+                    const material = new THREE.MeshStandardMaterial({ 
+                        map: texture,
+                        roughness: 0.3,
+                        metalness: 0.1,
+                        emissive: 0x000000,
+                        emissiveIntensity: 0
+                    });
+                    
+                    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material);
+                    mesh.position.set(art.position.x, art.position.y, art.position.z);
+                    mesh.rotation.y = Math.PI;
+                    mesh.userData = art;
+                    mesh.castShadow = true;
+                    scene.add(mesh);
+                    artworkMeshes.push(mesh);
+                    
+                    // Add special frame
+                    const frameGeometry = new THREE.BoxGeometry(2.1, 2.1, 0.1);
+                    const frameMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x4a148c,
+                        roughness: 0.5,
+                        metalness: 0.8,
+                        emissive: 0x7b1fa2,
+                        emissiveIntensity: 0.3
+                    });
+                    const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+                    frame.position.set(art.position.x, art.position.y, art.position.z - 0.05);
+                    frame.castShadow = true;
+                    frame.userData = { isFrame: true, parent: mesh };
+                    scene.add(frame);
+                    artworkMeshes.push(frame);
+                    
+                    // Add hover effect
+                    mesh.userData.hoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0.8;
+                        material.emissiveIntensity = 0.2;
+                        bubble.style.opacity = '1';
+                    };
+                    
+                    mesh.userData.unhoverEffect = () => {
+                        frameMaterial.emissiveIntensity = 0.3;
+                        material.emissiveIntensity = 0;
+                        bubble.style.opacity = '0';
+                    };
+                    
+                    // Interactive behavior
+                    mesh.userData.onClick = () => {
+                        // Change the artwork when clicked
+                        material.map = loader.load("{{ url_for('static', filename='images/interactive-alt.png') }}");
+                        setTimeout(() => {
+                            material.map = texture;
+                        }, 2000);
+                    };
+                } else if (art.type === '360') {
+                    // 360° panorama viewer
+                    const texture = loader.load(art.url);
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    
+                    const material = new THREE.MeshStandardMaterial({ 
+                        map: texture,
+                        roughness: 0.3,
+                        metalness: 0.1,
+                        side: THREE.BackSide
+                    });
+                    
+                    const sphereGeometry = new THREE.SphereGeometry(1, 64, 32);
+                    const mesh = new THREE.Mesh(sphereGeometry, material);
+                    mesh.position.set(art.position.x, art.position.y, art.position.z);
+                    mesh.scale.set(1.5, 1.5, 1.5);
+                    mesh.userData = art;
+                    scene.add(mesh);
+                    artworkMeshes.push(mesh);
+                    
+                    // Add stand
+                    const standGeometry = new THREE.CylinderGeometry(0.1, 0.2, 0.5, 16);
+                    const standMaterial = new THREE.MeshStandardMaterial({ 
+                        color: 0x333333,
+                        roughness: 0.8,
+                        metalness: 0.2
+                    });
+                    const stand = new THREE.Mesh(standGeometry, standMaterial);
+                    stand.position.set(art.position.x, art.position.y - 1.25, art.position.z);
+                    stand.castShadow = true;
+                    scene.add(stand);
+                    artworkMeshes.push(stand);
+                    
+                    // Add hover effect
+                    mesh.userData.hoverEffect = () => {
+                        bubble.style.opacity = '1';
+                    };
+                    
+                    mesh.userData.unhoverEffect = () => {
+                        bubble.style.opacity = '0';
+                    };
+                    
+                    // Interactive behavior
+                    mesh.userData.onClick = () => {
+                        openModal(art.url, '360', art.title, art.artist, art.description);
+                    };
+                }
+            });
+        }
+
+        function updateBubblePosition(bubble, artPosition) {
+            const vector = new THREE.Vector3(artPosition.x, artPosition.y + 1.5, artPosition.z);
+            vector.project(camera);
+            
+            const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+            const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
+            
+            bubble.style.left = `${x}px`;
+            bubble.style.top = `${y}px`;
+        }
 
         // Modal for displaying media
         const modal = document.createElement('div');
@@ -145,101 +1368,706 @@
         modalContent.id = 'modal-content';
         modal.appendChild(modalContent);
 
-        modal.addEventListener('click', () => {
-            modal.style.display = 'none';
-            modalContent.innerHTML = ''; // Clear previous content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                modalContent.innerHTML = '';
+                
+                // Pause any playing media
+                const mediaElements = modalContent.querySelectorAll('video, audio');
+                mediaElements.forEach(el => {
+                    el.pause();
+                    el.currentTime = 0;
+                });
+            }
         });
 
-        function openModal(url, type) {
+        function openModal(url, type, title, artist, description) {
             modal.style.display = 'flex';
+            modalContent.innerHTML = '';
+            
+            // Add info panel
+            const infoPanel = document.createElement('div');
+            infoPanel.style.background = 'rgba(20, 20, 30, 0.9)';
+            infoPanel.style.color = 'white';
+            infoPanel.style.padding = '20px';
+            infoPanel.style.marginBottom = '10px';
+            infoPanel.style.borderRadius = '10px 10px 0 0';
+            infoPanel.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+            
+            infoPanel.innerHTML = `
+                <h3 style="margin: 0 0 10px 0; color: #a777e3;">${title}</h3>
+                <p style="margin: 5px 0; font-size: 15px;"><strong>Artist:</strong> ${artist}</p>
+                <p style="margin: 5px 0; font-size: 15px;"><strong>Description:</strong> ${description}</p>
+            `;
+            
+            modalContent.appendChild(infoPanel);
+            
             if (type === 'image') {
+                const imgContainer = document.createElement('div');
+                imgContainer.style.padding = '20px';
+                imgContainer.style.textAlign = 'center';
+                
                 const img = document.createElement('img');
                 img.src = url;
-                modalContent.appendChild(img);
+                img.style.maxWidth = '80vw';
+                img.style.maxHeight = '70vh';
+                img.style.borderRadius = '5px';
+                img.style.boxShadow = '0 5px 25px rgba(0, 0, 0, 0.5)';
+                imgContainer.appendChild(img);
+                
+                modalContent.appendChild(imgContainer);
+                
+                // Add zoom functionality
+                let scale = 1;
+                img.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    scale += e.deltaY * -0.01;
+                    scale = Math.min(Math.max(0.5, scale), 3);
+                    img.style.transform = `scale(${scale})`;
+                });
+                
             } else if (type === 'video') {
+                const videoContainer = document.createElement('div');
+                videoContainer.style.padding = '20px';
+                videoContainer.style.textAlign = 'center';
+                
                 const video = document.createElement('video');
                 video.src = url;
                 video.controls = true;
-                video.play();
-                modalContent.appendChild(video);
+                video.autoplay = true;
+                video.style.maxWidth = '80vw';
+                video.style.maxHeight = '70vh';
+                video.style.borderRadius = '5px';
+                video.style.boxShadow = '0 5px 25px rgba(0, 0, 0, 0.5)';
+                videoContainer.appendChild(video);
+                
+                modalContent.appendChild(videoContainer);
+                
             } else if (type === 'audio') {
+                const audioContainer = document.createElement('div');
+                audioContainer.style.padding = '20px';
+                audioContainer.style.textAlign = 'center';
+                
                 const audio = document.createElement('audio');
                 audio.src = url;
                 audio.controls = true;
-                audio.play();
-                modalContent.appendChild(audio);
+                audio.autoplay = true;
+                audio.style.width = '80%';
+                audioContainer.appendChild(audio);
+                
+                modalContent.appendChild(audioContainer);
+                
+                // Add visualizer for audio
+                const canvas = document.createElement('canvas');
+                canvas.width = 600;
+                canvas.height = 150;
+                canvas.style.backgroundColor = 'rgba(20, 20, 30, 0.7)';
+                canvas.style.borderRadius = '5px';
+                canvas.style.marginTop = '20px';
+                canvas.style.width = '80%';
+                modalContent.appendChild(canvas);
+                
+                // Enhanced audio visualizer
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+                
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+                
+                const canvasCtx = canvas.getContext('2d');
+                
+                function draw() {
+                    requestAnimationFrame(draw);
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw gradient background
+                    const gradient = canvasCtx.createLinearGradient(0, 0, 0, canvas.height);
+                    gradient.addColorStop(0, '#1a1a2e');
+                    gradient.addColorStop(1, '#16213e');
+                    canvasCtx.fillStyle = gradient;
+                    canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw bars
+                    const barWidth = (canvas.width / bufferLength) * 2.5;
+                    let x = 0;
+                    
+                    for (let i = 0; i < bufferLength; i++) {
+                        const barHeight = (dataArray[i] / 255) * canvas.height;
+                        
+                        // Create gradient for each bar
+                        const barGradient = canvasCtx.createLinearGradient(0, canvas.height - barHeight, 0, canvas.height);
+                        barGradient.addColorStop(0, `hsl(${i * 2}, 100%, 50%)`);
+                        barGradient.addColorStop(1, `hsl(${i * 2}, 100%, 30%)`);
+                        
+                        canvasCtx.fillStyle = barGradient;
+                        canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                        
+                        // Add subtle reflection
+                        canvasCtx.fillStyle = `rgba(255, 255, 255, 0.1)`;
+                        canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, 2);
+                        
+                        x += barWidth + 1;
+                    }
+                    
+                    // Draw waveform
+                    analyser.getByteTimeDomainData(dataArray);
+                    canvasCtx.lineWidth = 2;
+                    canvasCtx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                    canvasCtx.beginPath();
+                    
+                    const sliceWidth = canvas.width / bufferLength;
+                    x = 0;
+                    
+                    for (let i = 0; i < bufferLength; i++) {
+                        const v = dataArray[i] / 128.0;
+                        const y = v * canvas.height / 2;
+                        
+                        if (i === 0) {
+                            canvasCtx.moveTo(x, y);
+                        } else {
+                            canvasCtx.lineTo(x, y);
+                        }
+                        
+                        x += sliceWidth;
+                    }
+                    
+                    canvasCtx.lineTo(canvas.width, canvas.height / 2);
+                    canvasCtx.stroke();
+                }
+                
+                draw();
+                
+            } else if (type === '360') {
+                // Create a 360° viewer
+                const viewerContainer = document.createElement('div');
+                viewerContainer.style.width = '80vw';
+                viewerContainer.style.height = '70vh';
+                viewerContainer.style.position = 'relative';
+                viewerContainer.style.margin = '0 auto';
+                
+                const viewerCanvas = document.createElement('canvas');
+                viewerCanvas.style.width = '100%';
+                viewerCanvas.style.height = '100%';
+                viewerCanvas.style.borderRadius = '5px';
+                viewerContainer.appendChild(viewerCanvas);
+                
+                modalContent.appendChild(viewerContainer);
+                
+                // Set up Three.js for 360 viewer
+                const viewerRenderer = new THREE.WebGLRenderer({ 
+                    canvas: viewerCanvas,
+                    antialias: true 
+                });
+                viewerRenderer.setSize(viewerContainer.offsetWidth, viewerContainer.offsetHeight);
+                
+                const viewerScene = new THREE.Scene();
+                const viewerCamera = new THREE.PerspectiveCamera(75, viewerContainer.offsetWidth / viewerContainer.offsetHeight, 0.1, 1000);
+                viewerCamera.position.z = 0.1;
+                
+                const viewerTexture = new THREE.TextureLoader().load(url);
+                const viewerGeometry = new THREE.SphereGeometry(5, 64, 32);
+                const viewerMaterial = new THREE.MeshBasicMaterial({
+                    map: viewerTexture,
+                    side: THREE.BackSide
+                });
+                const viewerSphere = new THREE.Mesh(viewerGeometry, viewerMaterial);
+                viewerScene.add(viewerSphere);
+                
+                // Add controls for rotating
+                let isDragging = false;
+                let previousMousePosition = { x: 0, y: 0 };
+                
+                viewerCanvas.addEventListener('mousedown', () => {
+                    isDragging = true;
+                });
+                
+                viewerCanvas.addEventListener('mouseup', () => {
+                    isDragging = false;
+                });
+                
+                viewerCanvas.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+                    
+                    viewerSphere.rotation.y += deltaMove.x * 0.01;
+                    viewerSphere.rotation.x += deltaMove.y * 0.01;
+                    
+                    previousMousePosition = {
+                        x: e.offsetX,
+                        y: e.offsetY
+                    };
+                });
+                
+                viewerCanvas.addEventListener('mouseout', () => {
+                    isDragging = false;
+                });
+                
+                // Handle touch events
+                viewerCanvas.addEventListener('touchstart', (e) => {
+                    isDragging = true;
+                    previousMousePosition = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                });
+                
+                viewerCanvas.addEventListener('touchend', () => {
+                    isDragging = false;
+                });
+                
+                viewerCanvas.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const deltaMove = {
+                        x: e.touches[0].clientX - previousMousePosition.x,
+                        y: e.touches[0].clientY - previousMousePosition.y
+                    };
+                    
+                    viewerSphere.rotation.y += deltaMove.x * 0.01;
+                    viewerSphere.rotation.x += deltaMove.y * 0.01;
+                    
+                    previousMousePosition = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                });
+                
+                // Animation loop
+                function animateViewer() {
+                    requestAnimationFrame(animateViewer);
+                    viewerRenderer.render(viewerScene, viewerCamera);
+                }
+                
+                animateViewer();
+                
+                // Handle resize
+                function handleViewerResize() {
+                    viewerCamera.aspect = viewerContainer.offsetWidth / viewerContainer.offsetHeight;
+                    viewerCamera.updateProjectionMatrix();
+                    viewerRenderer.setSize(viewerContainer.offsetWidth, viewerContainer.offsetHeight);
+                }
+                
+                window.addEventListener('resize', handleViewerResize);
+                
+                // Initial setup
+                handleViewerResize();
             }
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Close';
+            closeBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+            closeBtn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+            closeBtn.style.color = 'white';
+            closeBtn.style.padding = '8px 15px';
+            closeBtn.style.borderRadius = '5px';
+            closeBtn.style.margin = '20px auto';
+            closeBtn.style.display = 'block';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.transition = 'all 0.3s ease';
+            
+            closeBtn.addEventListener('mouseover', () => {
+                closeBtn.style.background = 'rgba(255, 255, 255, 0.2)';
+            });
+            
+            closeBtn.addEventListener('mouseout', () => {
+                closeBtn.style.background = 'rgba(255, 255, 255, 0.1)';
+            });
+            
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+                modalContent.innerHTML = '';
+                
+                // Pause any playing media
+                const mediaElements = modalContent.querySelectorAll('video, audio');
+                mediaElements.forEach(el => {
+                    el.pause();
+                    el.currentTime = 0;
+                });
+            });
+            
+            modalContent.appendChild(closeBtn);
         }
 
-        // Hotspot Setup
-        const hotspots = [
-            { x: -2, y: 1, z: -6, target: 'room2' },
-            { x: 3, y: 1, z: -12, target: 'room3' }
-        ];
-
-        hotspots.forEach((hotspot) => {
-            const element = document.createElement('div');
-            element.classList.add('hotspot');
-            element.style.left = `${(hotspot.x / 50) * 100}%`;
-            element.style.top = `${(hotspot.z / -50) * 100}%`;
-            document.body.appendChild(element);
-            element.addEventListener('click', () => {
-                navigateToRoom(hotspot.target);
-            });
+        // Audio player controls
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const muteBtn = document.getElementById('mute-btn');
+        
+        playPauseBtn.addEventListener('click', () => {
+            if (currentAudio) {
+                if (currentAudio.paused) {
+                    currentAudio.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    currentAudio.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            }
+        });
+        
+        volumeSlider.addEventListener('input', () => {
+            if (currentAudio) {
+                currentAudio.volume = volumeSlider.value;
+            }
+        });
+        
+        muteBtn.addEventListener('click', () => {
+            if (currentAudio) {
+                currentAudio.muted = !currentAudio.muted;
+                muteBtn.innerHTML = currentAudio.muted ? 
+                    '<i class="fas fa-volume-mute"></i>' : 
+                    '<i class="fas fa-volume-up"></i>';
+            }
         });
 
-        // Multi-Room Navigation
+        // Multi-Room Navigation with transitions
         const rooms = {
-            room2: { x: -10, z: -5 },
-            room3: { x: 10, z: -15 }
+            main: { x: 0, z: 5 },
+            contemporary: { x: -15, z: 0 },
+            digital: { x: 15, z: 0 },
+            photography: { x: 0, z: -15 },
+            sculpture: { x: 0, z: 15 },
+            user: { x: 0, z: 25 }
         };
 
         function navigateToRoom(room) {
             if (rooms[room]) {
-                camera.position.set(rooms[room].x, 1.6, rooms[room].z);
+                currentRoom = room;
+                
+                // Add transition effect
+                document.body.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    document.body.style.pointerEvents = 'auto';
+                }, 1000);
+                
+                // Load artworks for the new room
+                loadArtworks(room);
+                
+                // Smooth camera transition with easing
+                gsap.to(camera.position, {
+                    x: rooms[room].x,
+                    z: rooms[room].z,
+                    duration: 1.2,
+                    ease: "power2.inOut",
+                    onUpdate: () => {
+                        // Update bubble positions during transition
+                        artworkMeshes.forEach((mesh, index) => {
+                            const bubble = document.getElementById(`bubble-${room}-${index}`);
+                            if (bubble) {
+                                updateBubblePosition(bubble, mesh.position);
+                            }
+                        });
+                    },
+                    onComplete: () => {
+                        // Play ambient audio if available
+                        const roomArtworks = artworks[room] || [];
+                        const audioArtwork = roomArtworks.find(art => art.audio);
+                        
+                        if (audioArtwork && audioArtwork.audio) {
+                            currentAudio = new Audio(audioArtwork.audio);
+                            currentAudio.loop = true;
+                            currentAudio.volume = volumeSlider.value;
+                            currentAudio.play();
+                            
+                            document.getElementById('audio-player').style.display = 'block';
+                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        }
+                    }
+                });
+                
+                // Update minimap
+                updateMinimap();
             }
         }
 
-        // AR Integration (example placeholder)
-        if (window.isSecureContext && 'XR' in window) {
-            const xrButton = document.createElement('button');
-            xrButton.textContent = 'Enter AR';
-            document.body.appendChild(xrButton);
-            xrButton.addEventListener('click', () => {
-                // AR initialization (placeholder for actual AR features)
-                alert('AR mode is under development!');
-            });
+        // Enhanced Minimap with player direction
+        const minimapCanvas = document.getElementById('minimap-canvas');
+        const minimapCtx = minimapCanvas.getContext('2d');
+        
+        function updateMinimap() {
+            minimapCtx.clearRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            
+            // Draw background
+            minimapCtx.fillStyle = 'rgba(30, 30, 40, 0.7)';
+            minimapCtx.fillRect(0, 0, minimapCanvas.width, minimapCanvas.height);
+            
+            // Draw rooms with different colors
+            minimapCtx.fillStyle = 'rgba(110, 142, 251, 0.5)';
+            minimapCtx.fillRect(45, 45, 60, 60); // Main room
+            
+            minimapCtx.fillStyle = 'rgba(167, 119, 227, 0.5)';
+            minimapCtx.fillRect(15, 45, 30, 60);  // Contemporary
+            minimapCtx.fillRect(75, 45, 30, 60);  // Digital
+            minimapCtx.fillRect(45, 15, 60, 30);  // Photography
+            minimapCtx.fillRect(45, 75, 60, 30);  // Sculpture
+            
+            // Draw connections between rooms
+            minimapCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            minimapCtx.lineWidth = 2;
+            
+            // Main to Contemporary
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(45, 75);
+            minimapCtx.lineTo(30, 75);
+            minimapCtx.stroke();
+            
+            // Main to Digital
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(105, 75);
+            minimapCtx.lineTo(90, 75);
+            minimapCtx.stroke();
+            
+            // Main to Photography
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(75, 45);
+            minimapCtx.lineTo(75, 30);
+            minimapCtx.stroke();
+            
+            // Main to Sculpture
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(75, 105);
+            minimapCtx.lineTo(75, 90);
+            minimapCtx.stroke();
+            
+            // Draw player position with direction indicator
+            const mapX = (camera.position.x / 100 + 0.5) * minimapCanvas.width;
+            const mapZ = (camera.position.z / 100 + 0.5) * minimapCanvas.height;
+            
+            // Draw player circle
+            minimapCtx.fillStyle = 'rgba(255, 80, 80, 0.8)';
+            minimapCtx.beginPath();
+            minimapCtx.arc(mapX, mapZ, 5, 0, Math.PI * 2);
+            minimapCtx.fill();
+            
+            // Draw direction indicator
+            const direction = new THREE.Vector3();
+            camera.getWorldDirection(direction);
+            const angle = Math.atan2(direction.x, direction.z);
+            
+            minimapCtx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            minimapCtx.lineWidth = 2;
+            minimapCtx.beginPath();
+            minimapCtx.moveTo(mapX, mapZ);
+            minimapCtx.lineTo(
+                mapX + Math.sin(angle) * 10,
+                mapZ + Math.cos(angle) * 10
+            );
+            minimapCtx.stroke();
+            
+            // Draw current room highlight
+            minimapCtx.strokeStyle = 'rgba(255, 255, 0, 0.8)';
+            minimapCtx.lineWidth = 3;
+            
+            if (currentRoom === 'main') {
+                minimapCtx.strokeRect(45, 45, 60, 60);
+            } else if (currentRoom === 'contemporary') {
+                minimapCtx.strokeRect(15, 45, 30, 60);
+            } else if (currentRoom === 'digital') {
+                minimapCtx.strokeRect(75, 45, 30, 60);
+            } else if (currentRoom === 'photography') {
+                minimapCtx.strokeRect(45, 15, 60, 30);
+            } else if (currentRoom === 'sculpture') {
+                minimapCtx.strokeRect(45, 75, 60, 30);
+            }
+        }
+        
+        function toggleMinimap() {
+            const minimap = document.getElementById('gallery-minimap');
+            minimap.style.display = minimap.style.display === 'none' ? 'block' : 'none';
+            if (minimap.style.display === 'block') {
+                updateMinimap();
+            }
+        }
+        
+        // Enhanced Gallery selector with search
+        function showGallerySelector() {
+            const selector = document.getElementById('gallery-selector');
+            selector.style.display = selector.style.display === 'none' ? 'flex' : 'none';
+            
+            if (selector.style.display === 'flex') {
+                // Add search functionality
+                const searchBox = document.createElement('div');
+                searchBox.style.width = '100%';
+                searchBox.style.marginBottom = '20px';
+                searchBox.style.display = 'flex';
+                searchBox.style.justifyContent = 'center';
+                
+                const searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.placeholder = 'Search galleries...';
+                searchInput.style.padding = '10px 15px';
+                searchInput.style.borderRadius = '20px';
+                searchInput.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                searchInput.style.background = 'rgba(255, 255, 255, 0.1)';
+                searchInput.style.color = 'white';
+                searchInput.style.width = '80%';
+                searchInput.style.outline = 'none';
+                
+                searchInput.addEventListener('input', () => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const options = document.querySelectorAll('.gallery-option');
+                    
+                    options.forEach(option => {
+                        const title = option.querySelector('span').textContent.toLowerCase();
+                        if (title.includes(searchTerm)) {
+                            option.style.display = 'flex';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                });
+                
+                searchBox.appendChild(searchInput);
+                selector.insertBefore(searchBox, selector.firstChild);
+            }
+        }
+        
+        // Enhanced Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
         }
 
-        // Camera Movement
+        // Enhanced Camera Movement with acceleration
         const keys = {};
-        document.addEventListener('keydown', (event) => (keys[event.key] = true));
+        let velocity = new THREE.Vector3();
+        let acceleration = 0.1;
+        let maxSpeed = 0.5;
+        let friction = 0.95;
+        
+        document.addEventListener('keydown', (event) => {
+            keys[event.key] = true;
+            
+            // Shortcut keys
+            if (event.key === 'm') toggleMinimap();
+            if (event.key === 'g') showGallerySelector();
+            if (event.key === 'f') toggleFullscreen();
+        });
+        
         document.addEventListener('keyup', (event) => (keys[event.key] = false));
 
         function moveCamera() {
-            const speed = 0.1;
-            if (keys['w'] || keys['ArrowUp']) camera.position.z = Math.max(camera.position.z - speed, -25);
-            if (keys['s'] || keys['ArrowDown']) camera.position.z = Math.min(camera.position.z + speed, 25);
-            if (keys['a'] || keys['ArrowLeft']) camera.position.x = Math.max(camera.position.x - speed, -25);
-            if (keys['d'] || keys['ArrowRight']) camera.position.x = Math.min(camera.position.x + speed, 25);
+            // Apply acceleration based on key presses
+            if (keys['w'] || keys['ArrowUp']) velocity.z -= acceleration;
+            if (keys['s'] || keys['ArrowDown']) velocity.z += acceleration;
+            if (keys['a'] || keys['ArrowLeft']) velocity.x -= acceleration;
+            if (keys['d'] || keys['ArrowRight']) velocity.x += acceleration;
+            
+            // Apply friction
+            velocity.x *= friction;
+            velocity.z *= friction;
+            
+            // Limit speed
+            if (velocity.length() > maxSpeed) {
+                velocity.normalize().multiplyScalar(maxSpeed);
+            }
+            
+            // Update camera position
+            camera.position.x += velocity.x;
+            camera.position.z += velocity.z;
+            
+            // Boundary checks to keep camera in gallery
+            const boundary = 45;
+            camera.position.x = Math.max(-boundary, Math.min(boundary, camera.position.x));
+            camera.position.z = Math.max(-boundary, Math.min(boundary, camera.position.z));
+            
+            // Update minimap if visible
+            if (document.getElementById('gallery-minimap').style.display === 'block') {
+                updateMinimap();
+            }
+            
+            // Update bubble positions
+            artworkMeshes.forEach((mesh, index) => {
+                const bubble = document.getElementById(`bubble-${currentRoom}-${index}`);
+                if (bubble) {
+                    updateBubblePosition(bubble, mesh.position);
+                }
+            });
         }
 
-        // Responsive Resizing
+        // Enhanced Responsive Resizing
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // Update bubble positions
+            artworkMeshes.forEach((mesh, index) => {
+                const bubble = document.getElementById(`bubble-${currentRoom}-${index}`);
+                if (bubble) {
+                    updateBubblePosition(bubble, mesh.position);
+                }
+            });
         });
 
-        // Render Loop
+        // Enhanced Render Loop with hover effects
+        let hoveredObject = null;
+        
         function animate() {
-            moveCamera();
-            renderer.render(scene, camera);
             requestAnimationFrame(animate);
+            
+            moveCamera();
+            
+            // Raycaster for hover effects
+            const mouse = new THREE.Vector2();
+            mouse.x = (window.innerWidth / 2) / window.innerWidth * 2 - 1;
+            mouse.y = -(window.innerHeight / 2) / window.innerHeight * 2 + 1;
+            
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+            
+            const intersects = raycaster.intersectObjects(artworkMeshes);
+            
+            // Handle hover effects
+            if (intersects.length > 0) {
+                const intersectedObject = intersects[0].object;
+                
+                // Skip frames and pedestals
+                if (!intersectedObject.userData.isFrame && !intersectedObject.userData.isPedestal) {
+                    if (hoveredObject !== intersectedObject) {
+                        if (hoveredObject && hoveredObject.userData.unhoverEffect) {
+                            hoveredObject.userData.unhoverEffect();
+                        }
+                        
+                        hoveredObject = intersectedObject;
+                        
+                        if (hoveredObject.userData.hoverEffect) {
+                            hoveredObject.userData.hoverEffect();
+                        }
+                    }
+                }
+            } else {
+                if (hoveredObject && hoveredObject.userData.unhoverEffect) {
+                    hoveredObject.userData.unhoverEffect();
+                    hoveredObject = null;
+                }
+            }
+            
+            renderer.render(scene, camera);
         }
+        
         animate();
 
-        // Handle clicks on the 3D objects
+        // Enhanced click handling with interactive elements
         window.addEventListener('click', (event) => {
             const mouse = new THREE.Vector2();
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -248,140 +2076,103 @@
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
 
-            const intersects = raycaster.intersectObjects(scene.children);
+            const intersects = raycaster.intersectObjects(artworkMeshes);
             if (intersects.length > 0) {
                 const intersectedObject = intersects[0].object;
-                if (intersectedObject.userData.type) {
-                    openModal(intersectedObject.userData.url, intersectedObject.userData.type);
+                
+                // Handle frames and pedestals by getting their parent artwork
+                let artworkObject = intersectedObject;
+                if (intersectedObject.userData.isFrame || intersectedObject.userData.isPedestal) {
+                    artworkObject = intersectedObject.userData.parent;
+                }
+                
+                if (artworkObject.userData.type) {
+                    const art = artworkObject.userData;
+                    
+                    // Check for custom click behavior
+                    if (artworkObject.userData.onClick) {
+                        artworkObject.userData.onClick();
+                    } else {
+                        openModal(art.url, art.type, art.title, art.artist, art.description);
+                        
+                        // Play associated audio if available
+                        if (art.audio) {
+                            currentAudio = new Audio(art.audio);
+                            currentAudio.loop = true;
+                            currentAudio.volume = volumeSlider.value;
+                            currentAudio.play();
+                            
+                            document.getElementById('audio-player').style.display = 'block';
+                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        }
+                    }
+                    
+                    // Also show info panel
+                    const infoPanel = document.getElementById('artwork-info');
+                    document.getElementById('artwork-title').textContent = art.title;
+                    document.getElementById('artwork-artist').textContent = art.artist;
+                    document.getElementById('artwork-description').textContent = art.description;
+                    infoPanel.style.display = 'block';
                 }
             }
         });
 
-        // Dark Mode Toggle Functionality
+        // Enhanced Dark Mode Toggle
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
+            document.getElementById('dark-mode-toggle').textContent = '☀️';
+            scene.background = new THREE.Color(0x121212);
+            scene.fog = new THREE.FogExp2(0x121212, 0.002);
         }
 
-        document.getElementById('darkModeToggle').addEventListener('click', () => {
+        document.getElementById('dark-mode-toggle').addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 localStorage.setItem('darkMode', 'true');
-                document.getElementById('darkModeToggle').textContent = '☀️';
+                document.getElementById('dark-mode-toggle').textContent = '☀️';
+                scene.background = new THREE.Color(0x121212);
+                scene.fog = new THREE.FogExp2(0x121212, 0.002);
             } else {
                 localStorage.setItem('darkMode', 'false');
-                document.getElementById('darkModeToggle').textContent = '🌙';
+                document.getElementById('dark-mode-toggle').textContent = '🌙';
+                scene.background = new THREE.Color(0xf0f0f0);
+                scene.fog = new THREE.FogExp2(0xf0f0f0, 0.002);
             }
         });
-    </script>
 
-<div id="info" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-    Use WASD or arrow keys to navigate, click to interact<br>
-    <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" style="
-        display: inline-block; 
-        padding: 10px 20px; 
-        font-size: 16px; 
-        color: white; 
-        background-color: hsl(195, 46%, 48%); /* Bright turquoise color */
-        border: none; 
-        border-radius: 5px; 
-        text-decoration: none; 
-        transition: background-color 0.3s ease;
-    ">
-        Back to Dashboard
-    </a>
-</div>
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Gallery</h4>
-                    <div class="row g-2 pt-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="copyright">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FQAs</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-    <!-- Custom JavaScript for Join Now Button -->
-    <script>
-        document.getElementById('joinNowButton').addEventListener('click', function(event) {
-            event.preventDefault();
-            window.location.href = "{{ url_for('registration') }}";
-        });
+        // Initial setup
+        loadArtworks(currentRoom);
+        updateMinimap();
+        
+        // Add welcome message
+        setTimeout(() => {
+            const welcome = document.createElement('div');
+            welcome.style.position = 'fixed';
+            welcome.style.top = '50%';
+            welcome.style.left = '50%';
+            welcome.style.transform = 'translate(-50%, -50%)';
+            welcome.style.background = 'rgba(30, 30, 40, 0.9)';
+            welcome.style.color = 'white';
+            welcome.style.padding = '30px';
+            welcome.style.borderRadius = '15px';
+            welcome.style.zIndex = '1000';
+            welcome.style.textAlign = 'center';
+            welcome.style.maxWidth = '500px';
+            welcome.style.backdropFilter = 'blur(10px)';
+            welcome.style.boxShadow = '0 15px 50px rgba(0, 0, 0, 0.5)';
+            welcome.style.animation = 'fadeIn 0.5s ease-out';
+            
+            welcome.innerHTML = `
+                <h2 style="margin-top: 0; color: #a777e3;">Welcome to the Virtual Gallery</h2>
+                <p>Explore our collection of digital and traditional artworks. Navigate using arrow keys or the UI at the bottom.</p>
+                <p>Click on artworks to view details and interact with them.</p>
+                <button style="background: linear-gradient(135deg, #6e8efb, #a777e3); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 20px; font-weight: 600;" onclick="this.parentElement.remove()">
+                    Begin Exploration
+                </button>
+            `;
+            
+            document.body.appendChild(welcome);
+        }, 2000);
     </script>
 </body>
-
 </html>
