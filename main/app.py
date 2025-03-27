@@ -1,4 +1,5 @@
 import hashlib
+import re
 import MySQLdb
 from flask import Flask, request, jsonify, render_template, redirect, session, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -321,6 +322,8 @@ def update_points():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
+    
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
@@ -334,7 +337,6 @@ def login():
             conn.close()
 
             if user_data:
-                print(f"User found: {user_data}")  # Debugging line
                 if check_password_hash(user_data['password'], password):
                     user = Users(**user_data)
                     login_user(user)
@@ -347,17 +349,18 @@ def login():
                     elif user_data['role'] == 'Regular User':
                         return redirect(url_for('userdashboard'))
                     else:
-                        return "Invalid role! Contact admin."
+                        error = "Invalid role! Contact admin."
                 else:
-                    return "Invalid credentials!"  # Password mismatch
+                    error = "Invalid username or password"
             else:
-                return "User not found!"  # User not found in DB
+                error = "Invalid username or password"
         
         except mysql.connector.Error as e:
-            print(f"Database error: {e}")  # Log any database connection errors
-            return "There was an error with the database."
+            print(f"Database error: {e}")
+            error = "There was an error processing your request. Please try again."
 
-    return render_template('login.html')
+    return render_template('login.html', error=error)
+
 
 # Configure upload folder
 
@@ -377,48 +380,106 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+from flask import flash, redirect, url_for, request, jsonify
+from werkzeug.security import generate_password_hash
+import re
+import pymysql
+
+@app.route('/check-username')
+def check_username():
+    username = request.args.get('username', '').strip()
+    
+    if not username:
+        return jsonify({'available': False})
+    
+    try:
+        conn = create_connection()
+        with conn.cursor(dictionary=True) as cursor:
+            cursor.execute("SELECT username FROM Users WHERE username = %s", (username,))
+            user = cursor.fetchone()
+        return jsonify({'available': user is None})
+    except Exception as e:
+        print(f"Error checking username: {e}")
+        return jsonify({'available': False}), 500
+    finally:
+        if 'conn' in locals() and conn:
+            conn.close()
+
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     if request.method == 'POST':
-        username = request.form.get("username")
-        first_name = request.form.get("firstName")
-        last_name = request.form.get("lastName")
-        phone = request.form.get("phone")
-        role = request.form.get("role")
-        address = request.form.get("address")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirmPassword")
+        # Get form data
+        username = request.form.get("username", "").strip()
+        first_name = request.form.get("firstName", "").strip()
+        last_name = request.form.get("lastName", "").strip()
+        phone = request.form.get("phone", "").strip()
+        role = request.form.get("role", "").strip()
+        address = request.form.get("address", "").strip()
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "").strip()
+        confirm_password = request.form.get("confirmPassword", "").strip()
 
+        # Validate required fields
+        if not all([username, first_name, last_name, phone, role, address, email, password]):
+            flash("❌ All fields are required!", "error")
+            return redirect(url_for("registration"))
+
+        # Validate password match
         if password != confirm_password:
             flash("❌ Passwords do not match!", "error")
             return redirect(url_for("registration"))
 
-        hashed_password = generate_password_hash(password)
+        # Validate location
+        if len(address) < 3:
+            flash("❌ Location must be at least 3 characters", "error")
+            return redirect(url_for("registration"))
+        
+        if re.match(r'^[0-9\s]+$', address):
+            flash("❌ Location cannot be just numbers", "error")
+            return redirect(url_for("registration"))
 
-        conn = create_connection()
-        cursor = conn.cursor()
+        # Validate email format
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            flash("❌ Invalid email format", "error")
+            return redirect(url_for("registration"))
 
+        # Check username availability again (race condition protection)
+        conn = None
         try:
-            # ✅ Insert user into Users table
-            cursor.execute("""
-                INSERT INTO Users (username, first_name, last_name, phone, role, address, email, password)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (username, first_name, last_name, phone, role, address, email, hashed_password))
-            
-            conn.commit()
-            cursor.close()
-            conn.close()
+            conn = create_connection()
+            with conn.cursor(dictionary=True) as cursor:
+                cursor.execute("SELECT username FROM Users WHERE username = %s", (username,))
+                if cursor.fetchone():
+                    flash("❌ Username is already taken", "error")
+                    return redirect(url_for("registration"))
 
-            # ✅ If query param "redirect" exists, handle redirection
-            if request.args.get("redirect") == "artist-verification" and role == "Artist":
-                return redirect(url_for("artist_verification", username=username))
+                # Hash password only after all validations pass
+                hashed_password = generate_password_hash(password)
 
-            return redirect(url_for("login"))
+                # Insert user
+                cursor.execute("""
+                    INSERT INTO Users (username, first_name, last_name, phone, role, address, email, password)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (username, first_name, last_name, phone, role, address, email, hashed_password))
+                
+                conn.commit()
+
+                # Handle redirection based on role
+                if role == "Artist":
+                    flash("✅ Registration successful! Please complete artist verification", "success")
+                    return redirect(url_for("artist_verification", username=username))
+                else:
+                    flash("✅ Registration successful! Please login", "success")
+                    return redirect(url_for("login"))
 
         except pymysql.MySQLError as e:
+            if conn:
+                conn.rollback()
             flash(f"❌ Database Error: {str(e)}", "error")
             return redirect(url_for("registration"))
+        finally:
+            if conn:
+                conn.close()
 
     return render_template('registration.html')
 
@@ -742,7 +803,10 @@ def get_recommendations():
     return jsonify({"recommended_pages": recommendations})
 
 
-# ✅ Artwork Upload Route
+import hashlib
+from PIL import Image
+import imagehash
+
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_artwork():
@@ -753,55 +817,125 @@ def upload_artwork():
         tags = request.form.get("tags")
         media = request.files.get("media")
 
-        if not title or not description or not price or not tags or not media:
-            flash("❌ Please fill in all fields and upload an artwork!", "error")
-            return redirect(url_for("upload_artwork"))
+        # Validate required fields
+        if not all([title, description, price, tags, media]):
+            return jsonify({'success': False, 'message': 'Please fill in all fields and upload an artwork!'}), 400
 
         if media.filename == '':
-            flash("❌ No file selected!", "error")
-            return redirect(url_for("upload_artwork"))
+            return jsonify({'success': False, 'message': 'No file selected!'}), 400
 
-        # ✅ Save file securely
-        filename = secure_filename(media.filename)
-        file_path = os.path.join("static/uploads", filename)  # ✅ Store in static/uploads
-        media.save(file_path)
+        # Generate file hash
+        file_hash = hashlib.sha256(media.read()).hexdigest()
+        media.seek(0)
 
-        # ✅ Store artwork in the database
+        # Check for duplicates
         conn = create_connection()
         cursor = conn.cursor()
+
+        cursor.execute("SELECT id FROM artwork WHERE file_hash = %s", (file_hash,))
+        if cursor.fetchone():
+            return jsonify({'success': False, 'message': 'Artwork already exists!'}), 409  # Conflict
+
+        # Save artwork
+        filename = secure_filename(media.filename)
+        file_path = os.path.join("static/uploads", filename)
+        media.save(file_path)
+
+        cursor.execute("""
+            INSERT INTO artwork (title, description, price, tags, media, user_id, file_hash) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (title, description, price, tags, file_path, current_user.id, file_hash))
+        conn.commit()
+
+        return jsonify({'success': True, 'message': 'Artwork uploaded successfully!'}), 200
+
+    return render_template("upload_artwork.html")
+
+@app.route('/api/check_artwork', methods=['POST'])
+@login_required
+def check_artwork():
+    if 'media' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+
+    media = request.files['media']
+    if media.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+
+    try:
+        # Generate file hash
+        file_hash = hashlib.sha256(media.read()).hexdigest()
+        media.seek(0)
+        
+        # Generate perceptual hash for images
+        perceptual_hash = None
+        if media.content_type.startswith('image'):
+            try:
+                img = Image.open(media.stream)
+                perceptual_hash = str(imagehash.average_hash(img))
+                media.seek(0)
+            except Exception as e:
+                app.logger.error(f"Image processing error: {str(e)}")
+                return jsonify({'error': 'Error processing image'}), 400
+
+        # Check database
+        conn = create_connection()
+        cursor = conn.cursor()
+        
         try:
+            # Check for exact duplicates
             cursor.execute("""
-                INSERT INTO artwork (title, description, price, tags, media, user_id)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (title, description, price, tags, file_path, current_user.id))
-            conn.commit()
-            flash("✅ Artwork uploaded successfully!", "success")
+                SELECT id, title, user_id 
+                FROM artwork 
+                WHERE file_hash = %s
+                LIMIT 1
+            """, (file_hash,))
+            exact_match = cursor.fetchone()
+
+            if exact_match:
+                return jsonify({
+                    'status': 'duplicate',
+                    'match_type': 'exact',
+                    'existing': {
+                        'id': exact_match['id'],
+                        'title': exact_match['title'],
+                        'is_own': exact_match['user_id'] == current_user.id
+                    }
+                })
+
+            # Check for similar images
+            similar = []
+            if perceptual_hash:
+                cursor.execute("""
+                    SELECT id, title, user_id 
+                    FROM artwork 
+                    WHERE perceptual_hash LIKE %s
+                    AND user_id != %s
+                    LIMIT 3
+                """, (f"{perceptual_hash[:5]}%", current_user.id))
+                similar = cursor.fetchall()
+
+                if similar:
+                    return jsonify({
+                        'status': 'similar',
+                        'matches': [{
+                            'id': m['id'],
+                            'title': m['title'],
+                            'is_own': m['user_id'] == current_user.id
+                        } for m in similar]
+                    })
+
+            return jsonify({'status': 'unique'})
+
         except pymysql.MySQLError as e:
-            flash(f"❌ Database Error: {str(e)}", "error")
-            conn.rollback()
+            app.logger.error(f"Database error: {str(e)}")
+            return jsonify({'error': 'Database error'}), 500
         finally:
             cursor.close()
             conn.close()
 
-        return redirect(url_for('dashboard'))  # ✅ Redirect to dashboard
-
-    return render_template("upload_artwork.html")  # ✅ Render form for GET requests
-
-# ✅ Verify Artwork Authenticity
-@app.route('/verify/<artwork_id>', methods=['GET'])
-def verify_artwork(artwork_id):
-    conn = create_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT hash FROM Artworks WHERE id = %s", (artwork_id,))
-    artwork = cursor.fetchone()
-
-    if not artwork:
-        return jsonify({"status": "Not Found"}), 404
-
-    # ✅ Check blockchain for authenticity
-    exists = contract.functions.verifyArtwork(artwork["hash"]).call()
-    return jsonify({"authentic": exists}), 200
+    except Exception as e:
+        app.logger.error(f"Unexpected error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/view_artwork')
 def view_artwork():

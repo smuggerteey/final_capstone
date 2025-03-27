@@ -29,6 +29,56 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    
+    <style>
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .valid-feedback {
+            color: #198754;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .phone-input-group {
+            display: flex;
+        }
+        .country-code {
+            flex: 0 0 100px;
+            margin-right: 10px;
+        }
+        .phone-number {
+            flex: 1;
+        }
+        .password-requirements {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.25rem;
+        }
+        .requirement .icon {
+            margin-right: 5px;
+            font-size: 0.7rem;
+        }
+        .requirement.valid {
+            color: #198754;
+        }
+        .requirement.invalid {
+            color: #6c757d;
+        }
+        .requirement-text {
+            margin-left: 5px;
+            font-size: 0.75rem;
+        }
+        #username-valid {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -73,30 +123,94 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <form id="registrationForm" method="POST" action="/registration">
+                    <form id="registrationForm" method="POST" action="/registration" novalidate>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                                    <input type="text" class="form-control" id="username" name="username" 
+                                           placeholder="Username" pattern="^[a-zA-Z][a-zA-Z0-9_]{3,19}$" required>
                                     <label for="username">Username</label>
+                                    <div class="error-message" id="username-error"></div>
+                                    <div class="valid-feedback" id="username-valid"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" 
+                                           placeholder="First Name" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$" required>
                                     <label for="firstName">First Name</label>
+                                    <div class="error-message" id="firstName-error"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" 
+                                           placeholder="Last Name" pattern="^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$" required>
                                     <label for="lastName">Last Name</label>
+                                    <div class="error-message" id="lastName-error"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="phone" name="phone" placeholder="Phone Number" required>
-                                    <label for="phone">Phone Number</label>
+                                    <div class="phone-input-group">
+                                        <select class="form-select country-code" id="countryCode" name="countryCode" required>
+                                            <option value="">Code</option>
+                                            <option value="+213">Algeria (+213)</option>
+                                            <option value="+244">Angola (+244)</option>
+                                            <option value="+229">Benin (+229)</option>
+                                            <option value="+267">Botswana (+267)</option>
+                                            <option value="+226">Burkina Faso (+226)</option>
+                                            <option value="+257">Burundi (+257)</option>
+                                            <option value="+238">Cape Verde (+238)</option>
+                                            <option value="+235">Chad (+235)</option>
+                                            <option value="+269">Comoros (+269)</option>
+                                            <option value="+243">DR Congo (+243)</option>
+                                            <option value="+253">Djibouti (+253)</option>
+                                            <option value="+20">Egypt (+20)</option>
+                                            <option value="+240">Equatorial Guinea (+240)</option>
+                                            <option value="+291">Eritrea (+291)</option>
+                                            <option value="+251">Ethiopia (+251)</option>
+                                            <option value="+241">Gabon (+241)</option>
+                                            <option value="+220">Gambia (+220)</option>
+                                            <option value="+233">Ghana (+233)</option>
+                                            <option value="+224">Guinea (+224)</option>
+                                            <option value="+245">Guinea-Bissau (+245)</option>
+                                            <option value="+254">Kenya (+254)</option>
+                                            <option value="+266">Lesotho (+266)</option>
+                                            <option value="+231">Liberia (+231)</option>
+                                            <option value="+218">Libya (+218)</option>
+                                            <option value="+261">Madagascar (+261)</option>
+                                            <option value="+265">Malawi (+265)</option>
+                                            <option value="+223">Mali (+223)</option>
+                                            <option value="+222">Mauritania (+222)</option>
+                                            <option value="+230">Mauritius (+230)</option>
+                                            <option value="+212">Morocco (+212)</option>
+                                            <option value="+258">Mozambique (+258)</option>
+                                            <option value="+264">Namibia (+264)</option>
+                                            <option value="+227">Niger (+227)</option>
+                                            <option value="+234">Nigeria (+234)</option>
+                                            <option value="+250">Rwanda (+250)</option>
+                                            <option value="+221">Senegal (+221)</option>
+                                            <option value="+248">Seychelles (+248)</option>
+                                            <option value="+232">Sierra Leone (+232)</option>
+                                            <option value="+252">Somalia (+252)</option>
+                                            <option value="+27">South Africa (+27)</option>
+                                            <option value="+211">South Sudan (+211)</option>
+                                            <option value="+249">Sudan (+249)</option>
+                                            <option value="+255">Tanzania (+255)</option>
+                                            <option value="+228">Togo (+228)</option>
+                                            <option value="+216">Tunisia (+216)</option>
+                                            <option value="+256">Uganda (+256)</option>
+                                            <option value="+260">Zambia (+260)</option>
+                                            <option value="+263">Zimbabwe (+263)</option>
+                                        </select>
+                                        <div class="form-floating phone-number">
+                                            <input type="tel" class="form-control" id="phone" name="phone" 
+                                                   placeholder="Phone Number" pattern="^[0-9]{9,15}$" required>
+                                            <label for="phone">Phone Number</label>
+                                        </div>
+                                    </div>
+                                    <div class="error-message" id="phone-error"></div>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -107,30 +221,73 @@
                                         <option value="Regular User">Regular User</option>
                                     </select>
                                     <label for="role">Role</label>
+                                    <div class="error-message" id="role-error"></div>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Location" required>
-                                    <label for="address">Location</label>
+                                    <input type="text" class="form-control" id="address" name="address" 
+                                           placeholder="Location" 
+                                           pattern="^(?![0-9]*$)[a-zA-Z0-9\s,'-]{3,}$"
+                                           title="Location must be meaningful (not just numbers) and contain at least 3 characters"
+                                           required>
+                                    <label for="address">Location (City, Country)</label>
+                                    <div class="error-message" id="address-error"></div>
                                 </div>
                             </div>
                             <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required>
-                                    <label for="email">Email Address</label>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="email" name="email" 
+                                               placeholder="Email Address" 
+                                               pattern="^[a-zA-Z][a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$" 
+                                               title="Email must start with a letter and contain only letters, numbers, dots, hyphens or underscores"
+                                               required>
+                                        <label for="email">Email Address</label>
+                                        <div class="error-message" id="email-error"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="Password" required>
                                     <label for="password">Password</label>
+                                    <div class="error-message" id="password-error"></div>
+                                    <div class="password-requirements">
+                                        <div class="requirement invalid" id="password-length">
+                                            <span class="icon"><i class="fas fa-circle"></i></span>
+                                            <span class="requirement-text">8+ characters</span>
+                                        </div>
+                                        <div class="requirement invalid" id="password-uppercase">
+                                            <span class="icon"><i class="fas fa-circle"></i></span>
+                                            <span class="requirement-text">Uppercase letter</span>
+                                        </div>
+                                        <div class="requirement invalid" id="password-lowercase">
+                                            <span class="icon"><i class="fas fa-circle"></i></span>
+                                            <span class="requirement-text">Lowercase letter</span>
+                                        </div>
+                                        <div class="requirement invalid" id="password-number">
+                                            <span class="icon"><i class="fas fa-circle"></i></span>
+                                            <span class="requirement-text">Number</span>
+                                        </div>
+                                        <div class="requirement invalid" id="password-special">
+                                            <span class="icon"><i class="fas fa-circle"></i></span>
+                                            <span class="requirement-text">Special character (@$!%*?&)</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                                           placeholder="Confirm Password" required>
                                     <label for="confirmPassword">Confirm Password</label>
+                                    <div class="error-message" id="confirmPassword-error"></div>
+                                    <div class="valid-feedback" id="password-match">
+                                        <span class="icon"><i class="fas fa-check-circle"></i></span>
+                                        <span>Passwords match</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-12">
@@ -196,7 +353,7 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
+                    <p>Sign Up for News.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                         <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
@@ -210,7 +367,7 @@
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
                         &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
 
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        <!--/*** This template is free as long as you keep the footer author's credit link/attribution link/backlink. If you'd like to use the template without the footer author's credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                         Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
                     </div>
                     <div class="col-md-6 text-center text-md-end">
@@ -241,15 +398,272 @@
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Custom JavaScript for Form Submission -->
+    <!-- Custom JavaScript for Form Validation -->
     <script>
-        document.getElementById("registrationForm").addEventListener("submit", function(event) {
-            var role = document.getElementById("role").value;
-            if (role === "Artist") {
-                this.action = "/registration?redirect=artist-verification";
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const inputs = form.querySelectorAll('input, select');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            // Validation patterns and messages
+            const validations = {
+                username: {
+                    pattern: /^[a-zA-Z][a-zA-Z0-9_]{3,19}$/,
+                    message: "Username must start with a letter and be 4-20 characters (letters, numbers, underscores only)"
+                },
+                firstName: {
+                    pattern: /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/,
+                    message: "Please enter a valid first name (letters and special characters only)"
+                },
+                lastName: {
+                    pattern: /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]{2,50}$/,
+                    message: "Please enter a valid last name (letters and special characters only)"
+                },
+                phone: {
+                    pattern: /^[0-9]{9,15}$/,
+                    message: "Please enter a valid phone number (9-15 digits)"
+                },
+                countryCode: {
+                    required: true,
+                    message: "Please select your country code"
+                },
+                role: {
+                    required: true,
+                    message: "Please select your role"
+                },
+                address: {
+                    pattern: /^(?![0-9]*$)[a-zA-Z0-9\s,'-]{3,}$/,
+                    message: "Location must be meaningful (not just numbers) and contain at least 3 characters"
+                },
+                email: {
+                    pattern: /^[a-zA-Z][a-zA-Z0-9._-]*[a-zA-Z0-9]@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/,
+                    message: "Email must start with a letter and contain only letters, numbers, dots, hyphens or underscores"
+                },
+                password: {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                    message: "Password must meet all requirements"
+                }
+            };
+            
+            // Validate on input change
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateField(this);
+                    if (this.id === 'password') {
+                        validatePasswordRequirements(this.value);
+                    }
+                });
+                
+                input.addEventListener('blur', function() {
+                    validateField(this);
+                });
+            });
+            
+            // Confirm password validation
+            confirmPassword.addEventListener('input', function() {
+                if (this.value !== password.value) {
+                    showError(this, "Passwords do not match");
+                    document.getElementById('password-match').style.display = 'none';
+                } else if (password.value !== '') {
+                    clearError(this);
+                    document.getElementById('password-match').style.display = 'flex';
+                }
+            });
+            
+            // Password requirements validation
+            function validatePasswordRequirements(password) {
+                const requirements = {
+                    length: password.length >= 8,
+                    uppercase: /[A-Z]/.test(password),
+                    lowercase: /[a-z]/.test(password),
+                    number: /\d/.test(password),
+                    special: /[@$!%*?&]/.test(password)
+                };
+                
+                updateRequirement('password-length', requirements.length);
+                updateRequirement('password-uppercase', requirements.uppercase);
+                updateRequirement('password-lowercase', requirements.lowercase);
+                updateRequirement('password-number', requirements.number);
+                updateRequirement('password-special', requirements.special);
             }
+            
+            function updateRequirement(id, isValid) {
+                const element = document.getElementById(id);
+                if (isValid) {
+                    element.classList.remove('invalid');
+                    element.classList.add('valid');
+                    element.querySelector('.icon').innerHTML = '<i class="fas fa-check-circle"></i>';
+                } else {
+                    element.classList.remove('valid');
+                    element.classList.add('invalid');
+                    element.querySelector('.icon').innerHTML = '<i class="fas fa-circle"></i>';
+                }
+            }
+            
+            // Form submission handler
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+
+                // Check password match
+                if (confirmPassword.value !== password.value) {
+                    showError(confirmPassword, "Passwords do not match");
+                    isValid = false;
+                }
+                
+                // Check password requirements
+                const passwordValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password.value);
+                if (!passwordValid) {
+                    showError(password, validations.password.message);
+                    isValid = false;
+                }
+                
+                if (!isValid) {
+                    event.preventDefault();
+                    // Scroll to first error
+                    const firstError = form.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    // Handle role-based redirection
+                    const role = document.getElementById('role').value;
+                    if (role === "Artist") {
+                        this.action = "/registration?redirect=artist-verification";
+                    }
+                }
+            });
+            
+            function validateField(field) {
+                const fieldId = field.id;
+                const value = field.value.trim();
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                
+                // Skip validation for hidden fields
+                if (field.type === 'hidden') return true;
+                
+                // Check required fields
+                if (field.required && value === '') {
+                    showError(field, "This field is required");
+                    return false;
+                }
+                
+                // Skip pattern validation if empty (required handled above)
+                if (value === '') {
+                    clearError(field);
+                    return true;
+                }
+                
+                // Special case for country code (select element)
+                if (fieldId === 'countryCode' && value === '') {
+                    showError(field, validations.countryCode.message);
+                    return false;
+                }
+                
+                // Special case for role (select element)
+                if (fieldId === 'role' && value === '') {
+                    showError(field, validations.role.message);
+                    return false;
+                }
+                
+                // Validate against pattern if exists
+                if (validations[fieldId] && validations[fieldId].pattern) {
+                    if (!validations[fieldId].pattern.test(value)) {
+                        showError(field, validations[fieldId].message);
+                        return false;
+                    }
+                }
+                
+                // Clear any existing errors
+                clearError(field);
+                return true;
+            }
+            
+            function showError(field, message) {
+                field.classList.add('is-invalid');
+                const errorElement = document.getElementById(`${field.id}-error`);
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                }
+            }
+            
+            function clearError(field) {
+                field.classList.remove('is-invalid');
+                const errorElement = document.getElementById(`${field.id}-error`);
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    errorElement.style.display = 'none';
+                }
+            }
+            
+            // Username availability check
+            const usernameField = document.getElementById('username');
+            let usernameCheckTimeout;
+            
+            usernameField.addEventListener('input', function() {
+                // Clear any pending checks
+                clearTimeout(usernameCheckTimeout);
+                
+                const username = this.value.trim();
+                const validElement = document.getElementById('username-valid');
+                const errorElement = document.getElementById('username-error');
+                
+                // Clear previous states
+                validElement.style.display = 'none';
+                errorElement.textContent = '';
+                
+                if (username === '') {
+                    return;
+                }
+                
+                // Validate pattern first
+                const usernamePattern = /^[a-zA-Z][a-zA-Z0-9_]{3,19}$/;
+                if (!usernamePattern.test(username)) {
+                    showError(this, "Username must start with a letter and be 4-20 characters (letters, numbers, underscores only)");
+                    return;
+                }
+                
+                // Debounce the check (wait 500ms after last input)
+                usernameCheckTimeout = setTimeout(() => {
+                    // Show loading indicator
+                    validElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+                    validElement.style.display = 'block';
+                    validElement.style.color = '#6c757d'; // Gray for loading
+                    
+                    // Make AJAX request to check username
+                    fetch(`/check-username?username=${encodeURIComponent(username)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.available) {
+                                validElement.innerHTML = '<i class="fas fa-check-circle"></i> Username available';
+                                validElement.style.color = '#198754'; // Green for available
+                                clearError(this);
+                            } else {
+                                validElement.innerHTML = '<i class="fas fa-times-circle"></i> Username taken';
+                                validElement.style.color = '#dc3545'; // Red for taken
+                                showError(this, "This username is already taken");
+                            }
+                        })
+                        .catch(error => {
+                            validElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error checking';
+                            validElement.style.color = '#ffc107'; // Yellow for error
+                            console.error('Error checking username:', error);
+                        });
+                }, 500);
+            });
         });
     </script>
 </body>
-
 </html>
