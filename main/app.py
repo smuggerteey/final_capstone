@@ -1038,7 +1038,49 @@ def checkout():
     username = user.username
     user_data = {'role': user.role} 
     return render_template('checkout.html', user=user, username=username, user_data=user_data)
+PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
+@app.route('/pay', methods=['POST'])
+def pay():
+    data = request.json
+    email = data.get("email")
+    amount = data.get("amount")  # Amount in kobo (100 NGN = 10000)
 
+    if not email or not amount:
+        return jsonify({"error": "Email and amount are required"}), 400
+
+    headers = {
+        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "email": email,
+        "amount": int(amount) * 100  # Convert to kobo
+    }
+
+    response = requests.post("https://api.paystack.co/transaction/initialize", json=payload, headers=headers)
+    
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({"error": "Payment initialization failed"}), 500
+
+@app.route('/pay/verify/<string:reference>')
+def verify_payment(reference):
+    headers = {
+        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"
+    }
+
+    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", headers=headers)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data["data"]["status"] == "success":
+            return "Payment successful"
+        else:
+            return "Payment failed", 400
+    else:
+        return "Verification failed", 500
 
 @app.route('/virtual_gallery')
 def virtual_gallery():
