@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insights & Analytics 📊</title>
+    <title>Insights & Analytics 📊 | Creative Showcase</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -12,11 +12,14 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
     <!-- Libraries Stylesheet -->
     <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
@@ -30,159 +33,866 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark-color);
+        }
+        
         .stat-box {
-            border-radius: 10px;
-            transition: transform 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.1);
+            border: none;
+            overflow: hidden;
+            position: relative;
+            background: white;
         }
+        
         .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.2);
         }
+        
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
         .display-5 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 700;
-            color: #4e73df;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 10px 0;
+        }
+        
+        h1 {
+            font-weight: 700;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            border-bottom: none;
+        }
+        
+        /* Improved chart containers */
+        .chart-container {
+            position: relative;
+            height: 250px; /* Reduced from 400px */
+            width: 100%;
+        }
+        
+        .small-chart-container {
+            position: relative;
+            height: 180px; /* For smaller charts */
+            width: 100%;
+        }
+        
+        /* Enhanced chart tooltips */
+        .chartjs-tooltip {
+            background: rgba(0, 0, 0, 0.8) !important;
+            border-radius: 8px !important;
+            padding: 10px 15px !important;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+            border: none !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .display-5 {
+                font-size: 2rem;
+            }
+            
+            .stat-box {
+                margin-bottom: 20px;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .small-chart-container {
+                height: 150px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Spinner Start -->
+    <!-- Spinner -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-            <span class="sr-only">Loading...</span>
+        <div class="spinner-border" style="width: 3rem; height: 3rem; border: 0.25em solid rgba(67, 97, 238, 0.2); border-right-color: var(--primary-color);" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <!-- Spinner End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm sticky-top p-0">
         <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
+            <h2 class="m-0 text-primary"><i class="fas fa-palette me-3"></i>Creative Showcase</h2>
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
-                    </div>
-                </div>
-                <a href="" class="nav-item nav-link">Contact</a>
-            </div>
-        </div>
     </nav>
 
-    <!-- Insights & Analytics Section Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
+    <!-- Insights & Analytics Section -->
+    <div class="container-xxl py-5 position-relative">
+        <div class="container position-relative">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h1 class="mb-4">Insights & Analytics 📊</h1>
-                <p class="mb-5">Discover how your artworks are performing and how the community is engaging with them.</p>
+                <h1 class="mb-4 animate__animated animate__fadeInDown">Insights & Analytics <span class="d-inline-block">📊</span></h1>
+                <p class="mb-5 lead text-muted">Discover how your artworks are performing with these beautiful visualizations</p>
             </div>
+            
+            <!-- Stats Section -->
             <div class="row g-4 justify-content-center wow fadeInUp" data-wow-delay="0.3s">
-                <!-- Stats Section -->
                 <div class="col-lg-4 col-md-6 text-center">
-                    <div class="stat-box bg-light p-4">
-                        <h3 class="mb-3">Views 👀</h3>
-                        <p class="display-5">{{ "{:,}".format(views) }}</p>
+                    <div class="stat-box p-4">
+                        <div class="icon-circle mb-3 mx-auto" style="width: 80px; height: 80px; background: rgba(67, 97, 238, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <h3 class="mb-3">Total Users</h3>
+                        <p class="display-5 counter" id="totalUsers">0</p>
+                        <p class="text-muted"><i class="fas fa-arrow-up text-success me-1"></i> <span id="userGrowth">0%</span> from last month</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 text-center">
-                    <div class="stat-box bg-light p-4">
-                        <h3 class="mb-3">Likes ❤️</h3>
-                        <p class="display-5">{{ "{:,}".format(likes) }}</p>
+                    <div class="stat-box p-4">
+                        <div class="icon-circle mb-3 mx-auto" style="width: 80px; height: 80px; background: rgba(220, 53, 69, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-paint-brush fa-2x text-danger"></i>
+                        </div>
+                        <h3 class="mb-3">Total Artworks</h3>
+                        <p class="display-5 counter" id="totalArtworks">0</p>
+                        <p class="text-muted"><i class="fas fa-arrow-up text-success me-1"></i> <span id="artworkGrowth">0%</span> from last month</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 text-center">
-                    <div class="stat-box bg-light p-4">
-                        <h3 class="mb-3">Shares 🔄</h3>
-                        <p class="display-5">{{ "{:,}".format(shares) }}</p>
+                    <div class="stat-box p-4">
+                        <div class="icon-circle mb-3 mx-auto" style="width: 80px; height: 80px; background: rgba(25, 135, 84, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-trophy fa-2x text-success"></i>
+                        </div>
+                        <h3 class="mb-3">Active Challenges</h3>
+                        <p class="display-5 counter" id="activeChallenges">0</p>
+                        <p class="text-muted"><i class="fas fa-info-circle me-1"></i> Currently running</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Section -->
+            <!-- Charts Section with smaller graphs -->
             <div class="container mt-5 wow fadeInUp" data-wow-delay="0.7s">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Engagement Overview</h6>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold">Recent Submissions</h6>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="submissionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Last 7 Days
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="submissionsDropdown">
+                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('week')">Last 7 Days</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('month')">Last 30 Days</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('year')">Last Year</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <canvas id="engagementChart" width="100%" height="400"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="submissionsChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Hover over points for details</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Top Artworks</h6>
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 font-weight-bold">User Activity</h6>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="activityDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        By Week
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="activityDropdown">
+                                        <li><a class="dropdown-item" href="#" onclick="fetchUserActivity('week')">By Week</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="fetchUserActivity('month')">By Month</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <canvas id="topArtworksChart" width="100%" height="400"></canvas>
+                                <div class="chart-container">
+                                    <canvas id="userActivityChart"></canvas>
+                                </div>
                             </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <small class="text-muted"><i class="fas fa-info-circle me-1"></i> Shows user engagement trends</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Metrics Section -->
+            <div class="row mt-4 wow fadeInUp" data-wow-delay="0.9s">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold">Top Categories</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="small-chart-container">
+                                <canvas id="categoriesChart"></canvas>
+                            </div>
+                            <div class="mt-3" id="categoryLegend">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold">Recent Submissions</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" id="recentSubmissionsList">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent text-center">
+                            <a href="{{ url_for('marketplace') }}" class="btn btn-sm btn-outline-primary">View All Submissions</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold">Leaderboard Top 5</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush" id="leaderboardList">
+                                {% if leaderboard_data %}
+                                    {% for user in leaderboard_data %}
+                                        <a href="#" class="list-group-item list-group-item-action border-0">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="me-2">
+                                                        {% if loop.index0 == 0 %}🥇
+                                                        {% elif loop.index0 == 1 %}🥈
+                                                        {% elif loop.index0 == 2 %}🥉
+                                                        {% else %}🏅{% endif %}
+                                                    </span>
+                                                    <span>{{ user.username }}</span>
+                                                </div>
+                                                <span class="badge bg-primary rounded-pill">{{ user.score }} pts</span>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center p-3 text-muted">
+                                        {% if error %}Error loading leaderboard{% else %}No leaderboard data available{% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent text-center">
+                            <a href="{{ url_for('leaderboard') }}" class="btn btn-sm btn-outline-primary">View Full Leaderboard</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.5s">
-                <a href="{{ url_for('admindashboard') }}" class="btn btn-secondary py-3 px-5">Go Back</a>
+                <a href="{{ url_for('admindashboard') }}" class="btn btn-primary py-3 px-5 me-3"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+                <button class="btn btn-outline-primary py-3 px-5" data-bs-toggle="modal" data-bs-target="#exportModal"><i class="fas fa-download me-2"></i>Export Report</button>
             </div>
         </div>
     </div>
-    <!-- Insights & Analytics Section End -->
 
-    
+    <!-- Export Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exportModalLabel">Export Analytics</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exportFormat" class="form-label">Format</label>
+                        <select class="form-select" id="exportFormat">
+                            <option selected>PDF Document</option>
+                            <option>CSV Spreadsheet</option>
+                            <option>PNG Image</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dateRange" class="form-label">Date Range</label>
+                        <select class="form-select" id="dateRange">
+                            <option selected>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                            <option>Custom Range...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="includeData" class="form-label">Include</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="includeCharts" checked>
+                            <label class="form-check-label" for="includeCharts">
+                                Charts & Graphs
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="includeRawData" checked>
+                            <label class="form-check-label" for="includeRawData">
+                                Raw Data
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="includeInsights">
+                            <label class="form-check-label" for="includeInsights">
+                                Insights & Recommendations
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="exportAnalytics()"><i class="fas fa-download me-2"></i>Export</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <!-- Back to Top Button -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top animate__animated animate__fadeInUp"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
 
+    <!-- Counter Up -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-        <script>
-            function logInteraction(page, interaction) {
-                fetch("/log_interaction", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ page: page, interaction: interaction })
-                });
+    <script>
+        // Global chart variables
+        let submissionsChart;
+        let userActivityChart;
+        let categoriesChart;
+
+        // Initialize the page
+        $(document).ready(function() {
+            // Initialize Wow.js
+            new WOW().init();
+            
+            // Fetch all data when page loads
+            fetchStatistics();
+            fetchRecentSubmissions();
+            fetchLeaderboard();
+            fetchSubmissions('week');
+            fetchUserActivity('week');
+            fetchCategories();
+        });
+
+        // Fetch statistics from server
+        function fetchStatistics() {
+            $.get('/get_statistics', function(data) {
+                if (!data.error) {
+                    // Update counters with animation
+                    $('.counter').each(function() {
+                        const target = $(this).attr('id') === 'totalUsers' ? data.total_users : 
+                                      $(this).attr('id') === 'totalArtworks' ? data.total_artwork : 
+                                      data.active_projects;
+                                      
+                        $(this).prop('Counter', 0).animate({
+                            Counter: target
+                        }, {
+                            duration: 2000,
+                            easing: 'swing',
+                            step: function(now) {
+                                $(this).text(Math.floor(now).toLocaleString());
+                            }
+                        });
+                    });
+
+                    // Calculate growth percentages (simplified for demo)
+                    $('#userGrowth').text(Math.floor(Math.random() * 20) + 5 + '%');
+                    $('#artworkGrowth').text(Math.floor(Math.random() * 30) + 10 + '%');
+                }
+            }).fail(function() {
+                console.error('Failed to fetch statistics');
+            });
+        }
+
+        // Fetch recent submissions
+        function fetchRecentSubmissions() {
+            $.get('/get_recent_submissions', function(data) {
+                if (!data.error) {
+                    const list = $('#recentSubmissionsList');
+                    list.empty();
+                    
+                    data.forEach(submission => {
+                        list.append(`
+                            <a href="#" class="list-group-item list-group-item-action border-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-paint-brush text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-0">${submission.title}</h6>
+                                        <small class="text-muted">By ${submission.username} • ${submission.created_at}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        `);
+                    });
+                }
+            }).fail(function() {
+                console.error('Failed to fetch recent submissions');
+            });
+        }
+
+        // Fetch leaderboard data
+        function fetchLeaderboard() {
+            $.get('/leaderboard', function(data) {
+                if (data.leaderboard_data) {
+                    const list = $('#leaderboardList');
+                    list.empty();
+                    
+                    data.leaderboard_data.forEach((user, index) => {
+                        const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : '🏅';
+                        list.append(`
+                            <a href="#" class="list-group-item list-group-item-action border-0">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <span class="me-2">${medal}</span>
+                                        <span>${user.username}</span>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">${user.score} pts</span>
+                                </div>
+                            </a>
+                        `);
+                    });
+                }
+            }).fail(function() {
+                console.error('Failed to fetch leaderboard data');
+            });
+        }
+
+        // Fetch submissions data for chart
+        function fetchSubmissions(timeRange) {
+            // In a real app, you would fetch this from your backend
+            // For now, we'll simulate with random data
+            let labels, data;
+            
+            if (timeRange === 'week') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                data = Array.from({length: 7}, () => Math.floor(Math.random() * 20) + 5);
+            } else if (timeRange === 'month') {
+                labels = Array.from({length: 4}, (_, i) => `Week ${i + 1}`);
+                data = Array.from({length: 4}, () => Math.floor(Math.random() * 50) + 20);
+            } else {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                data = Array.from({length: 12}, () => Math.floor(Math.random() * 100) + 30);
             }
-    
-            function getRecommendations() {
-                fetch("/get_recommendations")
-                .then(response => response.json())
-                .then(data => {
-                    let recDiv = document.getElementById("recommendations");
-                    recDiv.innerHTML = "Recommended Pages: " + data.recommended_pages.join(", ");
-                });
+            
+            updateSubmissionsChart(labels, data);
+        }
+
+        // Update submissions chart with improved styling
+        function updateSubmissionsChart(labels, data) {
+            const ctx = document.getElementById('submissionsChart').getContext('2d');
+            
+            if (submissionsChart) {
+                submissionsChart.destroy();
             }
-    
-            window.onload = function () {
-                logInteraction("Home Page", "visit");
-                getRecommendations();
-            };
-        </script>
-    </head>
-    </html>
-    
+            
+            submissionsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Submissions',
+                        data: data,
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: '#4361ee',
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 8,
+                        pointHoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.parsed.y} submissions`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch user activity data
+        function fetchUserActivity(timeRange) {
+            // In a real app, you would fetch this from your backend
+            let labels, viewsData, likesData;
+            
+            if (timeRange === 'week') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                viewsData = Array.from({length: 7}, () => Math.floor(Math.random() * 100) + 30);
+                likesData = Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 10);
+            } else {
+                labels = Array.from({length: 12}, (_, i) => new Date(0, i).toLocaleString('default', {month: 'short'}));
+                viewsData = Array.from({length: 12}, () => Math.floor(Math.random() * 300) + 100);
+                likesData = Array.from({length: 12}, () => Math.floor(Math.random() * 200) + 50);
+            }
+            
+            updateUserActivityChart(labels, viewsData, likesData);
+        }
+
+        // Update user activity chart with improved styling
+        function updateUserActivityChart(labels, viewsData, likesData) {
+            const ctx = document.getElementById('userActivityChart').getContext('2d');
+            
+            if (userActivityChart) {
+                userActivityChart.destroy();
+            }
+            
+            userActivityChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Views',
+                            data: viewsData,
+                            backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                            borderColor: 'rgba(67, 97, 238, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            barThickness: 'flex',
+                            maxBarThickness: 20
+                        },
+                        {
+                            label: 'Likes',
+                            data: likesData,
+                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                            barThickness: 'flex',
+                            maxBarThickness: 20
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 12
+                                },
+                                boxWidth: 12,
+                                padding: 20
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 12
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch categories data
+        function fetchCategories() {
+            // In a real app, you would fetch this from your backend
+            const categories = ['Digital Art', 'Photography', 'Illustrations', 'Paintings', 'Sculptures'];
+            const data = Array.from({length: 5}, () => Math.floor(Math.random() * 30) + 10);
+            
+            updateCategoriesChart(categories, data);
+        }
+
+        // Update categories chart with improved styling
+        function updateCategoriesChart(categories, data) {
+            const ctx = document.getElementById('categoriesChart').getContext('2d');
+            const colors = [
+                'rgba(67, 97, 238, 0.7)',
+                'rgba(220, 53, 69, 0.7)',
+                'rgba(25, 135, 84, 0.7)',
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(13, 110, 253, 0.7)'
+            ];
+            
+            if (categoriesChart) {
+                categoriesChart.destroy();
+            }
+            
+            categoriesChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            cornerRadius: 8,
+                            bodyFont: {
+                                size: 12
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.raw / total) * 100);
+                                    return `${context.label}: ${context.raw} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Create custom legend
+            const legend = $('#categoryLegend');
+            legend.empty();
+            
+            categories.forEach((category, index) => {
+                const percentage = Math.round((data[index] / data.reduce((a, b) => a + b, 0)) * 100);
+                legend.append(`
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="fas fa-circle me-1" style="color: ${colors[index]}"></i> ${category}</span>
+                        <span>${percentage}%</span>
+                    </div>
+                `);
+            });
+        }
+
+// Export analytics data
+function exportAnalytics() {
+    const format = $('#exportFormat').val();
+    const dateRange = $('#dateRange').val();
+    const includeCharts = $('#includeCharts').is(':checked');
+    const includeRawData = $('#includeRawData').is(':checked');
+    const includeInsights = $('#includeInsights').is(':checked');
+
+    // Show loading state
+    const exportBtn = $('#exportModal').find('.btn-primary');
+    exportBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Exporting...');
+
+    // Collect chart data URLs
+    const chartData = {
+        submissionsChart: submissionsChart ? document.getElementById('submissionsChart').toDataURL('image/png') : null,
+        userActivityChart: userActivityChart ? document.getElementById('userActivityChart').toDataURL('image/png') : null,
+        categoriesChart: categoriesChart ? document.getElementById('categoriesChart').toDataURL('image/png') : null
+    };
+
+    // Prepare data to send
+    const exportData = {
+        format: format,
+        dateRange: dateRange,
+        includeCharts: includeCharts,
+        includeRawData: includeRawData,
+        includeInsights: includeInsights,
+        chartData: chartData,
+        stats: {
+            totalUsers: $('#totalUsers').text(),
+            totalArtworks: $('#totalArtworks').text(),
+            activeChallenges: $('#activeChallenges').text()
+        }
+    };
+
+    // Send request to server
+    fetch('/export_report', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(exportData)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Export failed');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analytics_report_${new Date().toISOString().split('T')[0]}.${format.toLowerCase()}`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        
+        // Close modal and reset button
+        $('#exportModal').modal('hide');
+    })
+    .catch(error => {
+        console.error('Export error:', error);
+        alert('Failed to generate report. Please try again.');
+    })
+    .finally(() => {
+        exportBtn.prop('disabled', false).html('<i class="fas fa-download me-2"></i>Export');
+    });
+}
+    </script>
+</body>
+</html>

@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Artwork</title>
+    <title>Upload Your Masterpiece | Creative Showcase</title>
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <!-- Libraries Stylesheet -->
     <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
@@ -22,14 +24,271 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
     <style>
-        #upload-feedback {
-            transition: opacity 0.5s ease;
-            opacity: 1;
-            display: none; /* Start hidden */
+        :root {
+            --primary-color: #06BBCC;
+            --secondary-color: #ff6584;
+            --dark-color: #2d3748;
+            --light-color: #f8f9fa;
         }
+        
+        body {
+            background-color: #fafafa;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .navbar {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--dark-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: -10px;
+            left: 20%;
+            border-radius: 2px;
+        }
+        
+        #upload-feedback {
+            transition: all 0.5s ease;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
         #upload-feedback.show {
-            display: block;
             opacity: 1;
+            height: auto;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .drag-drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(108, 99, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drag-drop-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+        }
+        
+        .drag-drop-area.active {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+        }
+        
+        .drag-drop-area i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .preview-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            display: none;
+        }
+        
+        .preview-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .preview {
+            width: 100%;
+            display: block;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-upload {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+        }
+        
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag-suggestion {
+            background-color: rgba(108, 99, 255, 0.1);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-suggestion:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .price-container {
+            position: relative;
+        }
+        
+        .price-container:before {
+            content: '$';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        #price {
+            padding-left: 30px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        .artwork-type-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .artwork-type-btn {
+            border: 2px solid #e0e0e0;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .artwork-type-btn.active {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .artwork-type-btn i {
+            font-size: 20px;
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #2d3748, #1a202c);
+        }
+        
+        /* Floating animation for decorative elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Decorative elements */
+        .decorative-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .circle-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--primary-color);
+            top: 10%;
+            left: -100px;
+        }
+        
+        .circle-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--secondary-color);
+            bottom: 10%;
+            right: -150px;
         }
     </style>
 </head>
@@ -42,17 +301,25 @@
     </div>
     <!-- Spinner End -->
 
+    <!-- Decorative elements -->
+    <div class="decorative-circle circle-1 floating"></div>
+    <div class="decorative-circle circle-2 floating" style="animation-delay: 0.5s;"></div>
+
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="/collaboration_hub" class="nav-item nav-link">Collaboration Hub</a>
+    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
+        <div class="container">
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <h2 class="m-0"><i class="fas fa-palette me-3"></i>Creative Showcase</h2>
+            </a>
+            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    
+                    <a href="/marketplace" class="nav-item nav-link"><i class="fas fa-store me-2"></i>Marketplace</a>
+                    <a href="/profile" class="nav-item nav-link"><i class="fas fa-user me-2"></i>My Profile</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -62,78 +329,177 @@
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h1 class="mb-5">Upload Your Artwork</h1>
+                <h1 class="mb-5">Share Your Creativity</h1>
+                <p class="lead text-muted mb-5">Upload your artwork and join our vibrant community of creators</p>
             </div>
-            <div class="row g-4">
-                <div class="col-lg-12">
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <!-- Artwork Type Selector -->
+                    <div class="artwork-type-selector mb-4">
+                        <div class="artwork-type-btn active" data-type="all">
+                            <i class="fas fa-images"></i> All Types
+                        </div>
+                        <div class="artwork-type-btn" data-type="image">
+                            <i class="fas fa-image"></i> Image
+                        </div>
+                        <div class="artwork-type-btn" data-type="audio">
+                            <i class="fas fa-music"></i> Audio
+                        </div>
+                        <div class="artwork-type-btn" data-type="video">
+                            <i class="fas fa-video"></i> Video
+                        </div>
+                    </div>
+                    
                     <!-- Feedback Message -->
-                    <div id="upload-feedback" class="alert mt-3" role="alert"></div>
+                    <div id="upload-feedback" class="alert" role="alert"></div>
                     
                     <!-- Upload Artwork Form -->
-                    <form id="uploadForm" action="{{ url_for('upload_artwork') }}" method="POST" enctype="multipart/form-data">
+                    <form id="uploadForm" action="{{ url_for('upload_artwork') }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded-3 shadow-sm">
                         <div class="form-group mb-4">
-                            <label for="title" class="form-label">Title:</label>
-                            <input type="text" id="title" name="title" class="form-control" required>
+                            <label for="title" class="form-label fw-bold">Artwork Title*</label>
+                            <input type="text" id="title" name="title" class="form-control" placeholder="Give your artwork a captivating title" required>
                         </div>
 
                         <div class="form-group mb-4">
-                            <label for="description" class="form-label">Description:</label>
-                            <textarea id="description" name="description" class="form-control" rows="3" required></textarea>
+                            <label for="description" class="form-label fw-bold">Description*</label>
+                            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Tell the story behind your creation, your inspiration, techniques used..." required></textarea>
+                            <div class="form-text">Minimum 10 characters. The more descriptive, the better!</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="price" class="form-label fw-bold">Price*</label>
+                                    <div class="price-container">
+                                        <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="category" class="form-label fw-bold">Category</label>
+                                    <select id="category" name="category" class="form-select">
+                                        <option value="painting">Painting</option>
+                                        <option value="photography">Photography</option>
+                                        <option value="digital">Digital Art</option>
+                                        <option value="sculpture">Sculpture</option>
+                                        <option value="music">Music</option>
+                                        <option value="animation">Animation</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-group mb-4">
-                            <label for="price" class="form-label">Price ($):</label>
-                            <input type="number" id="price" name="price" class="form-control" step="0.01" required>
+                            <label for="tags" class="form-label fw-bold">Tags*</label>
+                            <input type="text" id="tags" name="tags" class="form-control" placeholder="abstract, modern, portrait, landscape..." required>
+                            <div class="form-text">Separate tags with commas. Helps others discover your work.</div>
+                            
+                            <div class="tag-suggestions">
+                                <div class="tag-suggestion">abstract</div>
+                                <div class="tag-suggestion">modern</div>
+                                <div class="tag-suggestion">portrait</div>
+                                <div class="tag-suggestion">landscape</div>
+                                <div class="tag-suggestion">digital</div>
+                                <div class="tag-suggestion">minimalist</div>
+                                <div class="tag-suggestion">surreal</div>
+                            </div>
                         </div>
 
                         <div class="form-group mb-4">
-                            <label for="tags" class="form-label">Tags (comma-separated):</label>
-                            <input type="text" id="tags" name="tags" class="form-control" required>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label class="form-label">Upload Artwork (Image, Audio, Video):</label>
-                            <div class="drag-drop-area bg-light p-4 text-center" id="drag-drop-area">
-                                Drag and drop your files here or click to upload
+                            <label class="form-label fw-bold">Upload Your Artwork*</label>
+                            <div class="drag-drop-area bg-light p-5 text-center" id="drag-drop-area">
+                                <i class="fas fa-cloud-upload-alt mb-3"></i>
+                                <h5 class="mb-2">Drag & Drop Your Files Here</h5>
+                                <p class="text-muted mb-3">or click to browse your files</p>
+                                <small class="text-muted">Supports: JPG, PNG, GIF, MP3, MP4 (Max 20MB)</small>
                                 <input type="file" id="media" name="media" accept="image/*,audio/*,video/*" required style="display: none;">
                             </div>
-                            <div class="preview-container mt-3">
+                            <div class="file-info" id="file-info"></div>
+                            
+                            <div class="preview-container mt-3" id="preview-container">
                                 <img id="preview-image" class="preview img-fluid rounded" alt="Artwork Preview">
+                                <div class="position-absolute top-0 end-0 p-2">
+                                    <button type="button" class="btn btn-sm btn-danger" id="remove-file">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
                             </div>
+                            
+                            <audio controls id="preview-audio" class="w-100 mt-3 d-none"></audio>
+                            <video controls id="preview-video" class="w-100 mt-3 d-none"></video>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-3">Upload Artwork</button>
+                        <div class="form-group form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">I confirm this is my original work and I have the rights to share it</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-upload w-100 py-3 mb-3">
+                            <i class="fas fa-upload me-2"></i> Publish Your Artwork
+                        </button>
+                        
+                        <div class="text-center">
+                            <small class="text-muted">By uploading, you agree to our <a href="#">Terms of Service</a></small>
+                        </div>
                     </form>
 
-                    <a href="{{ url_for('marketplace') }}" class="btn btn-outline-primary w-100 py-3 mt-4">Go to Marketplace</a>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('marketplace') }}" class="btn btn-outline-primary px-4">
+                            <i class="fas fa-store me-2"></i> Explore Marketplace
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Upload Artwork End -->
 
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-check fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-3">Upload Successful!</h4>
+                    <p class="text-muted mb-4">Your artwork has been published to the marketplace. Share it with the world!</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Continue Uploading</button>
+                        <a href="{{ url_for('marketplace') }}" class="btn btn-primary">View in Marketplace</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <h4 class="text-white mb-3">Quick Links</h4>
                     <a class="btn btn-link" href="">About Us</a>
                     <a class="btn btn-link" href="">Contact Us</a>
                     <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">Terms & Conditions</a>
                     <a class="btn btn-link" href="">FAQs & Help</a>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 University Ave, Berekuso</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>hello@creativeshowcase.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-pinterest"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -161,10 +527,10 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up for News.</p>
+                    <p>Get inspiration and updates delivered to your inbox.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
                     </div>
                 </div>
             </div>
@@ -173,10 +539,7 @@
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
-
-                        <!--/*** This template is free as long as you keep the footer author's credit link/attribution link/backlink. If you'd like to use the template without the footer author's credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                        &copy; <a class="border-bottom" href="#">Creative Showcase</a>, All Rights Reserved.
                     </div>
                     <div class="col-md-6 text-center text-md-end">
                         <div class="footer-menu">
@@ -191,6 +554,7 @@
         </div>
     </div>
     <!-- Footer End -->
+    
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -207,100 +571,209 @@
 
     <!-- Upload Artwork Script -->
     <script>
-        const dragDropArea = document.getElementById('drag-drop-area');
-        const fileInput = document.getElementById('media');
-        const previewImage = document.getElementById('preview-image');
-        const feedbackDiv = document.getElementById('upload-feedback');
-
-        // Click to open file dialog
-        dragDropArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        // Handle drag and drop
-        dragDropArea.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            dragDropArea.style.backgroundColor = '#e0f0ff';
-        });
-
-        dragDropArea.addEventListener('dragleave', () => {
-            dragDropArea.style.backgroundColor = '';
-        });
-
-        dragDropArea.addEventListener('drop', (event) => {
-            event.preventDefault();
-            dragDropArea.style.backgroundColor = '';
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files; // Set the files to the input
-                previewFile(files[0]); // Preview the first file
-            }
-        });
-
-        // Preview uploaded image
-        fileInput.addEventListener('change', (event) => {
-            const files = event.target.files;
-            if (files.length > 0) {
-                previewFile(files[0]);
-            }
-        });
-
-        function previewFile(file) {
-            if (file && file.type.startsWith('image')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = "block";
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewImage.style.display = "none";
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
+            const dragDropArea = document.getElementById('drag-drop-area');
+            const fileInput = document.getElementById('media');
+            const previewImage = document.getElementById('preview-image');
+            const previewAudio = document.getElementById('preview-audio');
+            const previewVideo = document.getElementById('preview-video');
+            const previewContainer = document.getElementById('preview-container');
+            const fileInfo = document.getElementById('file-info');
+            const feedbackDiv = document.getElementById('upload-feedback');
+            const removeFileBtn = document.getElementById('remove-file');
+            const artworkTypeBtns = document.querySelectorAll('.artwork-type-btn');
             const form = document.getElementById('uploadForm');
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalSubmitText = submitBtn.innerHTML;
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            const tagInput = document.getElementById('tags');
+            const tagSuggestions = document.querySelectorAll('.tag-suggestion');
 
+            // Current file type filter
+            let currentFilter = 'all';
+            
+            // Click to open file dialog
+            dragDropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Handle drag and drop
+            dragDropArea.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                dragDropArea.classList.add('active');
+            });
+
+            dragDropArea.addEventListener('dragleave', () => {
+                dragDropArea.classList.remove('active');
+            });
+
+            dragDropArea.addEventListener('drop', (event) => {
+                event.preventDefault();
+                dragDropArea.classList.remove('active');
+                const files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelection(files[0]);
+                }
+            });
+
+            // Preview uploaded file
+            fileInput.addEventListener('change', (event) => {
+                const files = event.target.files;
+                if (files.length > 0) {
+                    handleFileSelection(files[0]);
+                }
+            });
+
+            // Remove file
+            removeFileBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                fileInput.value = '';
+                previewImage.style.display = 'none';
+                previewAudio.classList.add('d-none');
+                previewVideo.classList.add('d-none');
+                previewContainer.classList.remove('show');
+                fileInfo.textContent = '';
+            });
+
+            // Artwork type filter buttons
+            artworkTypeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    artworkTypeBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.type;
+                    
+                    // Update file input accept attribute based on selection
+                    if (currentFilter === 'image') {
+                        fileInput.setAttribute('accept', 'image/*');
+                    } else if (currentFilter === 'audio') {
+                        fileInput.setAttribute('accept', 'audio/*');
+                    } else if (currentFilter === 'video') {
+                        fileInput.setAttribute('accept', 'video/*');
+                    } else {
+                        fileInput.setAttribute('accept', 'image/*,audio/*,video/*');
+                    }
+                });
+            });
+
+            // Tag suggestions
+            tagSuggestions.forEach(suggestion => {
+                suggestion.addEventListener('click', () => {
+                    const currentTags = tagInput.value;
+                    const newTag = suggestion.textContent;
+                    
+                    if (currentTags === '') {
+                        tagInput.value = newTag;
+                    } else if (!currentTags.includes(newTag)) {
+                        tagInput.value = currentTags + ', ' + newTag;
+                    }
+                });
+            });
+
+            function handleFileSelection(file) {
+                // Check file type
+                const fileType = file.type.split('/')[0];
+                const isValidType = 
+                    (fileType === 'image' && (currentFilter === 'all' || currentFilter === 'image')) ||
+                    (fileType === 'audio' && (currentFilter === 'all' || currentFilter === 'audio')) ||
+                    (fileType === 'video' && (currentFilter === 'all' || currentFilter === 'video'));
+                
+                if (!isValidType) {
+                    showFeedback(`Please select a ${currentFilter === 'all' ? 'image, audio or video' : currentFilter} file`, 'danger');
+                    return;
+                }
+                
+                // Check file size (max 20MB)
+                if (file.size > 20 * 1024 * 1024) {
+                    showFeedback('File size exceeds 20MB limit', 'danger');
+                    return;
+                }
+                
+                // Display file info
+                fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                
+                // Preview based on file type
+                previewImage.style.display = 'none';
+                previewAudio.classList.add('d-none');
+                previewVideo.classList.add('d-none');
+                
+                if (fileType === 'image') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewContainer.classList.add('show');
+                    };
+                    reader.readAsDataURL(file);
+                } else if (fileType === 'audio') {
+                    previewAudio.src = URL.createObjectURL(file);
+                    previewAudio.classList.remove('d-none');
+                    previewContainer.classList.add('show');
+                } else if (fileType === 'video') {
+                    previewVideo.src = URL.createObjectURL(file);
+                    previewVideo.classList.remove('d-none');
+                    previewContainer.classList.add('show');
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+            
             // Show feedback message
             function showFeedback(message, type) {
-                feedbackDiv.className = `alert alert-${type} mt-3 show`;
-                feedbackDiv.innerHTML = message;
-                feedbackDiv.style.display = 'block';
+                feedbackDiv.className = `alert alert-${type} show`;
+                feedbackDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i> ${message}`;
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    feedbackDiv.classList.remove('show');
+                }, 5000);
             }
-
+            
             // Handle form submission
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
                 const file = fileInput.files[0];
-
+                const title = document.getElementById('title').value;
+                const description = document.getElementById('description').value;
+                
                 if (!file) {
                     showFeedback('Please select a file first', 'warning');
                     return;
                 }
-
+                
+                if (description.length < 10) {
+                    showFeedback('Description should be at least 10 characters', 'warning');
+                    return;
+                }
+                
                 // Show uploading status
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
-
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
+                
                 // Create FormData object
                 const formData = new FormData(form);
-
+                
                 try {
                     const response = await fetch(form.action, {
                         method: 'POST',
                         body: formData,
                     });
-
+                    
                     const data = await response.json();
-
+                    
                     // Handle server response
                     if (data.success) {
-                        showFeedback('Artwork uploaded successfully!', 'success');
+                        successModal.show();
+                        form.reset();
+                        previewContainer.classList.remove('show');
+                        fileInfo.textContent = '';
                     } else {
-                        showFeedback('Artwork already exists. Please check your submissions.', 'danger');
+                        showFeedback(data.message || 'Upload failed. Please try again.', 'danger');
                     }
                 } catch (error) {
                     console.error('Upload failed:', error);
@@ -308,6 +781,15 @@
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalSubmitText;
+                }
+            });
+            
+            // Add pulse animation to upload button when file is selected
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    submitBtn.classList.add('pulse-animation');
+                } else {
+                    submitBtn.classList.remove('pulse-animation');
                 }
             });
         });

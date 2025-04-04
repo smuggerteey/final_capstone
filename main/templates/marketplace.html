@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Art Marketplace | Digital Art & Creative Showcase 🎨</title>
+    <title>Marketplace| Digital Art & Creative Showcase 🎨</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -28,6 +28,212 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <style>
+        /* Primary color scheme */
+        :root {
+            --primary: #06BBCC;
+            --secondary: #f8f1ff;
+            --light: #f5f5f5;
+            --dark: #1a1423;
+        }
+        
+        /* Text colors */
+        .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        /* Background colors */
+        .bg-primary {
+            background-color: var(--primary) !important;
+        }
+        
+        .bg-secondary {
+            background-color: var(--secondary) !important;
+        }
+        
+        .bg-dark {
+            background-color: var(--dark) !important;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a3c83;
+            border-color: #5a3c83;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Navbar */
+        .navbar-light {
+            background-color: white !important;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .navbar-brand h2 {
+            color: var(--primary) !important;
+            font-weight: 700;
+        }
+        
+        /* Artwork cards */
+        .artwork-item {
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+            background-color: white;
+        }
+        
+        .artwork-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+        }
+        
+        .artwork-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .artwork-title {
+            color: var(--dark);
+            font-weight: 600;
+        }
+        
+        .artwork-price {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Hero section */
+        .hero-section {
+            background: linear-gradient(rgba(24, 29, 56, 0.7), rgba(24, 29, 56, 0.7)), url('https://source.unsplash.com/random/1600x900/?art,gallery') no-repeat center center;
+            background-size: cover;
+            color: white;
+            padding: 100px 0;
+        }
+        
+        /* Section titles */
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::before {
+            position: absolute;
+            content: "";
+            width: 45px;
+            height: 2px;
+            top: 50%;
+            left: -55px;
+            margin-top: -1px;
+            background: var(--primary);
+        }
+        
+        .section-title::after {
+            position: absolute;
+            content: "";
+            width: 45px;
+            height: 2px;
+            top: 50%;
+            right: -55px;
+            margin-top: -1px;
+            background: var(--primary);
+        }
+        
+        .section-title.text-start::before,
+        .section-title.text-end::after {
+            display: none;
+        }
+        
+        /* Testimonials */
+        .testimonial-item {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+            transition: 0.5s;
+        }
+        
+        .testimonial-item:hover {
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+        }
+        
+        .footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        
+        .footer a:hover {
+            color: white;
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            display: none;
+            right: 30px;
+            bottom: 30px;
+            z-index: 99;
+        }
+        
+        /* Custom utility classes */
+        .rounded-5 {
+            border-radius: 1rem !important;
+        }
+        
+        .rounded-6 {
+            border-radius: 1.5rem !important;
+        }
+
+        /* Category sections */
+        .artwork-category-section {
+            transition: all 0.3s ease;
+        }
+
+        .category-filter {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-filter.active {
+            background-color: var(--primary) !important;
+            color: white !important;
+        }
+
+        .category-header {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-header:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+    </style>
 </head>
 
 <body>
@@ -39,8 +245,8 @@
     </div>
     <!-- Spinner End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+     <!-- Navbar Start -->
+     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
             <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
         </a>
@@ -48,44 +254,118 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
-                    </div>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="/profile" class="nav-item nav-link"><i class="fas fa-user me-2"></i>My Profile</a>
                 </div>
-                <a href="" class="nav-item nav-link">Contact</a>
             </div>
         </div>
     </nav>
     <!-- Navbar End -->
 
-    <!-- Marketplace Section Start -->
-    <div class="container-xxl py-5">
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
         <div class="container">
-            <h1 class="text-center mb-5">Welcome to the Art Marketplace 🖼️</h1>
-            <p class="text-center mb-5">Browse and explore a wide range of creative artworks for sale.</p>
+            <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">Discover Unique Artworks</h1>
+            <p class="lead mb-5 animate__animated animate__fadeIn animate__delay-1s">Explore and collect exceptional art from talented creators worldwide</p>
+            <div class="d-flex justify-content-center gap-3 animate__animated animate__fadeIn animate__delay-2s">
+                <a href="#marketplace" class="btn btn-light btn-lg px-4 py-2">Browse Art</a>
+                <a href="#" class="btn btn-outline-light btn-lg px-4 py-2">Become a Seller</a>
+            </div>
+        </div>
+    </div>
 
-            <!-- Artwork Grid -->
-            <div class="row g-4">
-                {% for artwork in artworks %}
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="artwork-item bg-light p-4 text-center">
-                        <img src="{{ artwork.media }}" alt="{{ artwork.title }}" class="img-fluid mb-3 artwork-image">
-                        <h3 class="artwork-title">{{ artwork.title }}</h3>
-                        <p class="artwork-price">${{ artwork.price }}</p>
-                        <a href="/checkout" class="btn btn-primary btn-buy">Buy Now</a>
-                    </div>
+    <!-- Marketplace Section Start -->
+    <div id="marketplace" class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h6 class="section-title bg-white text-center text-primary px-3">Art Collection</h6>
+                <h1 class="mb-5">Art Marketplace 🎨</h1>
+                <div class="d-flex justify-content-center flex-wrap mb-4">
+                    <button class="category-filter badge bg-primary me-2 mb-2 active" data-category="all">All</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="painting">Paintings</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="photography">Photography</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="digital">Digital Art</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="sculpture">Sculpture</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="music">Music</button>
+                    <button class="category-filter badge bg-secondary text-dark me-2 mb-2" data-category="animation">Animation</button>
                 </div>
-                {% else %}
-                <p class="text-center">No artworks available at the moment.</p>
-                {% endfor %}
             </div>
 
+<!-- Artwork Grid by Category -->
+<div class="row g-4">
+    {% for category, artworks in artworks_by_category.items() %}
+    <div class="col-12 artwork-category-section" id="category-{{ category }}">
+        <div class="category-header">
+            <h2 class="text-capitalize">{{ category }} <small class="text-muted">({{ artworks|length }} items)</small></h2>
+        </div>
+        <div class="row g-4">
+            {% for artwork in artworks %}
+            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="artwork-item position-relative">
+                    <div class="position-relative overflow-hidden">
+                        {% if artwork.media.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                            <!-- Image Display -->
+                            <img src="{{ artwork.media }}" alt="{{ artwork.title }}" class="img-fluid artwork-image">
+                        {% elif artwork.media.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                            <!-- Video Display -->
+                            <video class="img-fluid artwork-image" controls>
+                                <source src="{{ artwork.media }}" type="video/{{ artwork.media.split('.')[-1] }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% elif artwork.media.lower().endswith(('.mp3', '.wav', '.ogg')) %}
+                            <!-- Audio Display -->
+                            <div class="audio-container" style="background: #f8f9fa; padding: 20px; text-align: center;">
+                                <i class="fas fa-music fa-3x mb-3" style="color: #6c757d;"></i>
+                                <audio controls style="width: 100%">
+                                    <source src="{{ artwork.media }}" type="audio/{{ artwork.media.split('.')[-1] }}">
+                                    Your browser does not support the audio element.
+                                </audio>
+                                <p class="mt-2">{{ artwork.title }}</p>
+                            </div>
+                        {% else %}
+                            <!-- Fallback for unknown types -->
+                            <div class="unknown-media" style="background: #f8f9fa; padding: 40px 20px; text-align: center;">
+                                <i class="fas fa-file-alt fa-3x mb-3" style="color: #6c757d;"></i>
+                                <p>Media preview not available</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="artwork-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                            <a href="/artwork/{{ artwork.id }}" class="btn btn-outline-light btn-lg rounded-pill">View Details</a>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="artwork-title mb-0">{{ artwork.title }}</h3>
+                            <span class="badge bg-primary">NEW</span>
+                        </div>
+                        <p class="text-muted mb-2">by {{ artwork.artist }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="artwork-price mb-0">${{ artwork.price }}</p>
+                            <div>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="text-muted">4.8 (24)</span>
+                            </div>
+                        </div>
+                        <a href="/checkout" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-shopping-cart me-2"></i> Purchase
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <img src="https://source.unsplash.com/random/300x300/?empty,art" alt="No artworks" class="img-fluid mb-4" style="max-height: 200px;">
+        <h3 class="mb-3">No Artworks Available</h3>
+        <p class="lead">Check back soon for new creative additions!</p>
+        <a href="#" class="btn btn-primary">Notify Me</a>
+    </div>
+    {% endfor %}
+</div>
             <!-- Back to Dashboard -->
             <div class="text-center mt-5">
                 <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
@@ -97,74 +377,64 @@
     </div>
     <!-- Marketplace Section End -->
 
-   <!-- Footer Start -->
-   <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Quick Link</h4>
-                <a class="btn btn-link" href="">About Us</a>
-                <a class="btn btn-link" href="">Contact Us</a>
-                <a class="btn btn-link" href="">Privacy Policy</a>
-                <a class="btn btn-link" href="">Terms & Condition</a>
-                <a class="btn btn-link" href="">FAQs & Help</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Contact</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                <div class="d-flex pt-2">
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Gallery</h4>
-                <div class="row g-2 pt-2">
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
+    <!-- Footer Start -->
+    <div class="container-fluid footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Art Haven</h4>
+                    <p>Connecting artists with collectors worldwide. Discover unique artworks for your home or collection.</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-square btn-outline-light me-1" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-square btn-outline-light me-1" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-square btn-outline-light me-1" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-square btn-outline-light me-1" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-square btn-outline-light me-1" href=""><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Newsletter</h4>
-                <p>Sign Up For News.</p>
-                <div class="position-relative mx-auto" style="max-width: 400px;">
-                    <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                    <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Links</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
+                    <p><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
+                    <p><i class="fa fa-envelope me-3"></i>info@creativeshowcase.com</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Get updates on new artworks and exclusive offers.</p>
+                    <div class="position-relative">
+                        <input class="form-control bg-transparent border-light w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Sign Up</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="copyright">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <div class="footer-menu">
-                        <a href="">Home</a>
-                        <a href="">Cookies</a>
-                        <a href="">Help</a>
-                        <a href="">FQAs</a>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Art Haven</a>, All Rights Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Footer End -->
-
+    <!-- Footer End -->
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -180,37 +450,64 @@
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Custom JavaScript for Dark Mode -->
+    <!-- Custom JavaScript -->
     <script>
-        const toggleButton = document.getElementById('darkModeToggle');
-        const body = document.body;
-
-        // Check Local Storage for Dark Mode Preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            body.classList.add('dark-mode');
-            toggleButton.textContent = '☀️';
+        // Artwork hover effect
+        document.querySelectorAll('.artwork-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.querySelector('.artwork-overlay').style.opacity = '1';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.querySelector('.artwork-overlay').style.opacity = '0';
+            });
+        });
+        
+        // Category filter
+        document.querySelectorAll('.category-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelector('.category-filter.active').classList.remove('active');
+                this.classList.add('active');
+                
+                const category = this.dataset.category;
+                
+                if (category === 'all') {
+                    // Show all categories
+                    document.querySelectorAll('.artwork-category-section').forEach(section => {
+                        section.style.display = 'block';
+                    });
+                } else {
+                    // Hide all categories first
+                    document.querySelectorAll('.artwork-category-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+                    
+                    // Show only the selected category
+                    const categorySection = document.getElementById(`category-${category}`);
+                    if (categorySection) {
+                        categorySection.style.display = 'block';
+                    }
+                }
+            });
+        });
+        
+        // Animate elements when they come into view
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.wow');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (elementPosition < screenPosition) {
+                    element.classList.add('animate__animated', element.dataset.wowAnimation || 'animate__fadeIn');
+                }
+            });
         }
-
-        // Toggle Dark Mode
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                toggleButton.textContent = '☀️';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                toggleButton.textContent = '🌙';
-            }
-        });
-    </script>
-
-    <!-- Custom JavaScript for Join Now Button -->
-    <script>
-        document.getElementById('joinNowButton').addEventListener('click', function(event) {
-            event.preventDefault();
-            window.location.href = "{{ url_for('registration') }}";
-        });
+        
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
     </script>
 </body>
-
 </html>

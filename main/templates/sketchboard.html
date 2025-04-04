@@ -12,7 +12,7 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -32,120 +32,378 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
 
-    <!-- Custom CSS for Centering -->
+    <!-- Custom CSS -->
     <style>
-        .centered-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            margin: 0 auto;
-            max-width: 800px;
+        /* General Styles */
+        body {
+            font-family: 'Heebo', sans-serif;
+            color: #333;
+            background-color: #f8f9fa;
         }
-
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::before {
+            position: absolute;
+            content: "";
+            width: 45px;
+            height: 2px;
+            top: 50%;
+            left: -55px;
+            margin-top: -1px;
+            background: #06BBCC;
+        }
+        
+        .section-title::after {
+            position: absolute;
+            content: "";
+            width: 45px;
+            height: 2px;
+            top: 50%;
+            right: -55px;
+            margin-top: -1px;
+            background: #06BBCC;
+        }
+        
+        .section-title.text-start::before,
+        .section-title.text-end::after {
+            display: none;
+        }
+        
+        /* Navbar Styles */
+        .navbar-light .navbar-nav .nav-link {
+            padding: 10px 15px;
+            color: #333;
+            font-weight: 500;
+            outline: none;
+        }
+        
+        .navbar-light .navbar-nav .nav-link:hover,
+        .navbar-light .navbar-nav .nav-link.active {
+            color: #06BBCC;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(24, 29, 56, 0.7), rgba(24, 29, 56, 0.7)), url('{{ url_for("static", filename="img/course-1.jpg") }}');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            padding: 100px 0;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card h5, 
+        .dashboard-card h6 {
+            color: #06BBCC;
+        }
+        
+        /* Points Display */
+        .points-display {
+            background: white;
+            color: #06BBCC;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .points-display i {
+            margin-right: 10px;
+        }
+        
+        /* Progress Bar */
         .progress-container {
-            width: 100%;
-            background-color: #f3f3f3;
+            height: 10px;
+            background: #e9ecef;
             border-radius: 5px;
-            margin: 20px 0;
+            overflow: hidden;
         }
-
+        
         .progress-bar {
-            height: 20px;
-            background-color: #007bff;
-            border-radius: 5px;
+            height: 100%;
+            background: linear-gradient(90deg, #06BBCC, #06BBCC 100%);
+            transition: width 0.5s ease;
         }
-
-        .navigation {
+        
+        /* Badges */
+        .badge-container {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
-            margin: 20px 0;
         }
-
-        .navigation .btn {
-            flex: 1;
-        }
-
-        #contentArea {
+        
+        .badge-item {
+            background: #f0f1ff;
+            color: #06BBCC;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+        }
+        
+        .badge-item i {
+            margin-right: 5px;
+            font-size: 0.9rem;
+        }
+        
+        /* Leaderboard */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        .leaderboard-table th {
+            background: #06BBCC;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .leaderboard-table td {
+            padding: 10px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .leaderboard-table tr.rank-1 td {
+            border-left: 3px solid gold;
+        }
+        
+        .leaderboard-table tr.rank-2 td {
+            border-left: 3px solid silver;
+        }
+        
+        .leaderboard-table tr.rank-3 td {
+            border-left: 3px solid #cd7f32; /* bronze */
+        }
+        
+        .rank-icon {
+            color: #06BBCC;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: #06BBCC;
+            margin-bottom: 20px;
+        }
+        
+        /* Drawing Canvas */
+        #drawingCanvas {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: block;
+            background: white;
+        }
+        
+        /* Tool Buttons */
+        .btn-tool {
+            background: #f0f1ff;
+            border: none;
+            color: #06BBCC;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-tool:hover {
+            background: #06BBCC;
+            color: white;
+        }
+        
+        .btn-tool.active {
+            background: #06BBCC;
+            color: white;
+        }
+        
+        /* Notepad */
+        #notepadText {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            font-family: inherit;
+        }
+        
+        /* Challenges Table */
+        .challenges-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        .challenges-table th {
+            background: #06BBCC;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .challenges-table td {
+            padding: 10px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .footer a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: #06BBCC;
+        }
+        
+        .footer .btn-social {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            margin: 0 auto;
-            max-width: 1000px;
-            padding: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
         }
-
-        .section {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        
+        /* Animations */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
         }
-
-        canvas {
-            display: block;
-            margin: 0 auto;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
-
-        .tools, .button-group, .notepad-tools {
+        
+        /* Drawing Game Styles */
+        .drawing-object {
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .game-container {
+            position: relative;
+        }
+        
+        .game-timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .accuracy-display {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 15px;
+        }
+        
+        .difficulty-btn {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .game-instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #06BBCC;
+        }
+        
+        /* Game Controls */
+        .game-controls {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            justify-content: space-between;
+            margin-top: 10px;
         }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-
-        .table-responsive {
-            margin-top: 20px;
-        }
-
-        .table {
-            width: 100%;
-            margin-bottom: 1rem;
-            color: #212529;
-        }
-
-        .table th, .table td {
-            padding: 0.75rem;
-            vertical-align: top;
-            border-top: 1px solid #dee2e6;
-        }
-
-        .table thead th {
-            vertical-align: bottom;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .table tbody + tbody {
-            border-top: 2px solid #dee2e6;
-        }
-
-        .table-bordered {
-            border: 1px solid #dee2e6;
-        }
-
-        .table-bordered th, .table-bordered td {
-            border: 1px solid #dee2e6;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.05);
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            #drawingCanvas {
+                width: 100%;
+                height: auto;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -160,59 +418,133 @@
     <!-- Spinner End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
+    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
+        <div class="container">
+            <a href="" class="navbar-brand d-flex align-items-center">
+                <h2 class="m-0 text-primary"><i class="fas fa-palette me-2"></i>Creative Hub</h2>
+            </a>
+            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="" class="nav-item nav-link active"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                </div>
+                <div class="d-flex align-items-center ms-3">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name={{ user_data.username }}&background=6c63ff&color=fff" alt="User" width="40" height="40" class="rounded-circle me-2">
+                            <span class="d-none d-lg-inline">{{ user_data.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
+                            <div class="collapse navbar-collapse" id="navbarCollapse">
+                                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                                    <a href="/profile" class="nav-item nav-link"><i class="fas fa-user me-2"></i>My Profile</a>
+                                </div>
+                            </div>
+                        </ul>
                     </div>
                 </div>
-                <a href="" class="nav-item nav-link">Contact</a>
             </div>
-            <!-- Dark Mode Toggle Button -->
-            <button id="darkModeToggle" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block"></button>
         </div>
     </nav>
     <!-- Navbar End -->
 
-    <!-- Creative Hub Section Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h1 class="mb-4">Creative Hub 🎨</h1>
-                <p class="mb-5">Explore your creativity with our gamified drawing board, voice recording, video recording, and notepad for poetry and writings!</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center py-5">
+            <h1 class="hero-title">Unleash Your Creativity</h1>
+            <p class="hero-subtitle">Explore your artistic potential with our gamified creative tools. Draw, record, write, and earn rewards!</p>
+            
+            <div class="points-display floating">
+                <i class="fas fa-coins"></i>
+                <span id="totalPoints"></span>
             </div>
+            
+            <div class="" style="max-width: 400px;">
+                <div class="progress-bar" style=""></div>
+            </div>
+        </div>
+    </div>
 
-            <!-- Centered Section -->
-            <div class="centered-section">
-                <!-- Leaderboard -->
-                <div id="leaderboard" class="mb-5 wow fadeInUp" data-wow-delay="0.3s">
-                    <h2>🏆 Leaderboard</h2>
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-lg-4">
+                <!-- User Profile Card -->
+                <div class="dashboard-card mb-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <img src="https://ui-avatars.com/api/?name={{ user_data.username }}&background=6c63ff&color=fff" alt="User" width="80" height="80" class="rounded-circle me-3">
+                        <div>
+                            <h5 class="mb-1">{{ user_data.username }}</h5>
+                            <p class="text-muted mb-0">Creative Explorer</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h6 class="card-title">Your Badges</h6>
+                        <div id="badgeList" class="badge-container">
+                            {% if user_data.badges %}
+                                {% for badge in user_data.badges.split(',') %}
+                                    <div class="badge-item">
+                                        <i class="fas fa-award"></i>
+                                        {{ badge }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h6 class="card-title">Quick Stats</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Drawings</span>
+                            <span>{{ user_data.drawings_count if user_data and user_data.drawings_count else 0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Recordings</span>
+                            <span>{{ user_data.recordings_count if user_data and user_data.recordings_count else 0 }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Writings</span>
+                            <span>{{ user_data.writings_count if user_data and user_data.writings_count else 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Leaderboard Card -->
+                <div class="dashboard-card">
+                    <h6 class="card-title">🏆 Leaderboard</h6>
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
+                        <table class="leaderboard-table">
                             <thead>
                                 <tr>
                                     <th>Rank</th>
-                                    <th>Username</th>
-                                    <th>Score</th>
+                                    <th>User</th>
+                                    <th>Points</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for player in leaderboard_data %}
-                                <tr>
-                                    <td>{{ loop.index }}</td>
-                                    <td>{{ player.username }}</td>
+                                <tr class="rank-{{ loop.index }}">
+                                    <td>
+                                        <span class="rank-icon">
+                                            {% if loop.index == 1 %}<i class="fas fa-trophy"></i>
+                                            {% elif loop.index == 2 %}<i class="fas fa-medal"></i>
+                                            {% elif loop.index == 3 %}<i class="fas fa-award"></i>
+                                            {% else %}{{ loop.index }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if loop.index <= 3 %}
+                                        <strong>{{ player.username }}</strong>
+                                        {% else %}
+                                        {{ player.username }}
+                                        {% endif %}
+                                    </td>
                                     <td>{{ player.score }}</td>
                                 </tr>
                                 {% endfor %}
@@ -220,75 +552,219 @@
                         </table>
                     </div>
                 </div>
-
-                <!-- Badges -->
-                <div id="badges" class="mb-5 wow fadeInUp" data-wow-delay="0.5s">
-                    <h2></h2>
-                    <div id="badgeList" class="d-flex flex-wrap gap-2"></div>
+            </div>
+            
+            <div class="col-lg-8">
+                <!-- Tools Navigation -->
+                <ul class="nav nav-tabs" id="creativeTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="drawing-tab" data-bs-toggle="tab" data-bs-target="#drawing" type="button" role="tab" aria-controls="drawing" aria-selected="true">
+                            <i class="fas fa-paint-brush"></i> Drawing
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="voice-tab" data-bs-toggle="tab" data-bs-target="#voice" type="button" role="tab" aria-controls="voice" aria-selected="false">
+                            <i class="fas fa-microphone"></i> Voice
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab" aria-controls="video" aria-selected="false">
+                            <i class="fas fa-video"></i> Video
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="notepad-tab" data-bs-toggle="tab" data-bs-target="#notepad" type="button" role="tab" aria-controls="notepad" aria-selected="false">
+                            <i class="fas fa-edit"></i> Notepad
+                        </button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content" id="creativeTabsContent">
+                    <!-- Drawing Tab -->
+                    <div class="tab-pane fade show active" id="drawing" role="tabpanel" aria-labelledby="drawing-tab">
+                        <div class="content-section">
+                            <h3 class="section-title"><i class="fas fa-paint-brush"></i> Drawing Board</h3>
+                            
+                            <div class="mode-toggle mb-4">
+                                <button id="freeDrawMode" class="btn-tool active">
+                                    <i class="fas fa-pencil-alt"></i> Free Draw
+                                </button>
+                                <button id="objectGameMode" class="btn-tool">
+                                    <i class="fas fa-gamepad"></i> Drawing Game
+                                </button>
+                            </div>
+                            
+                            <!-- Game Instructions -->
+                            <div id="gameInstructions" class="game-instructions" style="display: none;">
+                                <h5><i class="fas fa-info-circle"></i> How to Play</h5>
+                                <p>Try to replicate the object shown below as accurately as possible. 
+                                You can submit your drawing anytime or wait for the timer to run out. 
+                                Your accuracy and speed will determine your score!</p>
+                                
+                                <div class="difficulty-selector">
+                                    <h6>Select Difficulty:</h6>
+                                    <button class="btn btn-sm btn-outline-primary difficulty-btn" data-difficulty="easy">Easy</button>
+                                    <button class="btn btn-sm btn-outline-primary difficulty-btn" data-difficulty="medium">Medium</button>
+                                    <button class="btn btn-sm btn-outline-primary difficulty-btn" data-difficulty="hard">Hard</button>
+                                </div>
+                            </div>
+                            
+                            <!-- Game Container -->
+                            <div class="game-container">
+                                <canvas id="drawingCanvas" width="700" height="500"></canvas>
+                                
+                                <!-- Game UI Elements -->
+                                <div id="gameTimer" class="game-timer" style="display: none;">
+                                    <i class="fas fa-clock"></i> <span id="timeLeft">60</span>s
+                                </div>
+                                
+                                <div id="accuracyDisplay" class="accuracy-display" style="display: none;">
+                                    Accuracy: <span id="accuracyValue">0</span>%
+                                </div>
+                            </div>
+                            
+                            <!-- Drawing Tools -->
+                            <div class="tool-group">
+                                <button id="clearCanvas" class="btn-tool">
+                                    <i class="fas fa-trash-alt"></i> Clear
+                                </button>
+                                <button id="eraser" class="btn-tool">
+                                    <i class="fas fa-eraser"></i> Eraser
+                                </button>
+                                <input type="color" id="colorPicker" value="#000000" class="btn-tool" style="padding: 0; height: 38px;">
+                                <input type="range" id="brushSize" min="1" max="50" value="5" class="btn-tool" style="width: 100px;">
+                                <button id="takePicture" class="btn-tool">
+                                    <i class="fas fa-camera"></i> Save
+                                </button>
+                            </div>
+                            
+                            <!-- Game Controls -->
+                            <div class="game-controls">
+                                <button id="submitDrawing" class="btn-tool bg-success text-white">
+                                    <i class="fas fa-paper-plane"></i> Submit Drawing
+                                </button>
+                                <button id="startGame" class="btn-tool bg-primary text-white" style="display: none;">
+                                    <i class="fas fa-play"></i> Start Game
+                                </button>
+                                <button id="endGameEarly" class="btn-tool bg-warning text-dark" style="display: none;">
+                                    <i class="fas fa-stopwatch"></i> Submit Early
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Voice Tab -->
+                    <div class="tab-pane fade" id="voice" role="tabpanel" aria-labelledby="voice-tab">
+                        <div class="content-section">
+                            <h3 class="section-title"><i class="fas fa-microphone"></i> Voice Recording</h3>
+                            <p>Lip-sync the given song to earn points!</p>
+                            
+                            <div class="button-group mb-4">
+                                <button id="startRecord" class="btn btn-primary me-2">
+                                    <i class="fas fa-microphone"></i> Start Recording
+                                </button>
+                                <button id="stopRecord" class="btn btn-danger" disabled>
+                                    <i class="fas fa-stop"></i> Stop Recording
+                                </button>
+                            </div>
+                            
+                            <audio id="audioPlayback" controls></audio>
+                            
+                            <button id="submitVoice" class="btn btn-success mt-3">
+                                <i class="fas fa-paper-plane"></i> Submit Recording
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Tab -->
+                    <div class="tab-pane fade" id="video" role="tabpanel" aria-labelledby="video-tab">
+                        <div class="content-section">
+                            <h3 class="section-title"><i class="fas fa-video"></i> Video Recording</h3>
+                            <p>Complete the dance challenge to earn points!</p>
+                            
+                            <div class="button-group mb-4">
+                                <button id="startVideoRecord" class="btn btn-primary me-2">
+                                    <i class="fas fa-video"></i> Start Recording
+                                </button>
+                                <button id="stopVideoRecord" class="btn btn-danger" disabled>
+                                    <i class="fas fa-stop"></i> Stop Recording
+                                </button>
+                            </div>
+                            
+                            <video id="videoPreview" controls></video>
+                            
+                            <button id="submitVideo" class="btn btn-success mt-3">
+                                <i class="fas fa-paper-plane"></i> Submit Video
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Notepad Tab -->
+                    <div class="tab-pane fade" id="notepad" role="tabpanel" aria-labelledby="notepad-tab">
+                        <div class="content-section">
+                            <h3 class="section-title"><i class="fas fa-edit"></i> Creative Notepad</h3>
+                            <p>Write your poetry, stories, or thoughts to earn points!</p>
+                            
+                            <textarea id="notepadText" placeholder="Write your creative content here..."></textarea>
+                            
+                            <div class="notepad-tools mt-3">
+                                <button id="saveNote" class="btn btn-secondary me-2">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                                <button id="clearNote" class="btn btn-secondary me-2">
+                                    <i class="fas fa-trash-alt"></i> Clear
+                                </button>
+                                <button id="submitNote" class="btn btn-success">
+                                    <i class="fas fa-paper-plane"></i> Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Points Display -->
-                <div id="totalPoints" class="mb-4 wow fadeInUp" data-wow-delay="0.7s"></div>
-
-                <!-- Progress Bar -->
-                <div class="progress-container mb-5 wow fadeInUp" data-wow-delay="0.9s">
-                    <div class="progress-bar" style="width: 0%;"></div>
-                </div>
-
-                <!-- Navigation -->
-                <div class="navigation d-flex justify-content-center gap-3 mb-5 wow fadeInUp" data-wow-delay="1.1s">
-                    <a href="#" class="nav-link btn btn-primary" data-target="drawing-board">Drawing Board</a>
-                    <a href="#" class="nav-link btn btn-primary" data-target="voice-recording">Voice Recording</a>
-                    <a href="#" class="nav-link btn btn-primary" data-target="video-recording">Video Recording</a>
-                    <a href="#" class="nav-link btn btn-primary" data-target="notepad">Notepad</a>
+                
+                <!-- Challenges Section -->
+                <div class="content-section mt-4">
+                    <h3 class="section-title"><i class="fas fa-tasks"></i> Current Challenges</h3>
+                    
+                    <div class="table-responsive">
+                        <table class="challenges-table">
+                            <thead>
+                                <tr>
+                                    <th>Challenge</th>
+                                    <th>Description</th>
+                                    <th>Deadline</th>
+                                    <th>Reward</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for challenge in challenges %}
+                                <tr>
+                                    <td><strong>{{ challenge.name }}</strong></td>
+                                    <td>{{ challenge.description }}</td>
+                                    <td>{{ challenge.deadline }}</td>
+                                    <td><span class="badge bg-warning text-dark">{{ challenge.points_reward }} pts</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No challenges available at the moment.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-            <!-- Content Area -->
-            <div id="contentArea" class="wow fadeInUp" data-wow-delay="1.3s"></div>
-
         </div>
     </div>
-    <!-- Creative Hub Section End -->
 
-        <!-- Challenges Section Start -->
-        <div class="container-xxl py-5">
-            <div class="container">
-                <h1 class="text-center mb-5">View Challenges</h1>
-                <div class="challenges-container">
-                    {% if challenges %}
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Challenge Name</th>
-                                <th>Description</th>
-                                <th>Deadline</th>
-                                <th>Points Reward</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for challenge in challenges %}
-                            <tr>
-                                <td>{{ challenge.name }}</td>
-                                <td>{{ challenge.description }}</td>
-                                <td>{{ challenge.deadline }}</td>
-                                <td>{{ challenge.points_reward }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    {% else %}
-                    <p class="text-center">No challenges available.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <!-- Challenges Section End -->
-
-                    <!-- Back Button -->
-                    <div class="text-center mt-5 wow fadeInUp" data-wow-delay="1.5s">
-                        <a href="javascript:history.back()" class="btn btn-secondary py-3 px-5">Go Back</a>
-                    </div>
+    <!-- Back to Dashboard -->
+    <div class="text-center mt-5">
+        <a href="{{ url_for('art_challenges') if username in ['smuggerteey', 'cicada403'] else ('art_challenges' if user_data['role'] == 'Artist' else 'art_challenges') }}" 
+           class="btn btn-secondary dashboard-btn">
+            Go Back
+        </a>
+    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -372,303 +848,729 @@
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
-        <script>
-            let totalPoints = 0;
-            let leaderboard = [];
-            let badges = [];
-    
-            // Assume user_data is passed from Flask
-            const username = '{{ user_data.username }}';  // Ensure this is set
-    
-            function updatePoints(points) {
-                totalPoints += points;
-                document.getElementById('totalPoints').innerText = `Total Points: ${totalPoints}`;
-                updateProgressBar();
-                updateLeaderboard();
-                checkBadges();
-    
-                fetch('/update_points', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username: username, points: points }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log('Points updated successfully');
-                    } else {
-                        console.error('Failed to update points:', data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+    <script>
+        // Global variables for the game
+        let totalPoints = 0;
+        let gameActive = false;
+        let gameTimer;
+        let timeLeft = 60;
+        let currentDifficulty = 'easy';
+        let targetObject = null;
+        let drawingHistory = [];
+        let lastAccuracyCheck = 0;
+        let badges = [];
+        let canvas; // Declare canvas globally
+
+        // Initialize user data
+        function initUserData() {
+            updatePointsDisplay();
+            updateProgressBar();
+            
+            // Initialize badges from HTML (already rendered server-side)
+            badges = Array.from(document.querySelectorAll('.badge-item')).map(badge => badge.textContent.trim());
+        }
+
+        // Enhanced updatePoints function with database sync
+        function updatePoints(points) {
+            totalPoints += points;
+            updatePointsDisplay();
+            updateProgressBar();
+            checkBadges();
+
+            // Animate points update
+            const pointsDisplay = document.getElementById('totalPoints');
+            pointsDisplay.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => {
+                pointsDisplay.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
+
+            // Update in database
+            fetch('/update_points', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    username: '{{ user_data.username }}', 
+                    points: points 
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.newBadges) {
+                    // Update badges if new ones were awarded
+                    badges = data.newBadges.split(',');
+                    updateBadges();
+                    
+                    // Show notification for each new badge
+                    data.newBadges.split(',').forEach(badge => {
+                        if (!document.querySelector(`.badge-item:contains('${badge}')`)) {
+                            showBadgeNotification(badge);
+                        }
+                    });
+                }
+            });
+        }
+
+        function updatePointsDisplay() {
+            document.getElementById('totalPoints').innerText = `Total Points: ${totalPoints}`;
+        }
+
+        function updateProgressBar() {
+            const progressBar = document.querySelector('.progress-bar');
+            const progress = (totalPoints % 1000) / 10;
+            progressBar.style.width = `${progress}%`;
+            
+            // Add gradient based on progress
+            if (progress < 30) {
+                progressBar.style.background = 'linear-gradient(90deg, #ff6584 0%, #fbbf24 100%)';
+            } else if (progress < 70) {
+                progressBar.style.background = 'linear-gradient(90deg, #fbbf24 0%, #42b0ff 100%)';
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, #42b0ff 0%, #6c63ff 100%)';
+            }
+        }
+
+        function checkBadges() {
+            const newBadges = [];
+            
+            if (totalPoints >= 100 && !badges.includes("First Drawing")) {
+                newBadges.push("First Drawing");
+            }
+            if (totalPoints >= 500 && !badges.includes("Master Artist")) {
+                newBadges.push("Master Artist");
+            }
+            if (totalPoints >= 1000 && !badges.includes("Creative Guru")) {
+                newBadges.push("Creative Guru");
+            }
+            
+            if (newBadges.length > 0) {
+                badges = [...badges, ...newBadges];
+                updateBadges();
+                
+                // Show notifications for new badges
+                newBadges.forEach(badge => {
+                    showBadgeNotification(badge);
                 });
             }
-    
-            function updateProgressBar() {
-                const progressBar = document.querySelector('.progress-bar');
-                const progress = (totalPoints % 1000) / 10;
-                progressBar.style.width = `${progress}%`;
-            }
-    
-            function updateLeaderboard() {
-                fetch('/get_leaderboard')
-                    .then(response => response.json())
-                    .then(data => {
-                        const leaderboardList = document.getElementById('leaderboardList');
-                        leaderboardList.innerHTML = data.map((entry, index) => `
-                            <li class="list-group-item">${index + 1}. ${entry.username} - ${entry.score} points</li>
-                        `).join('');
-                    });
-            }
-    
-            function checkBadges() {
-                if (totalPoints >= 100 && !badges.includes("First Drawing")) {
-                    badges.push("First Drawing");
-                    alert("🎉 You earned the 'First Drawing' badge!");
-                    updateBadges();
-                }
-                if (totalPoints >= 500 && !badges.includes("Master Artist")) {
-                    badges.push("Master Artist");
-                    alert("🎉 You earned the 'Master Artist' badge!");
-                    updateBadges();
-                }
-            }
-    
-            function updateBadges() {
-                const badgeList = document.getElementById('badgeList');
-                badgeList.innerHTML = badges.map(badge => `
-                    <div class="badge bg-primary p-2 rounded">${badge}</div>
-                `).join('');
-            }
-    
-            // Load sections and initialize functionality
-            function loadSection(section) {
-                const contentArea = document.getElementById('contentArea');
-                contentArea.innerHTML = '';
-    
-                if (section === 'drawing-board') {
-                    contentArea.innerHTML = `
-                        <section class="section">
-                            <h2>Drawing Board 🎨</h2>
-                            <p>Draw freely or try to match the given object to earn points!</p>
-                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                            <div class="mode-toggle">
-                                <button id="freeDrawMode" class="btn btn-primary">Free Draw</button>
-                                <button id="objectGameMode" class="btn btn-primary">Object Drawing Game</button>
+        }
+
+        function showBadgeNotification(badgeName) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'position-fixed bottom-0 end-0 p-3';
+            notification.style.zIndex = '11';
+            
+            notification.innerHTML = `
+                <div id="badgeToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header bg-primary text-white">
+                        <strong class="me-auto">New Badge Unlocked!</strong>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body bg-light">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-award text-warning me-3" style="font-size: 2rem;"></i>
+                            <div>
+                                <h6 class="mb-1">${badgeName}</h6>
+                                <p class="mb-0">Congratulations! You've earned a new badge.</p>
                             </div>
-                            <canvas id="drawingCanvas" width="800" height="600"></canvas>
-                            <div class="tools">
-                                <button id="clearCanvas" class="btn btn-secondary">Clear Canvas</button>
-                                <button id="eraser" class="btn btn-secondary">Eraser</button>
-                                <input type="color" id="colorPicker" value="#000000">
-                                <input type="range" id="brushSize" min="1" max="50" value="5">
-                                <button id="takePicture" class="btn btn-success">Take Picture</button>
-                                <button id="submitDrawing" class="btn btn-success">Submit Drawing</button>
-                            </div>
-                        </section>
-                    `;
-                    initDrawingBoard();
-                } else if (section === 'voice-recording') {
-                    contentArea.innerHTML = `
-                        <section class="section">
-                            <h2>Voice Recording 🎤</h2>
-                            <p>Lip-sync the given song to earn points!</p>
-                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                            <div class="button-group">
-                                <button id="startRecord" class="btn btn-primary">Start Recording</button>
-                                <button id="stopRecord" class="btn btn-primary" disabled>Stop Recording</button>
-                            </div>
-                            <audio id="audioPlayback" controls></audio>
-                            <button id="submitVoice" class="btn btn-success">Submit Recording</button>
-                        </section>
-                    `;
-                    initVoiceRecording();
-                } else if (section === 'video-recording') {
-                    contentArea.innerHTML = `
-                        <section class="section">
-                            <h2>Video Recording 🎥</h2>
-                            <p>Complete the dance challenge to earn points!</p>
-                            <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                            <div class="button-group">
-                                <button id="startVideoRecord" class="btn btn-primary">Start Recording</button>
-                                <button id="stopVideoRecord" class="btn btn-primary" disabled>Stop Recording</button>
-                            </div>
-                            <video id="videoPreview" controls></video>
-                            <button id="submitVideo" class="btn btn-success">Submit Video</button>
-                            </section>
-                        `;
-                        initVideoRecording();
-                    } else if (section === 'notepad') {
-                        contentArea.innerHTML = `
-                            <section class="section">
-                                <h2>Notepad for Poetry & Writings 📝</h2>
-                                <textarea id="notepadText" placeholder="Write your poetry or thoughts here..."></textarea>
-                                <div class="notepad-tools">
-                                    <button id="saveNote" class="btn btn-primary">Save Note</button>
-                                    <button id="clearNote" class="btn btn-secondary">Clear Note</button>
-                                    <button id="submitNote" class="btn btn-success">Submit Note</button>
-                                </div>
-                                <div id="pointsDisplay">Total Points: ${totalPoints}</div>
-                            </section>
-                        `;
-                        initNotepad();
-                    }
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function updateBadges() {
+            const badgeList = document.getElementById('badgeList');
+            badgeList.innerHTML = badges.map(badge => `
+                <div class="badge-item">
+                    <i class="fas fa-award"></i>
+                    ${badge}
+                </div>
+            `).join('');
+        }
+
+        // Enhanced Drawing Board with Game Features
+        function initDrawingBoard() {
+            canvas = new fabric.Canvas('drawingCanvas', {
+                isDrawingMode: true,
+                backgroundColor: '#ffffff'
+            });
+            
+            // Set initial drawing settings
+            canvas.freeDrawingBrush.color = '#000000';
+            canvas.freeDrawingBrush.width = 5;
+
+            // Tool event listeners
+            document.getElementById('colorPicker').addEventListener('change', (e) => {
+                canvas.freeDrawingBrush.color = e.target.value;
+            });
+
+            document.getElementById('brushSize').addEventListener('input', (e) => {
+                canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
+            });
+
+            document.getElementById('clearCanvas').addEventListener('click', () => {
+                canvas.clear();
+                canvas.backgroundColor = '#ffffff';
+                canvas.renderAll();
+            });
+
+            document.getElementById('eraser').addEventListener('click', () => {
+                canvas.freeDrawingBrush.color = '#ffffff';
+            });
+
+            document.getElementById('takePicture').addEventListener('click', () => {
+                const image = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'creative-hub-drawing.png';
+                link.click();
+            });
+
+            document.getElementById('submitDrawing').addEventListener('click', () => {
+                if (gameActive) {
+                    Swal.fire({
+                        title: 'Game in Progress',
+                        text: 'Please finish or cancel the current game first.',
+                        icon: 'warning'
+                    });
+                    return;
                 }
-        
-                // Initialize Drawing Board with Fabric.js
-                function initDrawingBoard() {
-                    const canvas = new fabric.Canvas('drawingCanvas');
-                    canvas.isDrawingMode = true;
-        
-                    document.getElementById('colorPicker').addEventListener('change', (e) => {
-                        canvas.freeDrawingBrush.color = e.target.value;
+                
+                const points = 20;
+                Swal.fire({
+                    title: 'Drawing Submitted!',
+                    text: `You've earned ${points} points!`,
+                    icon: 'success',
+                    confirmButtonText: 'Awesome!'
+                });
+                updatePoints(points);
+                
+                // Update drawings count in database
+                updateUserStat('drawings_count');
+            });
+
+            // Mode toggle
+            document.getElementById('freeDrawMode').addEventListener('click', function() {
+                currentMode = 'free';
+                this.classList.add('active');
+                document.getElementById('objectGameMode').classList.remove('active');
+                canvas.isDrawingMode = true;
+                
+                // Hide game elements
+                document.getElementById('gameInstructions').style.display = 'none';
+                document.getElementById('gameTimer').style.display = 'none';
+                document.getElementById('accuracyDisplay').style.display = 'none';
+                document.getElementById('startGame').style.display = 'none';
+                document.getElementById('endGameEarly').style.display = 'none';
+                
+                // Clear any game objects
+                canvas.clear();
+                canvas.backgroundColor = '#ffffff';
+                canvas.renderAll();
+                
+                // Stop any running game
+                if (gameActive) {
+                    clearInterval(gameTimer);
+                    gameActive = false;
+                }
+            });
+
+            document.getElementById('objectGameMode').addEventListener('click', function() {
+                currentMode = 'game';
+                this.classList.add('active');
+                document.getElementById('freeDrawMode').classList.remove('active');
+                
+                // Show game elements
+                document.getElementById('gameInstructions').style.display = 'block';
+                document.getElementById('startGame').style.display = 'inline-block';
+                document.getElementById('endGameEarly').style.display = 'none';
+                
+                // Set up difficulty buttons
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        currentDifficulty = this.dataset.difficulty;
+                        document.querySelectorAll('.difficulty-btn').forEach(b => {
+                            b.classList.remove('active');
+                        });
+                        this.classList.add('active');
                     });
-        
-                    document.getElementById('brushSize').addEventListener('input', (e) => {
-                        canvas.freeDrawingBrush.width = parseInt(e.target.value, 10);
+                });
+                
+                // Set easy as default
+                document.querySelector('.difficulty-btn[data-difficulty="easy"]').click();
+            });
+
+            // Start game button
+            document.getElementById('startGame').addEventListener('click', function() {
+                startDrawingGame(canvas);
+            });
+            
+            // End game early button
+            document.getElementById('endGameEarly').addEventListener('click', function() {
+                if (gameActive) {
+                    endDrawingGame(canvas, true);
+                }
+            });
+        }
+
+        // Enhanced Drawing Game
+        function startDrawingGame(canvas) {
+            // Clear canvas and setup
+            canvas.clear();
+            canvas.backgroundColor = '#ffffff';
+            canvas.isDrawingMode = true;
+            
+            // Set time based on difficulty
+            switch(currentDifficulty) {
+                case 'easy':
+                    timeLeft = 90;
+                    break;
+                case 'medium':
+                    timeLeft = 60;
+                    break;
+                case 'hard':
+                    timeLeft = 30;
+                    break;
+            }
+            
+            // Create target object based on difficulty
+            createTargetObject(canvas, currentDifficulty);
+            
+            // Show game UI
+            document.getElementById('gameTimer').style.display = 'block';
+            document.getElementById('accuracyDisplay').style.display = 'block';
+            document.getElementById('timeLeft').textContent = timeLeft;
+            document.getElementById('accuracyValue').textContent = '0';
+            document.getElementById('startGame').style.display = 'none';
+            document.getElementById('endGameEarly').style.display = 'inline-block';
+            
+            // Start timer
+            gameActive = true;
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timeLeft').textContent = timeLeft;
+                
+                // Check accuracy periodically
+                if (Date.now() - lastAccuracyCheck > 2000) { // Every 2 seconds
+                    checkAccuracy(canvas);
+                    lastAccuracyCheck = Date.now();
+                }
+                
+                // Time's up
+                if (timeLeft <= 0) {
+                    endDrawingGame(canvas, false);
+                }
+            }, 1000);
+            
+            // Start recording drawing history for accuracy checks
+            drawingHistory = [];
+            canvas.on('path:created', function(e) {
+                drawingHistory.push(e.path);
+            });
+        }
+
+        function createTargetObject(canvas, difficulty) {
+            // Remove previous target if exists
+            if (targetObject) {
+                canvas.remove(targetObject);
+            }
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Create different objects based on difficulty
+            switch(difficulty) {
+                case 'easy':
+                    // Simple circle
+                    targetObject = new fabric.Circle({
+                        radius: 80,
+                        fill: 'transparent',
+                        stroke: '#06BBCC',
+                        strokeWidth: 3,
+                        left: centerX - 80,
+                        top: centerY - 80,
+                        selectable: false
                     });
-        
-                    document.getElementById('clearCanvas').addEventListener('click', () => {
-                        canvas.clear();
+                    break;
+                    
+                case 'medium':
+                    // House shape
+                    targetObject = new fabric.Group([
+                        new fabric.Rect({ // Main house
+                            width: 120,
+                            height: 100,
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3,
+                            left: centerX - 60,
+                            top: centerY - 50
+                        }),
+                        new fabric.Polygon([ // Roof
+                            { x: centerX - 80, y: centerY - 50 },
+                            { x: centerX, y: centerY - 90 },
+                            { x: centerX + 80, y: centerY - 50 }
+                        ], {
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3
+                        })
+                    ], {
+                        selectable: false
                     });
-        
-                    document.getElementById('eraser').addEventListener('click', () => {
-                        canvas.freeDrawingBrush.color = '#ffffff';
+                    break;
+                    
+                case 'hard':
+                    // Complex shape (smiley face)
+                    targetObject = new fabric.Group([
+                        new fabric.Circle({ // Face
+                            radius: 100,
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3,
+                            left: centerX - 100,
+                            top: centerY - 100
+                        }),
+                        new fabric.Circle({ // Left eye
+                            radius: 15,
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3,
+                            left: centerX - 50,
+                            top: centerY - 70
+                        }),
+                        new fabric.Circle({ // Right eye
+                            radius: 15,
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3,
+                            left: centerX + 20,
+                            top: centerY - 70
+                        }),
+                        new fabric.Path('M ' + (centerX - 40) + ' ' + (centerY + 20) + 
+                                      ' Q ' + centerX + ' ' + (centerY + 50) + 
+                                      ' ' + (centerX + 40) + ' ' + (centerY + 20), {
+                            fill: 'transparent',
+                            stroke: '#06BBCC',
+                            strokeWidth: 3
+                        })
+                    ], {
+                        selectable: false
                     });
-        
-                    document.getElementById('takePicture').addEventListener('click', () => {
-                        const image = canvas.toDataURL('image/png');
-                        const link = document.createElement('a');
-                        link.href = image;
-                        link.download = 'sketchboard-image.png';
-                        link.click();
-                    });
-        
-                    document.getElementById('submitDrawing').addEventListener('click', () => {
-                        alert("Drawing submitted! You earn 20 points.");
-                        updatePoints(20);
+                    break;
+            }
+            
+            canvas.add(targetObject);
+            canvas.renderAll();
+        }
+
+        function checkAccuracy(canvas) {
+            if (!targetObject || !gameActive) return;
+            
+            // Simple accuracy check - compare drawn area vs target
+            // In a real app, this would be more sophisticated
+            const drawnPaths = canvas.getObjects().filter(obj => obj !== targetObject);
+            
+            if (drawnPaths.length === 0) {
+                document.getElementById('accuracyValue').textContent = '0';
+                return;
+            }
+            
+            // Very simplified accuracy calculation
+            let accuracy = Math.min(100, Math.floor(Math.random() * 30) + 70); // Simulated accuracy
+            
+            // Adjust based on difficulty
+            if (currentDifficulty === 'hard') {
+                accuracy = Math.max(0, accuracy - 20);
+            } else if (currentDifficulty === 'easy') {
+                accuracy = Math.min(100, accuracy + 10);
+            }
+            
+            document.getElementById('accuracyValue').textContent = accuracy;
+        }
+
+        function endDrawingGame(canvas, submittedEarly) {
+            clearInterval(gameTimer);
+            gameActive = false;
+            
+            // Calculate final score
+            const accuracy = parseInt(document.getElementById('accuracyValue').textContent);
+            const timeBonus = timeLeft > 0 ? Math.floor(timeLeft / 5) : 0;
+            
+            let basePoints;
+            switch(currentDifficulty) {
+                case 'easy': basePoints = 50; break;
+                case 'medium': basePoints = 100; break;
+                case 'hard': basePoints = 150; break;
+            }
+            
+            // Bonus for submitting early with good accuracy
+            const earlyBonus = submittedEarly && accuracy > 70 ? Math.floor(accuracy / 10) * 5 : 0;
+            
+            const totalScore = Math.floor(basePoints * (accuracy / 100)) + timeBonus + earlyBonus;
+            
+            // Show results
+            Swal.fire({
+                title: submittedEarly ? 'Drawing Submitted!' : 'Time\'s Up!',
+                html: `
+                    <div class="text-center">
+                        <h4>Your Results</h4>
+                        <p>Accuracy: ${accuracy}%</p>
+                        ${timeLeft > 0 ? `<p>Time Bonus: +${timeBonus} points</p>` : ''}
+                        ${earlyBonus > 0 ? `<p>Early Submission Bonus: +${earlyBonus} points</p>` : ''}
+                        <p>Difficulty Multiplier: x${currentDifficulty === 'hard' ? 1.5 : currentDifficulty === 'medium' ? 1.2 : 1}</p>
+                        <hr>
+                        <h5>Total Score: ${totalScore} points!</h5>
+                    </div>
+                `,
+                icon: 'success',
+                confirmButtonText: submittedEarly ? 'Play Again?' : 'Try Again?'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    startDrawingGame(canvas);
+                } else {
+                    // Return to free draw mode
+                    document.getElementById('freeDrawMode').click();
+                }
+            });
+            
+            updatePoints(totalScore);
+            updateUserStat('drawings_count');
+            
+            // Reset game UI
+            document.getElementById('startGame').style.display = 'inline-block';
+            document.getElementById('endGameEarly').style.display = 'none';
+        }
+
+        function updateUserStat(statName) {
+            fetch('/update_user_stat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    username: '{{ user_data.username }}', 
+                    stat: statName 
+                }),
+            });
+        }
+
+        // Initialize Voice Recording
+        function initVoiceRecording() {
+            let audioRecorder;
+            let audioChunks = [];
+
+            document.getElementById('startRecord').addEventListener('click', async () => {
+                try {
+                    audioChunks = [];
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioRecorder = new MediaRecorder(stream);
+                    audioRecorder.ondataavailable = event => audioChunks.push(event.data);
+                    audioRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
+                    };
+                    audioRecorder.start();
+                    document.getElementById('stopRecord').disabled = false;
+                    document.getElementById('startRecord').disabled = true;
+                    
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: "Couldn't access microphone. Please ensure permissions are granted.",
+                        icon: 'error'
                     });
                 }
-        
-                // Initialize Voice Recording
-                function initVoiceRecording() {
-                    let audioRecorder;
-                    let audioChunks = [];
-        
-                    document.getElementById('startRecord').addEventListener('click', async () => {
-                        try {
-                            audioChunks = [];
-                            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                            audioRecorder = new MediaRecorder(stream);
-                            audioRecorder.ondataavailable = event => audioChunks.push(event.data);
-                            audioRecorder.onstop = () => {
-                                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                                document.getElementById('audioPlayback').src = URL.createObjectURL(audioBlob);
-                            };
-                            audioRecorder.start();
-                            document.getElementById('stopRecord').disabled = false;
-                        } catch (error) {
-                            alert("Error accessing microphone. Please ensure permissions are granted.");
-                        }
+            });
+
+            document.getElementById('stopRecord').addEventListener('click', () => {
+                audioRecorder.stop();
+                audioRecorder.stream.getTracks().forEach(track => track.stop());
+                document.getElementById('stopRecord').disabled = true;
+                document.getElementById('startRecord').disabled = false;
+                Swal.close();
+            });
+
+            document.getElementById('submitVoice').addEventListener('click', () => {
+                if (audioChunks.length === 0) {
+                    Swal.fire({
+                        title: 'No Recording',
+                        text: 'Please record something before submitting.',
+                        icon: 'warning'
                     });
-        
-                    document.getElementById('stopRecord').addEventListener('click', () => {
-                        audioRecorder.stop();
-                        document.getElementById('stopRecord').disabled = true;
-                    });
-        
-                    document.getElementById('submitVoice').addEventListener('click', () => {
-                        alert('Voice recording submitted! You earn 50 points.');
-                        updatePoints(50);
+                    return;
+                }
+                
+                Swal.fire({
+                    title: 'Recording Submitted!',
+                    text: 'You earn 50 points!',
+                    icon: 'success'
+                });
+                updatePoints(50);
+                updateUserStat('recordings_count');
+            });
+        }
+
+        // Initialize Video Recording
+        function initVideoRecording() {
+            let videoRecorder;
+            let videoChunks = [];
+
+            document.getElementById('startVideoRecord').addEventListener('click', async () => {
+                try {
+                    videoChunks = [];
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    document.getElementById('videoPreview').srcObject = stream;
+                    videoRecorder = new MediaRecorder(stream);
+                    videoRecorder.ondataavailable = event => videoChunks.push(event.data);
+                    videoRecorder.onstop = () => {
+                        const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
+                        document.getElementById('videoPreview').src = URL.createObjectURL(videoBlob);
+                        document.getElementById('videoPreview').srcObject = null;
+                    };
+                    videoRecorder.start();
+                    document.getElementById('stopVideoRecord').disabled = false;
+                    document.getElementById('startVideoRecord').disabled = true;
+                    
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: "Couldn't access camera. Please ensure permissions are granted.",
+                        icon: 'error'
                     });
                 }
-        
-                // Initialize Video Recording
-                function initVideoRecording() {
-                    let videoRecorder;
-                    let videoChunks = [];
-        
-                    document.getElementById('startVideoRecord').addEventListener('click', async () => {
-                        try {
-                            videoChunks = [];
-                            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                            document.getElementById('videoPreview').srcObject = stream;
-                            videoRecorder = new MediaRecorder(stream);
-                            videoRecorder.ondataavailable = event => videoChunks.push(event.data);
-                            videoRecorder.onstop = () => {
-                                const videoBlob = new Blob(videoChunks, { type: 'video/mp4' });
-                                document.getElementById('videoPreview').src = URL.createObjectURL(videoBlob);
-                                document.getElementById('videoPreview').srcObject = null;
-                            };
-                            videoRecorder.start();
-                            document.getElementById('stopVideoRecord').disabled = false;
-                        } catch (error) {
-                            alert("Error accessing camera. Please ensure permissions are granted.");
-                        }
+            });
+
+            document.getElementById('stopVideoRecord').addEventListener('click', () => {
+                videoRecorder.stop();
+                videoRecorder.stream.getTracks().forEach(track => track.stop());
+                document.getElementById('stopVideoRecord').disabled = true;
+                document.getElementById('startVideoRecord').disabled = false;
+                Swal.close();
+            });
+
+            document.getElementById('submitVideo').addEventListener('click', () => {
+                if (videoChunks.length === 0) {
+                    Swal.fire({
+                        title: 'No Video',
+                        text: 'Please record something before submitting.',
+                        icon: 'warning'
                     });
-        
-                    document.getElementById('stopVideoRecord').addEventListener('click', () => {
-                        videoRecorder.stop();
-                        document.getElementById('stopVideoRecord').disabled = true;
+                    return;
+                }
+                
+                Swal.fire({
+                    title: 'Video Submitted!',
+                    text: 'You earn 50 points!',
+                    icon: 'success'
+                });
+                updatePoints(50);
+                updateUserStat('recordings_count');
+            });
+        }
+
+        // Initialize Notepad
+        function initNotepad() {
+            const notepadText = document.getElementById('notepadText');
+
+            document.getElementById('saveNote').addEventListener('click', () => {
+                const note = notepadText.value;
+                if (note.trim()) {
+                    localStorage.setItem('savedNote', note);
+                    Swal.fire({
+                        title: 'Note Saved!',
+                        text: 'Your note has been saved locally.',
+                        icon: 'success'
                     });
-        
-                    document.getElementById('submitVideo').addEventListener('click', () => {
-                        alert('Video submitted! You earn 50 points.');
-                        updatePoints(50);
+                    updatePoints(10);
+                } else {
+                    Swal.fire({
+                        title: 'Empty Note',
+                        text: 'Please write something before saving!',
+                        icon: 'warning'
                     });
                 }
-        
-                // Initialize Notepad
-                function initNotepad() {
-                    const notepadText = document.getElementById('notepadText');
-        
-                    document.getElementById('saveNote').addEventListener('click', () => {
-                        const note = notepadText.value;
-                        if (note.trim()) {
-                            localStorage.setItem('savedNote', note);
-                            alert('Note saved locally!');
-                            updatePoints(10);
-                        } else {
-                            alert('Please write something before saving!');
-                        }
-                    });
-        
-                    document.getElementById('clearNote').addEventListener('click', () => {
+            });
+
+            document.getElementById('clearNote').addEventListener('click', () => {
+                Swal.fire({
+                    title: 'Clear Note?',
+                    text: 'Are you sure you want to clear your note?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, clear it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         notepadText.value = '';
-                    });
-        
-                    document.getElementById('submitNote').addEventListener('click', () => {
-                        const note = notepadText.value;
-                        if (note.trim()) {
-                            const points = Math.min(Math.floor(note.length / 10), 100);
-                            alert(`Note submitted! You earn ${points} points.`);
-                            updatePoints(points);
-                        } else {
-                            alert('Please write something before submitting!');
-                        }
-                    });
-        
-                    // Load saved note
-                    const savedNote = localStorage.getItem('savedNote');
-                    if (savedNote) {
-                        notepadText.value = savedNote;
                     }
-                }
-        
-                // Load Default Section
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        loadSection(this.getAttribute('data-target'));
-                    });
                 });
-        
-                // Load the drawing board by default
-                loadSection('drawing-board');
-            </script>
-        </body>
-        
-        </html>
+            });
+
+            document.getElementById('submitNote').addEventListener('click', () => {
+                const note = notepadText.value;
+                if (note.trim()) {
+                    const points = Math.min(Math.floor(note.length / 10), 100);
+                    Swal.fire({
+                        title: 'Note Submitted!',
+                        text: `You've earned ${points} points!`,
+                        icon: 'success'
+                    });
+                    updatePoints(points);
+                    updateUserStat('writings_count');
+                } else {
+                    Swal.fire({
+                        title: 'Empty Note',
+                        text: 'Please write something before submitting!',
+                        icon: 'warning'
+                    });
+                }
+            });
+
+            // Load saved note
+            const savedNote = localStorage.getItem('savedNote');
+            if (savedNote) {
+                notepadText.value = savedNote;
+            }
+        }
+
+        // Initialize all components when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initUserData();
+            initDrawingBoard();
+            initVoiceRecording();
+            initVideoRecording();
+            initNotepad();
+            
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Show welcome message
+            setTimeout(() => {
+                Swal.fire({
+                    title: `Welcome, {{ user_data.username }}!`,
+                    text: 'Ready to unleash your creativity?',
+                    icon: 'info',
+                    confirmButtonText: 'Let\'s go!'
+                });
+            }, 1000);
+        });
+    </script>
+    
+    <!-- SweetAlert for beautiful alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Gallery</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+        :root {
+            --primary: #2a3f54;
+            --secondary: #f8f8f8;
+            --accent: #d4af37;
+            --text: #333;
+            --light-text: #777;
+            --wall-color: #f5e9d9;
+            --frame-color: #c9b18d;
+            --wood-color: #8b5a2b;
+            --floor-color: #6d4c3d;
+            --molding-color: #e6d5b8;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            min-height: 100vh;
+            background-color: var(--wall-color);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Gallery Layout */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .main-header {
+            background: rgba(42, 63, 84, 0.9);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin: 0;
+            color: white;
+        }
+        
+        /* Footer styles */
+        .main-footer {
+            background: rgba(42, 63, 84, 0.9);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .copyright {
+            font-size: 0.9rem;
+        }
+        
+        /* Room elements */
+        .media-room {
+            position: relative;
+            min-height: calc(100vh - 120px);
+            padding: 120px 20px 180px;
+            background-color: var(--wall-color);
+            background-image: 
+                linear-gradient(rgba(245, 233, 217, 0.7), rgba(245, 233, 217, 0.7)),
+                url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+        }
+        
+        .floor {
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background-color: var(--floor-color);
+            background-image: 
+                linear-gradient(rgba(109, 76, 61, 0.7), rgba(109, 76, 61, 0.7)),
+                url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            z-index: 1;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .wall-molding {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background-color: var(--molding-color);
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .ceiling-molding {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-color: var(--molding-color);
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Gallery Header */
+        .gallery-header {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 60px;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-header:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .gallery-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--primary);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        /* Room Content */
+        .room-content {
+            max-width: 1400px;
+            margin: 6rem auto 2rem;
+            padding: 2rem;
+            position: relative;
+            z-index: 20;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(3px);
+            transition: all 0.3s ease;
+        }
+        
+        .room-content:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            position: relative;
+            font-size: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .section-title:hover::after {
+            width: 100px;
+        }
+        
+        /* Artwork Grid */
+        .artwork-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .artwork-card {
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 15px solid var(--frame-color);
+            position: relative;
+            background-color: #fff;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .artwork-card::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border: 5px solid rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-5px) rotateY(5deg);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+        }
+        
+        .media-container {
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+        
+        .media-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.5s ease;
+        }
+        
+        video.media-preview {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .artwork-card:hover .media-preview {
+            transform: scale(1.05);
+        }
+        
+        .artwork-details {
+            padding: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .artwork-card:hover .artwork-details {
+            background: var(--secondary);
+        }
+        
+        .artwork-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            margin: 0;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .artwork-card:hover .artwork-title {
+            color: var(--accent);
+        }
+        
+        .media-type {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #eee;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-right: 8px;
+            text-transform: capitalize;
+        }
+        
+        .media-date {
+            color: var(--light-text);
+            font-size: 0.9em;
+        }
+        
+        .audio-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 15px solid var(--frame-color);
+            box-shadow: 0 0 0 10px rgba(0,0,0,0.2);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: modalOpen 0.4s ease forwards 0.2s;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            background: var(--accent);
+            transform: rotate(90deg);
+        }
+        
+        .modal-media-container {
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        .modal-media {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .modal-details {
+            padding: 2rem;
+        }
+        
+        .modal-details h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            position: relative;
+            font-size: 1.8rem;
+        }
+        
+        .modal-details h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--accent);
+        }
+        
+        .modal-details p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalOpen {
+            from { 
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .room-content {
+                padding: 1rem;
+                margin-top: 6rem;
+            }
+            
+            .artwork-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .main-header, .gallery-header {
+                flex-direction: column;
+                padding: 0.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery-container">
+        <!-- Main Header -->
+        <header class="main-header">
+            <h1 class="header-title">Media Gallery</h1>
+        </header>
+        
+        <!-- Gallery Header -->
+        <div class="gallery-header">
+            <h2 class="gallery-title">Your Media Collection</h2>
+        </div>
+        
+        <!-- Wall Molding -->
+        <div class="wall-molding"></div>
+        <div class="ceiling-molding"></div>
+        
+        <!-- Media Room -->
+        <div class="media-room">
+            <div class="room-content">
+                <h2 class="section-title">All Media</h2>
+                <div class="artwork-grid">
+                    {% for artwork in artworks %}
+                    <div class="artwork-card" onclick="openModal('{{ artwork.title }}', '{{ artwork.media_type }}', '{{ artwork.media_url }}', '{{ artwork.upload_date }}')">
+                        <div class="media-container">
+                            {% if artwork.media_type == 'image' %}
+                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview">
+                            {% elif artwork.media_type == 'video' %}
+                                <video class="media-preview" muted loop>
+                                    <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
+                                </video>
+                            {% elif artwork.media_type == 'audio' %}
+                                <div style="text-align: center;">
+                                    <i class="fas fa-music audio-icon"></i>
+                                    <p>Audio File</p>
+                                </div>
+                            {% else %}
+                                <div>Unsupported Media</div>
+                            {% endif %}
+                        </div>
+                        <div class="artwork-details">
+                            <h3 class="artwork-title">{{ artwork.title }}</h3>
+                            <div>
+                                <span class="media-type">{{ artwork.media_type }}</span>
+                                <span class="media-date">{{ artwork.upload_date }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floor -->
+        <div class="floor"></div>
+        
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="copyright">
+                    &copy; {{ current_year }} Media Gallery. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="mediaModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-media-container" id="modalMediaContainer">
+                <!-- Media will be inserted here -->
+            </div>
+            <div class="modal-details">
+                <h2 id="modalTitle"></h2>
+                <p><strong>Type:</strong> <span id="modalType"></span></p>
+                <p><strong>Uploaded:</strong> <span id="modalDate"></span></p>
+                <div style="margin-top: 1rem;">
+                    <a href="#" id="downloadLink" class="nav-btn" style="text-decoration: none;">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Modal functions
+        function openModal(title, type, url, date) {
+            const modal = document.getElementById('mediaModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalType = document.getElementById('modalType');
+            const modalDate = document.getElementById('modalDate');
+            const modalMediaContainer = document.getElementById('modalMediaContainer');
+            const downloadLink = document.getElementById('downloadLink');
+            
+            // Set content
+            modalTitle.textContent = title;
+            modalType.textContent = type;
+            modalDate.textContent = date;
+            downloadLink.href = url;
+            downloadLink.download = title + '.' + url.split('.').pop();
+            
+            // Clear previous media
+            modalMediaContainer.innerHTML = '';
+            
+            // Add appropriate media
+            if (type === 'image') {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = title;
+                img.className = 'modal-media';
+                modalMediaContainer.appendChild(img);
+            } 
+            else if (type === 'video') {
+                const video = document.createElement('video');
+                video.src = url;
+                video.controls = true;
+                video.className = 'modal-media';
+                modalMediaContainer.appendChild(video);
+            } 
+            else if (type === 'audio') {
+                const audioContainer = document.createElement('div');
+                audioContainer.style.textAlign = 'center';
+                audioContainer.style.padding = '2rem';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-music audio-icon';
+                icon.style.fontSize = '5rem';
+                icon.style.color = 'var(--primary)';
+                
+                const audio = document.createElement('audio');
+                audio.src = url;
+                audio.controls = true;
+                audio.style.width = '100%';
+                audio.style.marginTop = '1rem';
+                
+                audioContainer.appendChild(icon);
+                audioContainer.appendChild(audio);
+                modalMediaContainer.appendChild(audioContainer);
+            } 
+            else {
+                modalMediaContainer.textContent = 'Unsupported media type';
+            }
+            
+            // Show modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            document.getElementById('mediaModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Pause any playing media
+            const mediaContainer = document.getElementById('modalMediaContainer');
+            const mediaElements = mediaContainer.querySelectorAll('video, audio');
+            mediaElements.forEach(el => el.pause());
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('mediaModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+        
+        // Add hover effect to artwork cards
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.artwork-card').forEach(card => {
+                card.addEventListener('mousemove', function(e) {
+                    const x = e.offsetX;
+                    const y = e.offsetY;
+                    const centerX = this.offsetWidth / 2;
+                    const centerY = this.offsetHeight / 2;
+                    
+                    const angleX = (centerY - y) / 10;
+                    const angleY = (x - centerX) / 10;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-5px)`;
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+                });
+            });
+            
+            // Add some random lighting effects to simulate gallery lighting
+            const lightSpots = 5;
+            const room = document.querySelector('.media-room');
+            
+            for (let i = 0; i < lightSpots; i++) {
+                const light = document.createElement('div');
+                light.style.position = 'absolute';
+                light.style.width = Math.random() * 100 + 50 + 'px';
+                light.style.height = Math.random() * 100 + 50 + 'px';
+                light.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)';
+                light.style.borderRadius = '50%';
+                light.style.top = Math.random() * 100 + '%';
+                light.style.left = Math.random() * 100 + '%';
+                light.style.pointerEvents = 'none';
+                light.style.zIndex = '1';
+                room.appendChild(light);
+            }
+        });
+    </script>
+</body>
+</html>

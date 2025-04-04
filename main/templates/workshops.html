@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workshops & Tutorials 🎓</title>
+    <title>Workshops & Tutorials 🎓 | Creative Showcase</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -12,11 +12,12 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Libraries Stylesheet -->
     <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
@@ -28,6 +29,533 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <style>
+        :root {
+            --primary-color: #17a2b8;
+            --secondary-color: #20c997;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+        
+        .dark-mode {
+            background-color: #121212;
+            color: #f5f5f5;
+        }
+        
+        .dark-mode .card,
+        .dark-mode .testimonial-card,
+        .dark-mode .navbar,
+        .dark-mode .footer {
+            background-color: #1e1e1e !important;
+            color: #f5f5f5 !important;
+            border-color: #333 !important;
+        }
+        
+        .dark-mode .card-body,
+        .dark-mode .card-footer {
+            background-color: #1e1e1e !important;
+            color: #f5f5f5 !important;
+        }
+        
+        .dark-mode .text-muted {
+            color: #aaa !important;
+        }
+        
+        .dark-mode .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .dark-mode .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .dark-mode .nav-pills .nav-link {
+            color: #ddd !important;
+        }
+        
+        .dark-mode .nav-pills .nav-link.active {
+            color: white !important;
+        }
+        
+        .workshop-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: none;
+            background: white;
+        }
+        
+        .dark-mode .workshop-card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .workshop-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .dark-mode .workshop-card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        
+        .workshop-card .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .workshop-card:hover .card-img-top {
+            transform: scale(1.05);
+        }
+        
+        .workshop-card .card-body {
+            position: relative;
+        }
+        
+        .price-badge {
+            position: absolute;
+            top: -20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        
+        .free-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        
+        .category-tag {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            z-index: 1;
+        }
+        
+        .instructor-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .instructor-img:hover {
+            transform: scale(1.2);
+        }
+        
+        .countdown {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .testimonial-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .testimonial-card {
+            background: rgba(30,30,30,0.8);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: -10px;
+            left: 25%;
+            border-radius: 2px;
+        }
+        
+        .gradient-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gradient-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(23, 162, 184, 0.3);
+            color: white;
+        }
+        
+        .gradient-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .gradient-btn:hover:before {
+            left: 100%;
+        }
+        
+        .workshop-hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{{ url_for("static", filename="img/workshop-bg.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 120px 0;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .workshop-hero:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.7) 100%);
+            z-index: 0;
+        }
+        
+        .workshop-hero .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .skill-level {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .beginner {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+        
+        .intermediate {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .advanced {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .nav-pills .nav-link {
+            color: #495057;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .nav-pills .nav-link:hover:not(.active) {
+            transform: translateY(-2px);
+        }
+        
+        .tutorial-card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+        }
+        
+        .tutorial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+        }
+        
+        .dark-mode .tutorial-card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4) !important;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .floating-shapes div {
+            position: absolute;
+            display: block;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+        
+        .floating-shapes div:nth-child(1) {
+            left: 20%;
+            top: 20%;
+            width: 80px;
+            height: 80px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation-delay: 0s;
+        }
+        
+        .floating-shapes div:nth-child(2) {
+            left: 60%;
+            top: 70%;
+            width: 100px;
+            height: 100px;
+            background: var(--secondary-color);
+            border-radius: 50%;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+        
+        .floating-shapes div:nth-child(3) {
+            left: 70%;
+            top: 20%;
+            width: 60px;
+            height: 60px;
+            background: #ffc107;
+            border-radius: 50%;
+            animation-delay: 4s;
+        }
+        
+        .floating-shapes div:nth-child(4) {
+            left: 30%;
+            top: 60%;
+            width: 120px;
+            height: 120px;
+            background: #dc3545;
+            border-radius: 50%;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+        
+        .floating-shapes div:nth-child(5) {
+            left: 85%;
+            top: 40%;
+            width: 50px;
+            height: 50px;
+            background: #6f42c1;
+            border-radius: 50%;
+            animation-delay: 0s;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.1;
+            }
+            50% {
+                opacity: 0.15;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .progress-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+        
+        .progress-ring__circle {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        
+        .progress-ring__circle--background {
+            stroke: #eee;
+        }
+        
+        .progress-ring__circle--progress {
+            stroke: var(--primary-color);
+            stroke-dasharray: 0, 100;
+            transition: stroke-dasharray 1s ease-in-out;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .feature-card {
+            transition: all 0.3s;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .dark-mode .feature-card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .dark-mode .feature-card:hover {
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stats-card {
+            transition: all 0.3s;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .dark-mode .stats-card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .dark-mode .stats-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        
+        .tooltip-inner {
+            background-color: var(--primary-color);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before, 
+        .bs-tooltip-top .tooltip-arrow::before {
+            border-top-color: var(--primary-color);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(23, 162, 184, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(23, 162, 184, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(23, 162, 184, 0);
+            }
+        }
+        
+        .countdown-number {
+            display: inline-block;
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .hover-zoom {
+            transition: transform 0.3s;
+        }
+        
+        .hover-zoom:hover {
+            transform: scale(1.05);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    </style>
 </head>
 
 <body>
@@ -40,130 +568,782 @@
     <!-- Spinner End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
+    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
+        <div class="container">
+            <a href="" class="navbar-brand d-flex align-items-center">
+                <h2 class="m-0 text-primary"><i class="fas fa-palette me-2"></i>Creative Hub</h2>
+            </a>
+            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="" class="nav-item nav-link active"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                    <a href="" class="nav-item nav-link"></a>
+                </div>
+                <div class="d-flex align-items-center ms-3">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://ui-avatars.com/api/?name={{ user_data.username }}&background=6c63ff&color=fff" alt="User" width="40" height="40" class="rounded-circle me-2">
+                            <span class="d-none d-lg-inline">{{ user_data.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownUser">
+                            <div class="collapse navbar-collapse" id="navbarCollapse">
+                                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                                
+                                    <a href="/profile" class="nav-item nav-link"><i class="fas fa-user me-2"></i>My Profile</a>
+                                </div>
+                            </div>
+                        </ul>
                     </div>
                 </div>
-                <a href="" class="nav-item nav-link">Contact</a>
             </div>
         </div>
     </nav>
 
+    <!-- Hero Section -->
+    <div class="workshop-hero text-center wow fadeIn">
+        <div class="floating-shapes">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="container py-5">
+            <h1 class="display-4 fw-bold mb-4">Unlock Your <span class="text-gradient">Creative Potential</span></h1>
+            <p class="lead mb-5">Join our immersive workshops and tutorials designed to take your skills to the next level</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="#workshops" class="btn btn-primary btn-lg gradient-btn px-4 pulse-animation">Explore Workshops</a>
+                <a href="#tutorials" class="btn btn-outline-light btn-lg px-4 hover-zoom">Free Tutorials</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="stats-card p-4 text-center h-100">
+                        <h3 class="stats-number">1,200+</h3>
+                        <p class="mb-0">Happy Students</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="stats-card p-4 text-center h-100">
+                        <h3 class="stats-number">85+</h3>
+                        <p class="mb-0">Workshops</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.5s">
+                    <div class="stats-card p-4 text-center h-100">
+                        <h3 class="stats-number">24</h3>
+                        <p class="mb-0">Expert Instructors</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 wow fadeIn" data-wow-delay="0.7s">
+                    <div class="stats-card p-4 text-center h-100">
+                        <h3 class="stats-number">98%</h3>
+                        <p class="mb-0">Satisfaction Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container-xxl py-5 bg-light">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="section-title mb-4">Why Learn With Us? <span class="text-primary">🌟</span></h2>
+                <p class="mb-5">We provide the best learning experience for creative minds</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="feature-card p-4 text-center h-100">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h5>Expert Instructors</h5>
+                        <p class="mb-0">Learn from industry professionals with years of experience in their fields.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="feature-card p-4 text-center h-100">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                        <h5>Hands-on Projects</h5>
+                        <p class="mb-0">Apply what you learn through practical, real-world projects and assignments.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="feature-card p-4 text-center h-100">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5>Community Support</h5>
+                        <p class="mb-0">Join a vibrant community of creatives for feedback and collaboration.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                    <div class="feature-card p-4 text-center h-100">
+                        <div class="feature-icon mx-auto">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h5>Certification</h5>
+                        <p class="mb-0">Earn certificates to showcase your new skills to employers and clients.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Workshops & Tutorials Section Start -->
+    <div class="container-xxl py-5" id="workshops">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="section-title mb-4">Upcoming Workshops <span class="text-primary">🎨</span></h2>
+                <p class="mb-5">Hands-on learning experiences with industry experts</p>
+                
+                <!-- Category Filter -->
+                <ul class="nav nav-pills justify-content-center mb-5" id="workshop-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="pill" href="#all">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="pill" href="#digital">Digital Art</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="pill" href="#traditional">Traditional</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="pill" href="#3d">3D Design</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="pill" href="#free">Free Sessions</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="all">
+                    <div class="row g-4">
+                        <!-- Workshop Card 1 -->
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="workshop-card card h-100">
+                                <div class="position-relative">
+                                    <img src="{{ url_for('static', filename='img/digital-art-workshop.jpg') }}" class="card-img-top" alt="Digital Art Workshop">
+                                    <div class="category-tag">Digital Art</div>
+                                    <div class="price-badge">$49</div>
+                                    <div class="position-absolute bottom-0 start-0 p-2">
+                                        <span class="skill-level beginner">Beginner</span>
+                                    </div>
+                                    <div class="position-absolute top-0 start-0 p-2">
+                                        <span class="countdown" id="countdown-timer"></span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Digital Painting Masterclass</h5>
+                                    <p class="card-text">Learn professional digital painting techniques in Photoshop from award-winning artist Maria Chen.</p>
+                                    <div class="progress-ring mb-3 mx-auto" data-progress="85">
+                                        <svg width="60" height="60" viewBox="0 0 60 60">
+                                            <circle class="progress-ring__circle--background" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                                            <circle class="progress-ring__circle--progress" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="0 100"/>
+                                        </svg>
+                                        <div class="progress-text">85% Full</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ url_for('static', filename='img/instructor1.jpg') }}" class="instructor-img me-2" alt="Instructor">
+                                            <small>Maria Chen</small>
+                                        </div>
+                                        <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> June 15, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary hover-zoom">Details</a>
+                                        <a href="#" class="btn btn-sm gradient-btn hover-zoom">Enroll Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workshop Card 2 -->
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="workshop-card card h-100">
+                                <div class="position-relative">
+                                    <img src="{{ url_for('static', filename='img/3d-modeling.jpg') }}" class="card-img-top" alt="3D Modeling Workshop">
+                                    <div class="category-tag">3D Design</div>
+                                    <div class="price-badge">$79</div>
+                                    <div class="position-absolute bottom-0 start-0 p-2">
+                                        <span class="skill-level intermediate">Intermediate</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Blender 3D Character Design</h5>
+                                    <p class="card-text">Create stunning 3D characters from scratch using Blender. Perfect for game developers and animators.</p>
+                                    <div class="progress-ring mb-3 mx-auto" data-progress="65">
+                                        <svg width="60" height="60" viewBox="0 0 60 60">
+                                            <circle class="progress-ring__circle--background" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                                            <circle class="progress-ring__circle--progress" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="0 100"/>
+                                        </svg>
+                                        <div class="progress-text">65% Full</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ url_for('static', filename='img/instructor2.jpg') }}" class="instructor-img me-2" alt="Instructor">
+                                            <small>James Rodriguez</small>
+                                        </div>
+                                        <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> July 2, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary hover-zoom">Details</a>
+                                        <a href="#" class="btn btn-sm gradient-btn hover-zoom">Enroll Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workshop Card 3 -->
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                            <div class="workshop-card card h-100">
+                                <div class="position-relative">
+                                    <img src="{{ url_for('static', filename='img/watercolor-workshop.jpg') }}" class="card-img-top" alt="Watercolor Workshop">
+                                    <div class="category-tag">Traditional</div>
+                                    <div class="price-badge free-badge">FREE</div>
+                                    <div class="position-absolute bottom-0 start-0 p-2">
+                                        <span class="skill-level beginner">Beginner</span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Watercolor Techniques for Beginners</h5>
+                                    <p class="card-text">Discover the magic of watercolors with this introductory workshop. All materials provided.</p>
+                                    <div class="progress-ring mb-3 mx-auto" data-progress="95">
+                                        <svg width="60" height="60" viewBox="0 0 60 60">
+                                            <circle class="progress-ring__circle--background" stroke-width="4" fill="transparent" r="26" cx="30" cy="30"/>
+                                            <circle class="progress-ring__circle--progress" stroke-width="4" fill="transparent" r="26" cx="30" cy="30" stroke-dasharray="0 100"/>
+                                        </svg>
+                                        <div class="progress-text">95% Full</div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ url_for('static', filename='img/instructor3.jpg') }}" class="instructor-img me-2" alt="Instructor">
+                                            <small>Sarah Johnson</small>
+                                        </div>
+                                        <small class="text-muted"><i class="far fa-calendar-alt me-1"></i> June 22, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
+                                    <div class="d-flex justify-content-between">
+                                        <a href="#" class="btn btn-sm btn-outline-primary hover-zoom">Details</a>
+                                        <a href="#" class="btn btn-sm gradient-btn hover-zoom">Reserve Spot</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other category tabs would go here -->
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-primary gradient-btn px-4 py-2 hover-zoom">View All Workshops <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Path Section -->
+    <div class="container-xxl py-5 bg-light">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="section-title mb-4">Choose Your Learning Path <span class="text-primary">🧭</span></h2>
+                <p class="mb-5">We offer structured paths to help you achieve your creative goals</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <h4>Digital Artist</h4>
+                            <p>Master digital painting, illustration, and concept art</p>
+                            <div class="text-start">
+                                <h6 class="mt-4">Includes:</h6>
+                                <ul>
+                                    <li>Digital Painting Fundamentals</li>
+                                    <li>Character Design Workshop</li>
+                                    <li>Environment Painting</li>
+                                    <li>Professional Portfolio Development</li>
+                                </ul>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary mt-auto hover-zoom">Start Path</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <h4>3D Modeler</h4>
+                            <p>Learn 3D modeling, texturing, and rendering</p>
+                            <div class="text-start">
+                                <h6 class="mt-4">Includes:</h6>
+                                <ul>
+                                    <li>Blender Basics</li>
+                                    <li>Character Modeling</li>
+                                    <li>Environment Design</li>
+                                    <li>3D Animation Principles</li>
+                                </ul>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary mt-auto hover-zoom">Start Path</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="feature-icon mx-auto mb-4">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <h4>Traditional Artist</h4>
+                            <p>Explore traditional media and techniques</p>
+                            <div class="text-start">
+                                <h6 class="mt-4">Includes:</h6>
+                                <ul>
+                                    <li>Watercolor Techniques</li>
+                                    <li>Oil Painting Mastery</li>
+                                    <li>Figure Drawing</li>
+                                    <li>Mixed Media Exploration</li>
+                                </ul>
+                            </div>
+                            <a href="#" class="btn btn-outline-primary mt-auto hover-zoom">Start Path</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Free Tutorials Section -->
+    <div class="container-xxl py-5" id="tutorials">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="section-title mb-4">Free Tutorials <span class="text-primary">✨</span></h2>
+                <p class="mb-5">Start learning today with our free tutorial library</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Tutorial Card 1 -->
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="card tutorial-card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='img/tutorial1.jpg') }}" class="card-img-top" alt="Procreate Tutorial">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">FREE</span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 p-2">
+                                <span class="badge bg-dark"><i class="fas fa-clock me-1"></i> 45 min</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Procreate for Beginners</h5>
+                            <p class="card-text text-muted">Learn the basics of digital illustration on iPad with Procreate.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-1"></i>
+                                    <small>4.8 (120)</small>
+                                </div>
+                                <small><i class="fas fa-user-graduate me-1"></i> 1.2K</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="#" class="btn btn-outline-primary w-100 hover-zoom">Start Learning</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial Card 2 -->
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="card tutorial-card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='img/tutorial2.jpg') }}" class="card-img-top" alt="Photoshop Tutorial">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">FREE</span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 p-2">
+                                <span class="badge bg-dark"><i class="fas fa-clock me-1"></i> 1h 15m</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Photoshop Compositing</h5>
+                            <p class="card-text text-muted">Create stunning photo composites with these professional techniques.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-1"></i>
+                                    <small>4.9 (85)</small>
+                                </div>
+                                <small><i class="fas fa-user-graduate me-1"></i> 2.4K</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="#" class="btn btn-outline-primary w-100 hover-zoom">Start Learning</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial Card 3 -->
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="card tutorial-card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='img/tutorial3.jpg') }}" class="card-img-top" alt="Blender Tutorial">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">FREE</span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 p-2">
+                                <span class="badge bg-dark"><i class="fas fa-clock me-1"></i> 2h 30m</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Blender Basics</h5>
+                            <p class="card-text text-muted">Your first steps into the world of 3D modeling with Blender.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-1"></i>
+                                    <small>4.7 (156)</small>
+                                </div>
+                                <small><i class="fas fa-user-graduate me-1"></i> 3.1K</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="#" class="btn btn-outline-primary w-100 hover-zoom">Start Learning</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tutorial Card 4 -->
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.4s">
+                    <div class="card tutorial-card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img src="{{ url_for('static', filename='img/tutorial4.jpg') }}" class="card-img-top" alt="Oil Painting Tutorial">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">FREE</span>
+                            </div>
+                            <div class="position-absolute bottom-0 start-0 p-2">
+                                <span class="badge bg-dark"><i class="fas fa-clock me-1"></i> 1h 45m</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">Oil Painting Fundamentals</h5>
+                            <p class="card-text text-muted">Master the basics of oil painting with this comprehensive guide.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-star text-warning me-1"></i>
+                                    <small>4.6 (92)</small>
+                                </div>
+                                <small><i class="fas fa-user-graduate me-1"></i> 1.8K</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <a href="#" class="btn btn-outline-primary w-100 hover-zoom">Start Learning</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="#" class="btn btn-primary gradient-btn px-4 py-2 hover-zoom">Browse All Tutorials <i class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div class="container-xxl py-5 bg-light">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h2 class="section-title mb-4">What Our Students Say <span class="text-primary">💬</span></h2>
+                <p class="mb-5">Hear from creatives who transformed their skills with our workshops</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="testimonial-card p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='img/student1.jpg') }}" class="rounded-circle me-3" width="60" height="60" alt="Student">
+                            <div>
+                                <h5 class="mb-0">Ama Mensah</h5>
+                                <div class="d-flex mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The Digital Painting Masterclass completely changed how I approach my artwork. Maria's teaching style is incredibly clear and supportive."</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="testimonial-card p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='img/student2.jpg') }}" class="rounded-circle me-3" width="60" height="60" alt="Student">
+                            <div>
+                                <h5 class="mb-0">Kwame Osei</h5>
+                                <div class="d-flex mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0">"I went from zero to creating my first 3D character in just two weeks after taking the Blender workshop. Highly recommended!"</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="testimonial-card p-4 h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="{{ url_for('static', filename='img/student3.jpg') }}" class="rounded-circle me-3" width="60" height="60" alt="Student">
+                            <div>
+                                <h5 class="mb-0">Esi Boateng</h5>
+                                <div class="d-flex mt-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The free watercolor tutorial gave me the confidence to start painting. I've since enrolled in two paid workshops and can't wait for more!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h1 class="mb-4">Workshops & Tutorials 🎓</h1>
-                <p class="mb-5">Enhance your skills with our curated workshops and tutorials designed for every level of creativity.</p>
+                <h2 class="section-title mb-4">Frequently Asked Questions <span class="text-primary">❓</span></h2>
+                <p class="mb-5">Find answers to common questions about our workshops and tutorials</p>
             </div>
-            <div class="row g-4 justify-content-center wow fadeInUp" data-wow-delay="0.3s">
-                <!-- Available Workshops -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature bg-light p-4 text-center">
-                        <h3 class="mb-3">Digital Art Basics</h3>
-                        <p>Learn the fundamentals of digital art using Photoshop and Procreate. <strong>Free</strong>.</p>
+            
+            <div class="row g-4">
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                    Do I need any prior experience to join the workshops?
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Most of our workshops are designed to accommodate all skill levels. We clearly label each workshop with its difficulty level (Beginner, Intermediate, Advanced) so you can choose the right one for your current skill level. Many beginners start with our introductory workshops and progress from there.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    What materials or software do I need?
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Requirements vary by workshop. For digital workshops, we'll provide a list of recommended software (often with free trial options). Traditional art workshops will list required materials. Some workshops (like our watercolor class) include all necessary materials in the workshop fee. Detailed requirements are always provided when you enroll.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Can I access workshop recordings if I miss a session?
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes! All paid workshop participants receive access to session recordings, reference materials, and any workshop resources for 6 months after the workshop ends. This allows you to review content at your own pace and catch up if you miss a session.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature bg-light p-4 text-center">
-                        <h3 class="mb-3">3D Modeling</h3>
-                        <p>An introduction to Blender for creating stunning 3D models. <strong>$15</strong>.</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature bg-light p-4 text-center">
-                        <h3 class="mb-3">Traditional Techniques</h3>
-                        <p>Master watercolor and oil painting techniques. Workshop on <strong>Dec 20, 2024</strong>.</p>
+                
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="accordion" id="faqAccordion2">
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingFour">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    Are certificates provided after completing workshops?
+                                </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion2">
+                                <div class="accordion-body">
+                                    Yes, all paid workshop participants who complete the course requirements receive a digital certificate of completion. Our certificates are recognized by creative industry professionals and can be a valuable addition to your portfolio or resume.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingFive">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                    What's your refund policy?
+                                </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion2">
+                                <div class="accordion-body">
+                                    We offer a full refund if you cancel at least 7 days before the workshop start date. Cancellations within 7 days receive a 50% refund. After the workshop begins, we can transfer your enrollment to a future workshop but don't offer refunds. Free tutorials can be accessed anytime with no commitment.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header" id="headingSix">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                                    Do you offer private or corporate workshops?
+                                </button>
+                            </h2>
+                            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordion2">
+                                <div class="accordion-body">
+                                    Absolutely! We regularly organize private workshops for groups, teams, or corporate clients. These can be tailored to your specific needs and scheduled at your convenience. Contact our team to discuss custom workshop options for your group.
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-4"> <a href="javascript:history.back()" class="btn btn-primary">Go Back</a> </div>
         </div>
     </div>
-    <!-- Workshops & Tutorials Section End -->
 
- <!-- Footer Start -->
- <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-    <div class="container py-5">
-        <div class="row g-5">
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Quick Link</h4>
-                <a class="btn btn-link" href="">About Us</a>
-                <a class="btn btn-link" href="">Contact Us</a>
-                <a class="btn btn-link" href="">Privacy Policy</a>
-                <a class="btn btn-link" href="">Terms & Condition</a>
-                <a class="btn btn-link" href="">FAQs & Help</a>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Contact</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                <div class="d-flex pt-2">
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                    <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+    <!-- CTA Section -->
+    <div class="container-xxl py-5 bg-primary text-white position-relative">
+        <div class="floating-shapes">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 wow fadeInUp" data-wow-delay="0.1s">
+                    <h2 class="mb-3">Ready to Unleash Your Creativity?</h2>
+                    <p class="mb-0">Join our community of artists and designers today. Whether you're just starting out or looking to refine your skills, we have the perfect learning experience for you.</p>
                 </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Gallery</h4>
-                <div class="row g-2 pt-2">
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <h4 class="text-white mb-3">Newsletter</h4>
-                <p>Sign Up For News.</p>
-                <div class="position-relative mx-auto" style="max-width: 400px;">
-                    <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                    <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                <div class="col-lg-4 text-lg-end wow fadeInUp" data-wow-delay="0.3s">
+                    <a href="#" class="btn btn-light btn-lg px-4 py-2 hover-zoom">Get Started Now</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container">
-        <div class="copyright">
-            <div class="row">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                </div>
-                <div class="col-md-6 text-center text-md-end">
-                    <div class="footer-menu">
-                        <a href="">Home</a>
-                        <a href="">Cookies</a>
-                        <a href="">Help</a>
-                        <a href="">FQAs</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Footer End -->
 
+                <!-- Back to Dashboard -->
+                <div class="text-center mt-5">
+                    <a href="{{ url_for('art_challenges') if username in ['smuggerteey', 'cicada403'] else ('art_challenges' if user_data['role'] == 'Artist' else 'art_challenges') }}" 
+                       class="btn btn-secondary dashboard-btn">
+                        Go Back
+                    </a>
+                </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@creativeshowcase.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Gallery</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-4.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-5.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1 hover-zoom" src="{{ url_for('static', filename='img/course-6.jpg') }}" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Get creative tips and workshop updates straight to your inbox.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2 hover-zoom">Sign Up</button>
+                    </div>
+                    <small class="text-white-50 mt-2">We'll never share your email. Unsubscribe anytime.</small>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Creative Showcase</a>, All Right Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -179,8 +1359,12 @@
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Dark Mode Toggle Script -->
     <script>
+        // Initialize tooltips
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
         // Dark Mode Toggle Functionality
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
@@ -196,6 +1380,99 @@
                 localStorage.setItem('darkMode', 'false');
                 document.getElementById('darkModeToggle').textContent = '🌙';
             }
+        });
+
+        // Countdown timer for featured workshop
+        function updateCountdown() {
+            const workshopDate = new Date('June 15, 2024 10:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = workshopDate - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            
+            document.getElementById('countdown-timer').innerHTML = `
+                <span class="countdown-number">${days}</span>d 
+                <span class="countdown-number">${hours}</span>h 
+                <span class="countdown-number">${minutes}</span>m
+            `;
+        }
+        
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+        
+        // Animate progress rings
+        function animateProgressRings() {
+            const rings = document.querySelectorAll('.progress-ring');
+            rings.forEach(ring => {
+                const progress = ring.getAttribute('data-progress');
+                const circle = ring.querySelector('.progress-ring__circle--progress');
+                const circumference = 2 * Math.PI * 26;
+                const offset = circumference - (progress / 100) * circumference;
+                
+                circle.style.strokeDasharray = `${circumference} ${circumference}`;
+                circle.style.strokeDashoffset = circumference;
+                
+                setTimeout(() => {
+                    circle.style.transition = 'stroke-dashoffset 1s ease-in-out';
+                    circle.style.strokeDashoffset = offset;
+                }, 100);
+            });
+        }
+        
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            animateProgressRings();
+            
+            // Add hover effect to workshop cards
+            const workshopCards = document.querySelectorAll('.workshop-card');
+            workshopCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0,0,0,0.2)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                });
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.wow').forEach(element => {
+            observer.observe(element);
         });
     </script>
 </body>

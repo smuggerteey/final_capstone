@@ -12,11 +12,12 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Libraries Stylesheet -->
     <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
@@ -28,6 +29,322 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <style>
+        /* Spicy Additions */
+        .profile-header {
+            position: relative;
+            padding: 2rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .profile-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 100%);
+        }
+        
+        .profile-picture {
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-picture:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-name::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, #a18cd1 0%, #fbc2eb 100%);
+            margin: 0 auto;
+            right: 0;
+        }
+        
+        .profile-bio {
+            font-size: 1.1rem;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto 1rem;
+        }
+        
+        .portfolio-item {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+            position: relative;
+            border-radius: 12px;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .portfolio-image {
+            transition: all 0.5s ease;
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .portfolio-item:hover .portfolio-image {
+            transform: scale(1.05);
+        }
+        
+        .portfolio-title {
+            font-family: 'Poppins', sans-serif;
+            color: #444;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        .form-container {
+            box-shadow: 0 5px 25px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.3);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 1.5rem 0;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+        
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            min-width: 100px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #764ba2;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            margin: 0.2rem;
+            font-size: 0.8rem;
+            color: #555;
+            transition: all 0.2s ease;
+        }
+        
+        .tag:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #e0e5f0 0%, #b0bdd8 100%);
+        }
+        
+        .price-tag {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(245, 87, 108, 0.3);
+        }
+        
+        /* Animation for empty state */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .empty-portfolio {
+            animation: pulse 2s infinite;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255,255,255,0.8);
+            border-radius: 15px;
+            margin: 2rem auto;
+            max-width: 500px;
+            border: 2px dashed #c3cfe2;
+        }
+        
+        .empty-portfolio i {
+            font-size: 3rem;
+            color: #764ba2;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        /* Floating elements */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* Glow effect */
+        .glow-on-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .glow-on-hover:hover {
+            box-shadow: 0 0 15px rgba(118, 75, 162, 0.5);
+        }
+        
+        /* Special badge for featured works */
+        .featured-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Watermark effect for portfolio items */
+        .portfolio-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        
+        /* Enhanced form inputs */
+        .form-control {
+            border: 1px solid #e0e5f0;
+            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+        }
+        
+        .form-control:focus {
+            border-color: #a18cd1;
+            box-shadow: 0 0 0 0.25rem rgba(161, 140, 209, 0.25);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .profile-header {
+                padding: 1.5rem;
+            }
+            
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .social-links {
+                gap: 10px;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -39,93 +356,144 @@
     </div>
     <!-- Spinner End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+     <!-- Navbar Start -->
+     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
             <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active">Home</a>
-                <a href="" class="nav-item nav-link">About</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="" class="dropdown-item">Our Team</a>
-                        <a href="" class="dropdown-item">Testimonial</a>
+    </nav>
+    <!-- Navbar End -->
+
+  <!-- Profile Section -->
+  <div class="container-xxl py-5">
+    <div class="container">
+        <!-- Profile Header -->
+        <div class="profile-header text-center mb-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="floating">
+                <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='default_profile.png') }}" 
+                     alt="Profile Picture" 
+                     class="profile-picture rounded-circle mb-3" 
+                     style="width: 150px; height: 150px; object-fit: cover;">
+            </div>
+            <h2 class="profile-name">{{ user.username }}</h2>
+            <p class="profile-bio">{{ user.first_name }} {{ user.last_name }} - {{ user.bio }}</p>
+                
+                <!-- Social Links -->
+                <div class="social-links">
+                    <a href="#" class="glow-on-hover"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="glow-on-hover"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="glow-on-hover"><i class="fab fa-behance"></i></a>
+                    <a href="#" class="glow-on-hover"><i class="fab fa-dribbble"></i></a>
+                    <a href="#" class="glow-on-hover"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                
+                <!-- Stats - Only showing artworks count -->
+                <div class="stats-container">
+                    <div class="stat-item glow-on-hover">
+                        <div class="stat-number">{{ artworks|length }}</div>
+                        <div class="stat-label">Artworks</div>
                     </div>
                 </div>
-                <a href="" class="nav-item nav-link">Contact</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Profile Section Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <!-- Profile Header -->
-            <div class="profile-header text-center mb-5">
-                <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else 'static/default_profile.png' }}" 
-                     alt="Profile Picture" 
-                     class="rounded-circle mb-3" 
-                     style="width: 150px; height: 150px; object-fit: cover;">
-                <h2 class="profile-name">{{ user.username }}</h2>
-                <p class="profile-bio">{{ user.first_name }} {{ user.last_name }} - {{ user.bio }}</p>
             </div>
 
             <!-- Profile Update Form -->
-            <div class="form-container bg-light p-4 rounded mb-5">
+            <div class="form-container bg-light p-4 rounded mb-5 wow fadeInUp" data-wow-delay="0.2s">
                 <h3 class="text-center mb-4">Update Profile</h3>
                 <form method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{ user.first_name }}" required>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{ user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" placeholder="Last Name" value="{{ user.last_name }}" required>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <input type="text" name="last_name" class="form-control" placeholder="Last Name" value="{{ user.last_name }}" required>
+                        <label class="form-label">Bio</label>
+                        <textarea name="bio" class="form-control" placeholder="Tell us about yourself..." rows="3" required>{{ user.bio }}</textarea>
                     </div>
                     <div class="mb-3">
-                        <textarea name="bio" class="form-control" placeholder="Bio" required>{{ user.bio }}</textarea>
-                    </div>
-                    <div class="mb-3">
+                        <label class="form-label">Profile Picture</label>
                         <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                        <small class="text-muted">Max size 2MB (JPEG, PNG)</small>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Profile
+                        </button>
                     </div>
                 </form>
             </div>
 
             <!-- Portfolio Section -->
-            <div class="portfolio-title text-center mb-4">
-                <h3>My Portfolio</h3>
+            <div class="portfolio-title text-center mb-4 wow fadeIn" data-wow-delay="0.3s">
+                <h3>My Creative Portfolio</h3>
+                <p class="text-muted">Showcasing my artistic journey and creations</p>
             </div>
+            
+            {% if artworks %}
             <div class="row g-4">
                 {% for artwork in artworks %}
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.{{ loop.index }}s">
                     <div class="portfolio-item bg-light p-4 rounded">
-                        <img src="{{ url_for('static', filename=artwork.media) }}" 
-                             alt="{{ artwork.title }}" 
-                             class="img-fluid mb-3 portfolio-image">
+                        {% if loop.first %}
+                        <div class="featured-badge">FEATURED</div>
+                        {% endif %}
+                        <div class="position-relative overflow-hidden mb-3" style="height: 200px; border-radius: 10px;">
+                            <img src="{{ url_for('static', filename=artwork.media_path) }}" 
+                                 alt="{{ artwork.title }}" 
+                                 class="img-fluid w-100 h-100 portfolio-image">
+                            <div class="portfolio-overlay">
+                                <a href="/artwork/{{ artwork.id }}" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
                         <h3 class="portfolio-title">{{ artwork.title }}</h3>
-                        <p>{{ artwork.description }}</p>
-                        <p>Price: ${{ artwork.price }}</p>
-                        <p>Tags: {{ artwork.tags }}</p>
+                        <p class="text-muted">{{ artwork.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price-tag">${{ artwork.price }}</span>
+                            <div>
+                                {% if artwork.tags %}
+                                {% for tag in artwork.tags.split(',') %}
+                                <span class="tag">{{ tag }}</span>
+                                {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                {% else %}
-                <p class="text-center">No artworks uploaded yet.</p>
                 {% endfor %}
             </div>
+            {% else %}
+            <div class="empty-portfolio wow fadeIn" data-wow-delay="0.4s">
+                <i class="fas fa-paint-brush floating"></i>
+                <h4>Your Portfolio is Empty</h4>
+                {% if user.role == 'Artist' %}
+                    <p class="text-muted">Start uploading your creative works to showcase your talent to the world!</p>
+                    <a href="{{ url_for('upload_artwork') }}" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Upload First Artwork
+                    </a>
+                {% else %}
+                    <p class="text-muted">This user hasn't uploaded any artworks yet.</p>
+                {% endif %}
+            </div>
+            {% endif %}
 
             <!-- Back to Dashboard Button -->
-            <div class="text-center mt-5">
-                <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
-                   class="btn btn-secondary">
-                    Back to Dashboard
+            <div class="text-center mt-5 wow fadeIn" data-wow-delay="0.5s">
+                <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user.role == 'Artist' else 'userdashboard') }}" 
+                   class="btn btn-secondary btn-lg me-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
                 </a>
+                {% if user.role == 'Artist' %}
+                <a href="{{ url_for('upload_artwork') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Upload New Artwork
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -167,11 +535,20 @@
                         <div class="col-4">
                             <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
                         </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
+                        </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
+                    <p>Get creative inspiration delivered to your inbox.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                         <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
@@ -198,7 +575,6 @@
         </div>
     </div>
     <!-- Footer End -->
-
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -236,14 +612,41 @@
                 toggleButton.textContent = '🌙';
             }
         });
-    </script>
 
-    <!-- Custom JavaScript for Join Now Button -->
-    <script>
-        document.getElementById('joinNowButton').addEventListener('click', function(event) {
-            event.preventDefault();
-            window.location.href = "{{ url_for('registration') }}";
+        // Add floating animation to profile picture
+        const profilePic = document.querySelector('.profile-picture');
+        if (profilePic) {
+            profilePic.addEventListener('mouseenter', () => {
+                profilePic.style.transform = 'scale(1.05) rotate(5deg)';
+            });
+            
+            profilePic.addEventListener('mouseleave', () => {
+                profilePic.style.transform = 'scale(1.05)';
+            });
+        }
+        
+        // Add glow effect to social links on hover
+        const socialLinks = document.querySelectorAll('.social-links a');
+        socialLinks.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                link.style.boxShadow = '0 0 15px rgba(118, 75, 162, 0.7)';
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                link.style.boxShadow = '';
+            });
         });
+        
+        // Add pulse animation to empty portfolio icon
+        const emptyPortfolioIcon = document.querySelector('.empty-portfolio i');
+        if (emptyPortfolioIcon) {
+            setInterval(() => {
+                emptyPortfolioIcon.style.transform = 'rotate(5deg)';
+                setTimeout(() => {
+                    emptyPortfolioIcon.style.transform = 'rotate(-5deg)';
+                }, 1000);
+            }, 2000);
+        }
     </script>
 </body>
 
