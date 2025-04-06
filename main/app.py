@@ -43,8 +43,6 @@ from opt_einsum import contract
 # =============================================
 
 app = Flask(__name__)
-from flask_talisman import Talisman
-Talisman(app)
 
 # Configuration
 app.secret_key = 'tinotenda'

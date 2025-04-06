@@ -1,0 +1,37 @@
+Count,Message,Traceback,Nodes
+46,Login failed,"  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 340, in run
+    self.execute_next_task()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 487, in execute_task
+    task(self.user).run()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 325, in run
+    self.on_start()
+    ~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\Documents\final_capstone\main\locust_single_file.py"", line 51, in on_start
+    self.login(TestConfig.USER_CREDENTIALS[""regular""])
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\vanessa.apaliya\Documents\final_capstone\main\locust_single_file.py"", line 80, in login
+    raise Exception(""Login failed"")
+",local
+4,Login failed,"  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 340, in run
+    self.execute_next_task()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 373, in execute_next_task
+    self.execute_task(self._task_queue.popleft())
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 487, in execute_task
+    task(self.user).run()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\AppData\Local\Programs\Python\Python313\Lib\site-packages\locust\user\task.py"", line 325, in run
+    self.on_start()
+    ~~~~~~~~~~~~~^^
+  File ""C:\Users\vanessa.apaliya\Documents\final_capstone\main\locust_single_file.py"", line 47, in on_start
+    self.login(TestConfig.USER_CREDENTIALS[""admin""])
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\vanessa.apaliya\Documents\final_capstone\main\locust_single_file.py"", line 80, in login
+    raise Exception(""Login failed"")
+",local
