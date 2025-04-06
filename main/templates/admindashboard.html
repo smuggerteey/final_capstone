@@ -591,6 +591,42 @@
         input:checked + .slider:before {
             transform: translateX(26px);
         }
+
+        .profile-container {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+        .profile-container:hover .profile-dropdown {
+            display: block;
+        }
+        .profile-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .profile-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -606,36 +642,42 @@
     <!-- Spinner End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
-        <div class="container">
-            <a href="" class="navbar-brand d-flex align-items-center">
-                <h2 class="m-0"><i class="fas fa-palette me-2"></i>Creative Hub</h2>
-            </a>
-            <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto">
-                    <!-- Profile and Logout Buttons -->
-                    <div class="d-flex align-items-center">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle py-3 px-4 ripple" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-2"></i>Admin
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </div>
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="" class="nav-item nav-link active"></a>
+                <a href="" class="nav-item nav-link"></a>
+                <div class="nav-item dropdown">
+                    <a href="#" class=""></a>
+                    <div class="">
+
+                    </div>
+                </div>
+                <a href="" class="nav-item nav-link"></a>
+            </div>
+            <!-- Profile and Logout Buttons -->
+            <div class="d-flex align-items-center">
+                <div class="profile-container me-3">
+                    <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='default_profile.png') }}" 
+     alt="Profile" 
+     class="profile-pic"
+     style="width: 60px; height: 60px;"
+     onclick="window.location.href='{{ url_for('profile') }}'">
+                    <div class="profile-dropdown">
+                        <a href="{{ url_for('profile') }}"><i class=""></i>Profile</a>
+                        <a href="{{ url_for('logout') }}"><i class=""></i>Logout</a>
                     </div>
                 </div>
             </div>
         </div>
     </nav>
     <!-- Navbar End -->
-
     <!-- Admin Dashboard Start -->
     <div class="container-xxl py-5">
         <div class="container">
@@ -667,7 +709,7 @@
                 <div class="col-lg-9">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h1 class="welcome-header mb-2 animate__animated animate__fadeIn">Welcome back, Admin! 🎨</h1>
+                            <h1 class="welcome-header mb-2 animate__animated animate__fadeIn">Welcome, {{ user.username }} 🎨</h1>
                             <p class="text-muted">Here's what's happening with your creative community today.</p>
                         </div>
                         <div class="d-flex">

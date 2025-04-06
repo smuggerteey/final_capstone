@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Gallery</title>
+    <title>Art Gallery Experience</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     
     <style>
         :root {
             --primary: #2a3f54;
             --secondary: #f8f8f8;
             --accent: #d4af37;
+            --accent-light: #f0d991;
             --text: #333;
             --light-text: #777;
             --wall-color: #f5e9d9;
@@ -26,10 +30,12 @@
             --wood-color: #8b5a2b;
             --floor-color: #6d4c3d;
             --molding-color: #e6d5b8;
+            --gallery-light: #fff9e6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
             color: var(--text);
@@ -37,6 +43,8 @@
             background-color: var(--wall-color);
             position: relative;
             overflow-x: hidden;
+            line-height: 1.6;
+            padding-top: 160px; /* Added for fixed header */
         }
         
         /* Gallery Layout */
@@ -47,17 +55,28 @@
             min-height: 100vh;
         }
         
-        /* Header styles */
+        /* Header styles - Combined main and gallery header */
         .main-header {
-            background: rgba(42, 63, 84, 0.9);
+            background: linear-gradient(135deg, rgba(42, 63, 84, 0.95) 0%, rgba(31, 47, 63, 0.95) 100%);
             color: white;
             padding: 1rem 2rem;
             display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .header-top {
+            display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            width: 100%;
         }
         
         .header-title {
@@ -65,17 +84,69 @@
             font-size: 1.8rem;
             margin: 0;
             color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, var(--accent), #f5f7fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            position: relative;
+        }
+        
+        .header-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+            border-radius: 3px;
+        }
+        
+        .gallery-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin: 0.5rem 0 0 0;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .gallery-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .gallery-controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
         }
         
         /* Footer styles */
         .main-footer {
-            background: rgba(42, 63, 84, 0.9);
+            background: linear-gradient(135deg, rgba(42, 63, 84, 0.95) 0%, rgba(31, 47, 63, 0.95) 100%);
             color: white;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
             position: relative;
             z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
         
         .footer-content {
@@ -88,19 +159,37 @@
         
         .copyright {
             font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
         }
         
         /* Room elements */
         .media-room {
             position: relative;
             min-height: calc(100vh - 120px);
-            padding: 120px 20px 180px;
+            padding: 20px 20px 180px;
             background-color: var(--wall-color);
             background-image: 
                 linear-gradient(rgba(245, 233, 217, 0.7), rgba(245, 233, 217, 0.7)),
                 url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
             background-size: cover;
             background-attachment: fixed;
+            overflow: hidden;
         }
         
         .floor {
@@ -115,118 +204,190 @@
                 url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
             background-size: cover;
             z-index: 1;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.4);
         }
         
         .wall-molding {
             position: fixed;
-            top: 80px;
+            top: 160px; /* Adjusted for combined header */
             left: 0;
             width: 100%;
             height: 30px;
-            background-color: var(--molding-color);
+            background: linear-gradient(to bottom, var(--molding-color), #d8c9a8);
             z-index: 5;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         
         .ceiling-molding {
             position: fixed;
-            top: 60px;
+            top: 0;
             left: 0;
             width: 100%;
             height: 20px;
-            background-color: var(--molding-color);
-            z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: linear-gradient(to bottom, #f5e9d9, var(--molding-color));
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
-        /* Gallery Header */
-        .gallery-header {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            width: 100%;
-            top: 60px;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
+        /* Button styles */
+        .dashboard-btn {
+            display: inline-flex;
             align-items: center;
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-        }
-        
-        .gallery-header:hover {
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-        }
-        
-        .gallery-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            margin: 0;
+            justify-content: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent) 0%, #e8c874 100%);
             color: var(--primary);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .dashboard-btn:hover {
+            background: linear-gradient(135deg, #c99e1b 0%, #e8c874 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+        
+        .dashboard-btn:hover::before {
+            left: 100%;
+        }
+        
+        .dashboard-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .dashboard-btn:hover i {
+            transform: translateX(3px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            box-shadow: none;
+        }
+        
+        .btn-outline:hover {
+            background: var(--accent);
+            color: var(--primary);
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            background: var(--accent);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: var(--accent);
+            color: var(--primary);
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
         }
         
         /* Room Content */
         .room-content {
             max-width: 1400px;
-            margin: 6rem auto 2rem;
-            padding: 2rem;
+            margin: 3rem auto 2rem;
+            padding: 2.5rem;
             position: relative;
             z-index: 20;
-            background-color: rgba(255, 255, 255, 0.85);
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(3px);
-            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.88);
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255,255,255,0.3);
         }
         
         .room-content:hover {
-            background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            background-color: rgba(255, 255, 255, 0.93);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            transform: translateY(-5px);
         }
         
         .section-title {
             font-family: 'Playfair Display', serif;
             color: var(--primary);
             margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 0.8rem;
             position: relative;
-            font-size: 2rem;
+            font-size: 2.2rem;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-weight: 700;
         }
         
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -3px;
             left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: var(--accent);
-            transition: width 0.3s ease;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            border-radius: 2px;
+            transition: width 0.4s ease;
         }
         
         .section-title:hover::after {
-            width: 100px;
+            width: 120px;
+        }
+        
+        .section-description {
+            color: var(--light-text);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            font-size: 1.05rem;
         }
         
         /* Artwork Grid */
         .artwork-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
         }
         
         .artwork-card {
             background: white;
-            border-radius: 4px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
             border: 15px solid var(--frame-color);
             position: relative;
@@ -244,28 +405,56 @@
             bottom: -15px;
             border: 5px solid rgba(0,0,0,0.1);
             pointer-events: none;
+            border-radius: 12px;
+        }
+        
+        .artwork-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
         
         .artwork-card:hover {
-            transform: translateY(-5px) rotateY(5deg);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+            transform: translateY(-10px) rotateY(5deg) rotateX(2deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+        
+        .artwork-card:hover::after {
+            opacity: 1;
+        }
+        
+        .artwork-card:hover .artwork-title {
+            color: var(--accent);
+        }
+        
+        .artwork-card:hover .media-preview {
+            transform: scale(1.08);
         }
         
         .media-container {
             width: 100%;
-            height: 250px;
+            height: 280px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             background-color: #f5f5f5;
+            position: relative;
         }
         
         .media-preview {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         
         video.media-preview {
@@ -274,14 +463,12 @@
             background: #000;
         }
         
-        .artwork-card:hover .media-preview {
-            transform: scale(1.05);
-        }
-        
         .artwork-details {
-            padding: 1rem;
+            padding: 1.2rem;
             background: white;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
         }
         
         .artwork-card:hover .artwork-details {
@@ -290,35 +477,74 @@
         
         .artwork-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            margin: 0;
+            font-size: 1.1rem;
+            margin: 0 0 0.5rem 0;
             color: var(--primary);
             transition: all 0.3s ease;
+            font-weight: 700;
         }
         
-        .artwork-card:hover .artwork-title {
-            color: var(--accent);
+        .artwork-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .media-type {
             display: inline-block;
-            padding: 2px 8px;
-            background: #eee;
-            border-radius: 4px;
-            font-size: 0.8em;
-            margin-right: 8px;
-            text-transform: capitalize;
+            padding: 4px 12px;
+            background: rgba(42, 63, 84, 0.1);
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .artwork-card:hover .media-type {
+            background: var(--primary);
+            color: white;
         }
         
         .media-date {
             color: var(--light-text);
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
         
         .audio-icon {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: var(--primary);
             margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+        
+        /* Floating Gallery Lights */
+        .gallery-light {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, var(--gallery-light) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.5;
+            animation: float 8s infinite ease-in-out;
+        }
+        
+        .gallery-light:nth-child(2) {
+            width: 200px;
+            height: 200px;
+            animation-delay: 2s;
+            animation-duration: 10s;
+        }
+        
+        .gallery-light:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            animation-delay: 4s;
+            animation-duration: 6s;
         }
         
         /* Modal */
@@ -329,94 +555,164 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
+            backdrop-filter: blur(10px);
         }
         
         .modal-content {
             background: white;
-            border-radius: 8px;
-            max-width: 800px;
+            border-radius: 12px;
+            max-width: 900px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
             border: 15px solid var(--frame-color);
-            box-shadow: 0 0 0 10px rgba(0,0,0,0.2);
+            box-shadow: 0 0 0 15px rgba(0,0,0,0.3);
             transform: scale(0.9);
             opacity: 0;
-            animation: modalOpen 0.4s ease forwards 0.2s;
+            animation: modalOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
         }
         
         .close-modal {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             color: white;
             background: rgba(0,0,0,0.7);
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2;
             transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
         }
         
         .close-modal:hover {
             background: var(--accent);
-            transform: rotate(90deg);
+            transform: rotate(90deg) scale(1.1);
+            border-color: rgba(255,255,255,0.3);
         }
         
         .modal-media-container {
             width: 100%;
-            height: 400px;
+            height: 500px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #000;
             overflow: hidden;
+            position: relative;
         }
         
         .modal-media {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-media:hover {
+            transform: scale(1.02);
         }
         
         .modal-details {
-            padding: 2rem;
+            padding: 2.5rem;
         }
         
         .modal-details h2 {
             font-family: 'Playfair Display', serif;
             color: var(--primary);
             margin-top: 0;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 0.8rem;
             position: relative;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            font-weight: 700;
         }
         
         .modal-details h2::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: -3px;
             left: 0;
-            width: 50px;
-            height: 3px;
-            background-color: var(--accent);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent), var(--accent-light));
+            border-radius: 2px;
         }
         
         .modal-details p {
-            margin: 0.5rem 0;
-            line-height: 1.6;
+            margin: 0.8rem 0;
+            line-height: 1.7;
+        }
+        
+        .modal-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .modal-meta-item i {
+            color: var(--accent);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #e8c874 100%);
+            color: var(--primary);
+        }
+        
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #c99e1b 0%, #e8c874 100%);
+            color: white;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mt-5 {
+            margin-top: 3rem;
+        }
+        
+        /* Floating particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
         }
         
         /* Animations */
@@ -436,52 +732,184 @@
             }
         }
         
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-20px) translateX(10px);
+            }
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+        
         /* Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .room-content {
-                padding: 1rem;
-                margin-top: 6rem;
+                padding: 1.5rem;
+                margin-top: 3rem;
             }
             
             .artwork-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1.5rem;
             }
             
-            .main-header, .gallery-header {
+            .modal-media-container {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 1rem;
+            }
+            
+            .header-top {
                 flex-direction: column;
-                padding: 0.5rem;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-title::after, .gallery-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .gallery-controls {
+                flex-wrap: wrap;
             }
             
             .footer-content {
                 flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
+            .modal-details {
+                padding: 1.5rem;
+            }
+            
+            .modal-meta {
+                flex-direction: column;
                 gap: 0.5rem;
+            }
+            
+            body {
+                padding-top: 200px; /* Adjusted for responsive header */
+            }
+            
+            .wall-molding {
+                top: 200px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .artwork-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+            
+            .modal-media-container {
+                height: 300px;
+            }
+            
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .gallery-title {
+                font-size: 1.2rem;
+            }
+            
+            .filter-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
     <div class="gallery-container">
-        <!-- Main Header -->
+        <!-- Main Header - Combined with gallery header -->
         <header class="main-header">
-            <h1 class="header-title">Media Gallery</h1>
+            <div class="header-top">
+                <h1 class="header-title">Art Gallery Experience</h1>
+                
+                <!-- Back to Dashboard -->
+                <div class="header-controls">
+                    <a href="{% if username in ['smuggerteey', 'cicada403'] %}{{ url_for('admindashboard') }}{% else %}{{ url_for('dashboard') if session.get('role') == 'Artist' else url_for('userdashboard') }}{% endif %}" 
+                       class="dashboard-btn">
+                        <i class="fas fa-arrow-left"></i> Back..........
+                    </a>
+                </div>
+            </div>
+            
+            <h2 class="gallery-title">Curated Collection</h2>
+            
+            <div class="gallery-controls">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th"></i> All
+                </button>
+                <button class="filter-btn" data-filter="image">
+                    <i class="fas fa-image"></i> Images
+                </button>
+                <button class="filter-btn" data-filter="video">
+                    <i class="fas fa-video"></i> Videos
+                </button>
+                <button class="filter-btn" data-filter="audio">
+                    <i class="fas fa-music"></i> Audio
+                </button>
+            </div>
         </header>
-        
-        <!-- Gallery Header -->
-        <div class="gallery-header">
-            <h2 class="gallery-title">Your Media Collection</h2>
-        </div>
         
         <!-- Wall Molding -->
         <div class="wall-molding"></div>
         <div class="ceiling-molding"></div>
         
+        <!-- Gallery Lights -->
+        <div class="gallery-light" style="top: 20%; left: 10%;"></div>
+        <div class="gallery-light" style="top: 60%; left: 70%;"></div>
+        <div class="gallery-light" style="top: 30%; left: 50%;"></div>
+        
+        <!-- Floating Particles -->
+        <div class="particles" id="particles"></div>
+        
         <!-- Media Room -->
         <div class="media-room">
-            <div class="room-content">
-                <h2 class="section-title">All Media</h2>
-                <div class="artwork-grid">
+            <div class="room-content animate__animated animate__fadeIn">
+                <h2 class="section-title">Featured Artworks</h2>
+                <p class="section-description">
+                    Explore our carefully curated collection of digital masterpieces. 
+                    Each piece tells a unique story and represents the creative vision of talented artists.
+                </p>
+                
+                <div class="artwork-grid" id="artworkGrid">
                     {% for artwork in artworks %}
-                    <div class="artwork-card" onclick="openModal('{{ artwork.title }}', '{{ artwork.media_type }}', '{{ artwork.media_url }}', '{{ artwork.upload_date }}')">
+                    <div class="artwork-card" 
+                         onclick="openModal('{{ artwork.title }}', '{{ artwork.media_type }}', '{{ artwork.media_url }}', '{{ artwork.upload_date }}', '{{ artwork.description }}')"
+                         data-type="{{ artwork.media_type }}">
                         <div class="media-container">
                             {% if artwork.media_type == 'image' %}
                                 <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview">
@@ -492,7 +920,7 @@
                             {% elif artwork.media_type == 'audio' %}
                                 <div style="text-align: center;">
                                     <i class="fas fa-music audio-icon"></i>
-                                    <p>Audio File</p>
+                                    <p>Audio Composition</p>
                                 </div>
                             {% else %}
                                 <div>Unsupported Media</div>
@@ -500,13 +928,20 @@
                         </div>
                         <div class="artwork-details">
                             <h3 class="artwork-title">{{ artwork.title }}</h3>
-                            <div>
+                            <div class="artwork-meta">
                                 <span class="media-type">{{ artwork.media_type }}</span>
                                 <span class="media-date">{{ artwork.upload_date }}</span>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
+                </div>
+
+                <!-- View More Button -->
+                <div class="text-center mt-5">
+                    <button class="dashboard-btn btn-accent">
+                        <i class="fas fa-plus"></i> Load More
+                    </button>
                 </div>
             </div>
         </div>
@@ -518,7 +953,13 @@
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="copyright">
-                    &copy; {{ current_year }} Media Gallery. All rights reserved.
+                    &copy; {{ current_year }} Art Gallery Experience. All rights reserved.
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
                 </div>
             </div>
         </footer>
@@ -533,33 +974,147 @@
             </div>
             <div class="modal-details">
                 <h2 id="modalTitle"></h2>
-                <p><strong>Type:</strong> <span id="modalType"></span></p>
-                <p><strong>Uploaded:</strong> <span id="modalDate"></span></p>
-                <div style="margin-top: 1rem;">
-                    <a href="#" id="downloadLink" class="nav-btn" style="text-decoration: none;">
+                <div class="modal-meta">
+                    <div class="modal-meta-item">
+                        <i class="fas fa-image" id="modalTypeIcon"></i>
+                        <span id="modalType"></span>
+                    </div>
+                    <div class="modal-meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="modalDate"></span>
+                    </div>
+                </div>
+                <p id="modalDescription"></p>
+                <div class="modal-actions">
+                    <a href="#" id="downloadLink" class="dashboard-btn">
                         <i class="fas fa-download"></i> Download
                     </a>
+                    <button class="dashboard-btn btn-outline">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     
     <script>
+        // Initialize GSAP animations
+        gsap.from(".room-content", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.3
+        });
+        
+        gsap.from(".artwork-card", {
+            duration: 0.8,
+            y: 30,
+            opacity: 0,
+            stagger: 0.1,
+            ease: "back.out(1.7)",
+            delay: 0.5
+        });
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random size between 1px and 3px
+                const size = Math.random() * 2 + 1;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.bottom = `-10px`;
+                
+                // Random animation duration between 10s and 20s
+                const duration = Math.random() * 10 + 10;
+                particle.style.animation = `floatParticle ${duration}s linear infinite`;
+                
+                // Random delay
+                particle.style.animationDelay = `${Math.random() * 10}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Filter functionality
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const artworkCards = document.querySelectorAll('.artwork-card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    const filter = btn.dataset.filter;
+                    
+                    // Filter artwork cards
+                    artworkCards.forEach(card => {
+                        if (filter === 'all' || card.dataset.type === filter) {
+                            gsap.to(card, {
+                                duration: 0.5,
+                                opacity: 1,
+                                scale: 1,
+                                display: 'block',
+                                ease: "power2.out"
+                            });
+                        } else {
+                            gsap.to(card, {
+                                duration: 0.5,
+                                opacity: 0,
+                                scale: 0.9,
+                                display: 'none',
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+                });
+            });
+        }
+        
         // Modal functions
-        function openModal(title, type, url, date) {
+        function openModal(title, type, url, date, description) {
             const modal = document.getElementById('mediaModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalType = document.getElementById('modalType');
+            const modalTypeIcon = document.getElementById('modalTypeIcon');
             const modalDate = document.getElementById('modalDate');
+            const modalDescription = document.getElementById('modalDescription');
             const modalMediaContainer = document.getElementById('modalMediaContainer');
             const downloadLink = document.getElementById('downloadLink');
             
             // Set content
             modalTitle.textContent = title;
-            modalType.textContent = type;
+            modalType.textContent = type.charAt(0).toUpperCase() + type.slice(1);
             modalDate.textContent = date;
+            modalDescription.textContent = description || "No description available for this artwork.";
             downloadLink.href = url;
             downloadLink.download = title + '.' + url.split('.').pop();
+            
+            // Set icon based on media type
+            switch(type) {
+                case 'image':
+                    modalTypeIcon.className = 'fas fa-image';
+                    break;
+                case 'video':
+                    modalTypeIcon.className = 'fas fa-video';
+                    break;
+                case 'audio':
+                    modalTypeIcon.className = 'fas fa-music';
+                    break;
+                default:
+                    modalTypeIcon.className = 'fas fa-file';
+            }
             
             // Clear previous media
             modalMediaContainer.innerHTML = '';
@@ -571,51 +1126,121 @@
                 img.alt = title;
                 img.className = 'modal-media';
                 modalMediaContainer.appendChild(img);
+                
+                // Add zoom effect on hover
+                img.addEventListener('mousemove', (e) => {
+                    const rect = e.target.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const posX = (centerX - x) / 20;
+                    const posY = (centerY - y) / 20;
+                    
+                    img.style.transform = `scale(1.05) translate(${posX}px, ${posY}px)`;
+                });
+                
+                img.addEventListener('mouseleave', () => {
+                    img.style.transform = 'scale(1)';
+                });
             } 
             else if (type === 'video') {
+                const videoContainer = document.createElement('div');
+                videoContainer.style.width = '100%';
+                videoContainer.style.height = '100%';
+                videoContainer.style.display = 'flex';
+                videoContainer.style.alignItems = 'center';
+                videoContainer.style.justifyContent = 'center';
+                
                 const video = document.createElement('video');
                 video.src = url;
                 video.controls = true;
+                video.autoplay = true;
                 video.className = 'modal-media';
-                modalMediaContainer.appendChild(video);
+                video.style.maxHeight = '100%';
+                video.style.maxWidth = '100%';
+                
+                videoContainer.appendChild(video);
+                modalMediaContainer.appendChild(videoContainer);
             } 
             else if (type === 'audio') {
                 const audioContainer = document.createElement('div');
                 audioContainer.style.textAlign = 'center';
                 audioContainer.style.padding = '2rem';
+                audioContainer.style.width = '100%';
+                audioContainer.style.height = '100%';
+                audioContainer.style.display = 'flex';
+                audioContainer.style.flexDirection = 'column';
+                audioContainer.style.alignItems = 'center';
+                audioContainer.style.justifyContent = 'center';
+                audioContainer.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #e8e8e8 100%)';
                 
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-music audio-icon';
-                icon.style.fontSize = '5rem';
-                icon.style.color = 'var(--primary)';
+                icon.style.fontSize = '6rem';
+                icon.style.color = 'var(--accent)';
+                icon.style.marginBottom = '2rem';
+                
+                const titleElement = document.createElement('h3');
+                titleElement.textContent = title;
+                titleElement.style.fontFamily = "'Playfair Display', serif";
+                titleElement.style.color = 'var(--primary)';
+                titleElement.style.margin = '0 0 1.5rem 0';
+                titleElement.style.fontSize = '1.5rem';
                 
                 const audio = document.createElement('audio');
                 audio.src = url;
                 audio.controls = true;
-                audio.style.width = '100%';
+                audio.style.width = '80%';
                 audio.style.marginTop = '1rem';
                 
                 audioContainer.appendChild(icon);
+                audioContainer.appendChild(titleElement);
                 audioContainer.appendChild(audio);
                 modalMediaContainer.appendChild(audioContainer);
             } 
             else {
                 modalMediaContainer.textContent = 'Unsupported media type';
+                modalMediaContainer.style.display = 'flex';
+                modalMediaContainer.style.alignItems = 'center';
+                modalMediaContainer.style.justifyContent = 'center';
+                modalMediaContainer.style.color = 'white';
+                modalMediaContainer.style.fontSize = '1.2rem';
             }
             
-            // Show modal
+            // Show modal with animation
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            
+            // Animate in
+            gsap.from(".modal-content", {
+                duration: 0.5,
+                scale: 0.9,
+                opacity: 0,
+                ease: "back.out(1.7)"
+            });
         }
         
         function closeModal() {
-            document.getElementById('mediaModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            const modal = document.getElementById('mediaModal');
             
-            // Pause any playing media
-            const mediaContainer = document.getElementById('modalMediaContainer');
-            const mediaElements = mediaContainer.querySelectorAll('video, audio');
-            mediaElements.forEach(el => el.pause());
+            // Animate out
+            gsap.to(".modal-content", {
+                duration: 0.3,
+                scale: 0.9,
+                opacity: 0,
+                ease: "power2.in",
+                onComplete: () => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    
+                    // Pause any playing media
+                    const mediaContainer = document.getElementById('modalMediaContainer');
+                    const mediaElements = mediaContainer.querySelectorAll('video, audio');
+                    mediaElements.forEach(el => el.pause());
+                }
+            });
         }
         
         // Close modal when clicking outside
@@ -626,8 +1251,11 @@
             }
         }
         
-        // Add hover effect to artwork cards
+        // Add 3D hover effect to artwork cards
         document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            setupFilters();
+            
             document.querySelectorAll('.artwork-card').forEach(card => {
                 card.addEventListener('mousemove', function(e) {
                     const x = e.offsetX;
@@ -635,34 +1263,53 @@
                     const centerX = this.offsetWidth / 2;
                     const centerY = this.offsetHeight / 2;
                     
-                    const angleX = (centerY - y) / 10;
-                    const angleY = (x - centerX) / 10;
+                    const angleX = (centerY - y) / 15;
+                    const angleY = (x - centerX) / 15;
                     
-                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-5px)`;
+                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-10px)`;
+                    this.style.boxShadow = `0 30px 50px rgba(0,0,0,0.3)`;
                 });
                 
                 card.addEventListener('mouseleave', function() {
                     this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+                    this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
                 });
             });
             
-            // Add some random lighting effects to simulate gallery lighting
-            const lightSpots = 5;
-            const room = document.querySelector('.media-room');
-            
-            for (let i = 0; i < lightSpots; i++) {
+            // Add floating light effect to cards on hover
+            const cards = document.querySelectorAll('.artwork-card');
+            cards.forEach(card => {
                 const light = document.createElement('div');
                 light.style.position = 'absolute';
-                light.style.width = Math.random() * 100 + 50 + 'px';
-                light.style.height = Math.random() * 100 + 50 + 'px';
-                light.style.background = 'radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%)';
+                light.style.width = '100px';
+                light.style.height = '100px';
+                light.style.background = 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%)';
                 light.style.borderRadius = '50%';
-                light.style.top = Math.random() * 100 + '%';
-                light.style.left = Math.random() * 100 + '%';
+                light.style.top = '-30px';
+                light.style.left = '-30px';
                 light.style.pointerEvents = 'none';
+                light.style.opacity = '0';
+                light.style.transition = 'opacity 0.3s ease';
                 light.style.zIndex = '1';
-                room.appendChild(light);
-            }
+                card.appendChild(light);
+                
+                card.addEventListener('mouseenter', () => {
+                    light.style.opacity = '0.6';
+                    // Position light based on mouse position
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        
+                        light.style.left = `${x - 50}px`;
+                        light.style.top = `${y - 50}px`;
+                    });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    light.style.opacity = '0';
+                });
+            });
         });
     </script>
 </body>

@@ -28,6 +28,43 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
+    <style>
+        .profile-container {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+        .profile-container:hover .profile-dropdown {
+            display: block;
+        }
+        .profile-dropdown a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .profile-dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -61,8 +98,17 @@
             </div>
             <!-- Profile and Logout Buttons -->
             <div class="d-flex align-items-center">
-                <a href="{{ url_for('profile') }}" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block"><i class="fas fa-user"></i> Profile</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-danger py-4 px-lg-5 d-none d-lg-block ms-3"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <div class="profile-container me-3">
+                    <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='default_profile.png') }}" 
+     alt="Profile" 
+     class="profile-pic"
+     style="width: 60px; height: 60px;"
+     onclick="window.location.href='{{ url_for('profile') }}'">
+                    <div class="profile-dropdown">
+                        <a href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a>
+                        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -73,7 +119,7 @@
         <div class="container">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h6 class="section-title bg-white text-center text-primary px-3">Artist Dashboard</h6>
-                <h1 class="mb-5">Welcome to Your Dashboard, {{ user_name }} 🎨</h1>
+                <h1 class="mb-5">Welcome to Your Dashboard, {{ user.username }} 🎨</h1>
                 <p>Manage your artwork, connect with fellow artists, and explore endless creative possibilities.</p>
             </div>
 
@@ -139,7 +185,7 @@
                     <div class="feature-item text-center">
                         <i class="fas fa-palette fa-3x text-primary mb-4"></i>
                         <h5>Your Artwork 🖼️</h5>
-                        <p>Explore, edit, and manage the artworks you’ve uploaded. Showcase your creativity to the world!</p>
+                        <p>Explore, edit, and manage the artworks you've uploaded. Showcase your creativity to the world!</p>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
@@ -154,6 +200,7 @@
                         <i class="fas fa-user fa-3x text-primary mb-4"></i>
                         <h5>Your Profile ✨</h5>
                         <p>Update your personal information and preferences.</p>
+
                     </div>
                 </div>
             </div>
@@ -236,7 +283,6 @@
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -250,30 +296,6 @@
 
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-    <!-- Custom JavaScript for Dark Mode -->
-    <script>
-        const toggleButton = document.getElementById('darkModeToggle');
-        const body = document.body;
-
-        // Check Local Storage for Dark Mode Preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            body.classList.add('dark-mode');
-            toggleButton.textContent = '☀️'; // Change to sun icon for light mode
-        }
-
-        // Toggle Dark Mode
-        toggleButton.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                toggleButton.textContent = '☀️'; // Change to sun icon for light mode
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                toggleButton.textContent = '🌙'; // Change to moon icon for dark mode
-            }
-        });
-    </script>
 </body>
 
 </html>

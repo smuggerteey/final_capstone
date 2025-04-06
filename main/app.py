@@ -46,12 +46,16 @@ app = Flask(__name__)
 
 # Configuration
 app.secret_key = 'tinotenda'
-app.config['UPLOAD_FOLDER'] = "static/uploads"
-app.config['PROFILE_PICS_FOLDER'] = "static/profile_pics"
+app.config['UPLOAD_FOLDER'] = "main/static/uploads"
+app.config['PROFILE_PICS_FOLDER'] = "main/static/profile_pics"
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB limit
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
-
+TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
+TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
+TWILIO_PHONE_NUMBER = '+2330203419613'
+SENDGRID_API_KEY = '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'
+MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['PROFILE_PICS_FOLDER'], exist_ok=True)
@@ -61,7 +65,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'testDB'
+    'database': 'creative_showcase'
 }
 
 # Third-party service configurations
@@ -330,7 +334,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="testDB"
+        database="creative_showcase"
     )
 
 def get_user_data(username):
@@ -1037,7 +1041,6 @@ def remove_user(user_id):
 # =============================================
 # ROUTES - ARTWORK MANAGEMENT
 # =============================================
-
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_artwork():

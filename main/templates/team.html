@@ -3,630 +3,663 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Dashboard - Creative Hub 🎨</title>
-    <!-- Favicon -->
-    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Animate.css -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
-    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    
+    <title>Upload Artwork</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #06BBCC;
-            --secondary-color: #a29bfe;
-            --accent-color: #fd79a8;
-            --dark-color: #2d3436;
-            --light-color: #f5f6fa;
-            --success-color: #00b894;
-            --warning-color: #fdcb6e;
-            --danger-color: #d63031;
-        }
-        
         body {
-            font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
-            overflow-x: hidden;
         }
-        
-        .navbar {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-        
-        .navbar-brand h2 {
-            color: white !important;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .sidebar {
-            background: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            border-radius: 15px !important;
-            transition: all 0.3s ease;
-            position: sticky;
-            top: 20px;
-            height: calc(100vh - 40px);
-            overflow-y: auto;
-        }
-        
-        .sidebar:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .sidebar a {
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: var(--dark-color);
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        
-        .sidebar a:hover {
-            background-color: var(--primary-color);
-            color: white !important;
-            transform: translateX(5px);
-            text-decoration: none;
-        }
-        
-        .sidebar a.active {
-            background-color: rgba(6, 187, 204, 0.1);
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        
-        .sidebar a.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--primary-color);
-            border-radius: 0 4px 4px 0;
-        }
-        
-        .sidebar a i {
-            width: 25px;
-            text-align: center;
-            margin-right: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar a:hover i {
-            transform: scale(1.1);
-        }
-        
-        .card {
-            border: none;
-            border-radius: 15px !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            position: relative;
-            background: white;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-        }
-        
-        .total-artwork { 
-            background-color: rgba(253, 121, 168, 0.1); 
-            border-left: 4px solid var(--accent-color);
-        }
-        .challenges { 
-            background-color: rgba(108, 92, 231, 0.1); 
-            border-left: 4px solid var(--primary-color);
-        }
-        .collaborations { 
-            background-color: rgba(0, 184, 148, 0.1); 
-            border-left: 4px solid var(--success-color);
-        }
-        
-        .display-4 {
-            font-weight: 700;
-            color: var(--primary-color);
-            margin: 10px 0;
-            font-size: 2.5rem;
-        }
-        
-        .list-group-item {
-            border: none;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            padding: 15px 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .list-group-item:hover {
-            background-color: rgba(108, 92, 231, 0.05);
-            transform: translateX(3px);
-        }
-        
-        .welcome-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .welcome-header::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 3px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
-        }
-        
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-        
-        .btn-danger {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.4);
-        }
-        
-        /* Pulse animation for cards */
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.4); }
-            70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(108, 92, 231, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Chart container */
-        .chart-container {
-            height: 300px;
-            width: 100%;
-            position: relative;
-        }
-        
-        /* Recent activity timeline */
-        .timeline {
-            position: relative;
-            padding-left: 30px;
-        }
-        
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 10px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: var(--secondary-color);
-        }
-        
-        .timeline-item {
-            position: relative;
-            padding-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .timeline-item:hover {
-            transform: translateX(5px);
-        }
-        
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -30px;
-            top: 5px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            border: 2px solid white;
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
-        }
-        
-        .timeline-date {
-            font-size: 12px;
-            color: #777;
-            transition: all 0.3s ease;
-        }
-        
-        .timeline-item:hover .timeline-date {
-            color: var(--primary-color);
-        }
-        
-        /* Dark mode toggle */
-        .dark-mode-toggle {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 999;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--dark-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .dark-mode-toggle:hover {
-            transform: scale(1.1) rotate(30deg);
-        }
-        
-        /* Dark mode styles */
-        body.dark-mode {
-            background-color: #1a1a2e;
-            color: #f0f0f0;
-        }
-        
-        body.dark-mode .navbar {
-            background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
-        }
-        
-        body.dark-mode .sidebar,
-        body.dark-mode .card {
-            background-color: #16213e;
-            color: #f0f0f0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        body.dark-mode .list-group-item {
-            background-color: #16213e;
-            color: #f0f0f0;
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        body.dark-mode .sidebar a {
-            color: #f0f0f0;
-        }
-        
-        body.dark-mode .display-4 {
-            color: var(--secondary-color);
-        }
-        
-        body.dark-mode .text-muted {
-            color: #b8b8b8 !important;
-        }
-        
-        /* Floating particles background */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        /* Glow effect for important elements */
-        .glow {
-            animation: glow 2s infinite alternate;
-        }
-        
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px rgba(108, 92, 231, 0.5);
-            }
-            to {
-                box-shadow: 0 0 20px rgba(108, 92, 231, 0.8);
-            }
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-color);
-        }
-        
-        /* Hover effects for table rows */
-        .table-hover tbody tr {
-            transition: all 0.2s ease;
-        }
-        
-        .table-hover tbody tr:hover {
-            transform: scale(1.01);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        /* Badge animations */
-        .badge {
-            transition: all 0.3s ease;
-        }
-        
-        .badge:hover {
-            transform: scale(1.1);
-        }
-        
-        /* Floating action button */
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            right: 100px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 20px rgba(6, 187, 204, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 999;
-        }
-        
-        .fab:hover {
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 6px 25px rgba(6, 187, 204, 0.4);
-        }
-        
-        /* Tooltip styles */
-        .custom-tooltip {
-            position: relative;
-        }
-        
-        .custom-tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-        
-        .custom-tooltip:hover::after {
-            opacity: 1;
-            bottom: 110%;
-        }
-        
-        /* Animated gradient border */
-        .gradient-border {
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        
-        .gradient-border::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--secondary-color));
-            z-index: -1;
-            border-radius: 16px;
-            animation: gradientBG 6s ease infinite;
-            background-size: 300% 300%;
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Floating animation */
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        /* Ripple effect */
-        .ripple {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .ripple:after {
-            content: "";
-            display: block;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
-            background-repeat: no-repeat;
-            background-position: 50%;
-            transform: scale(10, 10);
-            opacity: 0;
-            transition: transform .5s, opacity 1s;
-        }
-        
-        .ripple:active:after {
-            transform: scale(0, 0);
-            opacity: .3;
-            transition: 0s;
-        }
-        
-        /* Toggle switch */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 24px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 24px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Action cards */
-        .action-card {
-            transition: all 0.3s ease;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            height: 100%;
-        }
-
-        .action-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-card .card-body {
+        .upload-container {
+            max-width: 800px;
+            margin: 2rem auto;
             padding: 2rem;
-            text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-
-        .action-card i {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
+        .preview-container {
+            max-width: 100%;
+            margin: 1rem 0;
+            display: none;
         }
-
-        .action-card .btn {
-            margin-top: 1rem;
+        .preview-media {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+        }
+        .progress-container {
+            margin: 1rem 0;
+            display: none;
+        }
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        #resultAlert {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .duplicate-alert {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Floating particles background -->
-    <canvas id="particles" class="particles"></canvas>
-    
+    <div class="container py-4">
+        <div class="upload-container">
+            <h2 class="text-center mb-4">Upload Artwork</h2>
+            
+            <!-- Duplicate Alert -->
+            <div class="alert alert-warning duplicate-alert">
+                <h4 class="alert-heading">Duplicate Artwork Detected!</h4>
+                <p>This artwork was already uploaded by <strong><span class="original-owner"></span></strong> as "<span class="original-title"></span>".</p>
+                <p><span class="duplicate-count"></span> duplicate(s) exist.</p>
+                <hr>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-secondary" id="cancelUpload">Cancel</button>
+                    <button class="btn btn-warning" id="forceUpload">Upload Anyway</button>
+                </div>
+            </div>
+
+            <!-- Upload Form -->
+            <form id="uploadForm" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="title" class="form-label required-field">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                        <div class="invalid-feedback">Please provide a title.</div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="category" class="form-label required-field">Category</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="" selected disabled>Select category</option>
+                            <option value="painting">Painting</option>
+                            <option value="photography">Photography</option>
+                            <option value="digital">Digital Art</option>
+                            <option value="sculpture">Sculpture</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a category.</div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="description" class="form-label required-field">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                        <div class="invalid-feedback">Please provide a description.</div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="price" class="form-label required-field">Price ($)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" required>
+                            <div class="invalid-feedback">Please enter a valid price.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="tags" class="form-label">Tags</label>
+                        <input type="text" class="form-control" id="tags" name="tags" placeholder="abstract, modern, colorful">
+                        <div class="form-text">Separate tags with commas</div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label for="media" class="form-label required-field">Artwork File</label>
+                        <input class="form-control" type="file" id="media" name="media" accept="image/*,video/*" required>
+                        <div class="form-text">Max 10MB. Supported: JPG, PNG, GIF, MP4, WEBM</div>
+                        <div class="invalid-feedback">Please select an artwork file.</div>
+                    </div>
+                    
+                    <!-- Preview -->
+                    <div class="col-12 preview-container">
+                        <h5>Preview:</h5>
+                        <img src="#" alt="Preview" class="preview-media" id="imagePreview">
+                        <video controls class="preview-media" id="videoPreview" style="display:none;"></video>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="col-12 progress-container">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="text-center mt-2 upload-status">Uploading...</div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary w-100" id="submitBtn">
+                            <span class="spinner-border spinner-border-sm me-2" id="submitSpinner" style="display:none;"></span>
+                            <span id="submitText">Upload Artwork</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Result Alert -->
+            <div class="alert mt-3" id="resultAlert" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const form = document.getElementById('uploadForm');
+            const mediaInput = document.getElementById('media');
+            const previewContainer = document.querySelector('.preview-container');
+            const imagePreview = document.getElementById('imagePreview');
+            const videoPreview = document.getElementById('videoPreview');
+            const duplicateAlert = document.querySelector('.duplicate-alert');
+            const progressContainer = document.querySelector('.progress-container');
+            const progressBar = document.querySelector('.progress-bar');
+            const uploadStatus = document.querySelector('.upload-status');
+            const resultAlert = document.getElementById('resultAlert');
+            const submitBtn = document.getElementById('submitBtn');
+            const submitSpinner = document.getElementById('submitSpinner');
+            const submitText = document.getElementById('submitText');
+            
+            // State
+            let forceUpload = false;
+            let currentXHR = null;
+
+            // Preview media file
+            mediaInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    previewContainer.style.display = 'block';
+                    
+                    if (file.type.startsWith('image/')) {
+                        imagePreview.style.display = 'block';
+                        videoPreview.style.display = 'none';
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    } 
+                    else if (file.type.startsWith('video/')) {
+                        imagePreview.style.display = 'none';
+                        videoPreview.style.display = 'block';
+                        
+                        videoPreview.src = URL.createObjectURL(file);
+                    }
+                }
+            });
+
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
+                // Prepare for upload
+                submitBtn.disabled = true;
+                submitSpinner.style.display = 'inline-block';
+                submitText.textContent = 'Uploading...';
+                progressContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                const formData = new FormData(form);
+                if (forceUpload) {
+                    formData.append('force_upload', 'true');
+                }
+                
+                // Abort any previous upload
+                if (currentXHR) {
+                    currentXHR.abort();
+                }
+                
+                currentXHR = new XMLHttpRequest();
+                
+                // Progress handler
+                currentXHR.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percent + '%';
+                        uploadStatus.textContent = `Uploading... ${percent}%`;
+                    }
+                };
+                
+                // Load handler
+                currentXHR.onload = function() {
+                    try {
+                        const contentType = currentXHR.getResponseHeader('Content-Type') || '';
+                        
+                        if (!contentType.includes('application/json')) {
+                            showError('Server returned unexpected response');
+                            return;
+                        }
+                        
+                        const response = JSON.parse(currentXHR.responseText);
+                        
+                        if (currentXHR.status === 200 && response.success) {
+                            showSuccess(response);
+                        } 
+                        else if (currentXHR.status === 409 && response.is_duplicate) {
+                            showDuplicateWarning(response);
+                        }
+                        else {
+                            showError(response.message || 'Upload failed', response.error);
+                        }
+                    } catch (e) {
+                        showError('Failed to parse server response', e.message);
+                    }
+                };
+                
+                // Error handler
+                currentXHR.onerror = function() {
+                    showError('Network error occurred');
+                };
+                
+                // Always runs when request completes
+                currentXHR.onloadend = function() {
+                    submitBtn.disabled = false;
+                    submitSpinner.style.display = 'none';
+                    submitText.textContent = 'Upload Artwork';
+                    progressContainer.style.display = 'none';
+                    currentXHR = null;
+                };
+                
+                currentXHR.open('POST', '/upload', true);
+                currentXHR.setRequestHeader('Accept', 'application/json');
+                currentXHR.send(formData);
+            });
+
+            // Duplicate alert buttons
+            document.getElementById('cancelUpload').addEventListener('click', function() {
+                duplicateAlert.style.display = 'none';
+                forceUpload = false;
+            });
+
+            document.getElementById('forceUpload').addEventListener('click', function() {
+                duplicateAlert.style.display = 'none';
+                forceUpload = true;
+                form.dispatchEvent(new Event('submit'));
+            });
+
+            // Helper functions
+            function showSuccess(response) {
+                let html = `
+                    <h4 class="alert-heading">Upload Successful!</h4>
+                    <p>${response.message}</p>
+                `;
+                
+                if (response.needs_review) {
+                    html += `<div class="alert alert-warning mt-2 mb-0">Your artwork is pending admin approval.</div>`;
+                } else {
+                    html += `<div class="alert alert-success mt-2 mb-0">Your artwork is now live!</div>`;
+                }
+                
+                if (response.file_path) {
+                    html += `
+                        <hr>
+                        <p class="mb-0">
+                            <a href="${response.file_path}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                View Uploaded File
+                            </a>
+                        </p>
+                    `;
+                }
+                
+                showAlert('success', html);
+                
+                if (!response.needs_review) {
+                    form.reset();
+                    form.classList.remove('was-validated');
+                    previewContainer.style.display = 'none';
+                }
+            }
+            
+            function showDuplicateWarning(response) {
+                document.querySelector('.original-owner').textContent = response.original_owner;
+                document.querySelector('.original-title').textContent = response.original_title;
+                document.querySelector('.duplicate-count').textContent = response.duplicate_count;
+                duplicateAlert.style.display = 'block';
+            }
+            
+            function showError(message, detail = null) {
+                let html = `
+                    <h4 class="alert-heading">Upload Failed</h4>
+                    <p>${escapeHtml(message)}</p>
+                `;
+                
+                if (detail) {
+                    html += `
+                        <div class="alert alert-light mt-2 mb-0 p-2">
+                            <small>${escapeHtml(detail)}</small>
+                        </div>
+                    `;
+                }
+                
+                showAlert('danger', html);
+            }
+            
+            function showAlert(type, html) {
+                resultAlert.innerHTML = html;
+                resultAlert.className = `alert alert-${type} show`;
+                resultAlert.style.display = 'block';
+                
+                // Scroll to alert
+                resultAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Auto-hide after delay
+                const delay = type === 'success' ? 5000 : 10000;
+                setTimeout(() => {
+                    resultAlert.style.display = 'none';
+                }, delay);
+            }
+            
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Your Masterpiece | Creative Showcase</title>
+    <!-- Favicon -->
+    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Template Stylesheet -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #06BBCC;
+            --secondary-color: #ff6584;
+            --dark-color: #2d3748;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            background-color: #fafafa;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        .navbar {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: var(--dark-color);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: -10px;
+            left: 20%;
+            border-radius: 2px;
+        }
+        
+        #upload-feedback {
+            transition: all 0.5s ease;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        #upload-feedback.show {
+            opacity: 1;
+            height: auto;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .drag-drop-area {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(108, 99, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drag-drop-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+        }
+        
+        .drag-drop-area.active {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+        }
+        
+        .drag-drop-area i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .preview-container {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            max-width: 100%;
+            margin: 0 auto;
+            background: #fff;
+            display: none;
+        }
+        
+        .preview-container.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .preview {
+            width: 100%;
+            display: block;
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-upload {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3);
+        }
+        
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(108, 99, 255, 0.25);
+        }
+        
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag-suggestion {
+            background-color: rgba(108, 99, 255, 0.1);
+            color: var(--primary-color);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-suggestion:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .price-container {
+            position: relative;
+        }
+        
+        .price-container:before {
+            content: '$';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        #price {
+            padding-left: 30px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        .artwork-type-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .artwork-type-btn {
+            border: 2px solid #e0e0e0;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .artwork-type-btn.active {
+            border-color: var(--primary-color);
+            background-color: rgba(108, 99, 255, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .artwork-type-btn i {
+            font-size: 20px;
+        }
+        
+        /* Duplicate artwork modal styles */
+        .duplicate-modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+        }
+        
+        .duplicate-header {
+            background-color: #ffebee;
+            border-bottom: none;
+        }
+        
+        .duplicate-title {
+            color: #d32f2f;
+            font-weight: 700;
+        }
+        
+        .duplicate-body {
+            padding: 30px;
+        }
+        
+        .duplicate-footer {
+            border-top: none;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-force {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+        }
+        
+        .btn-force:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
     <!-- Spinner Start -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -638,482 +671,422 @@
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
         <div class="container">
-            <a href="" class="navbar-brand d-flex align-items-center">
-                <h2 class="m-0"><i class="fas fa-palette me-2"></i>Creative Hub</h2>
+            <a href="/" class="navbar-brand d-flex align-items-center">
+                <h2 class="m-0"><i class="fas fa-palette me-3"></i>Creative Showcase</h2>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto">
-                    <!-- Profile and Logout Buttons -->
-                    <div class="d-flex align-items-center">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle py-3 px-4 ripple" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-2"></i>{{ user_name }}
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="navbar-nav ms-auto p-4 p-lg-0">
+                    <a href="{{ url_for('profile') }}" class="nav-item nav-link">My Profile</a>
+                    <a href="{{ url_for('logout') }}" class="nav-item nav-link">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
     <!-- Navbar End -->
 
-    <!-- Artist Dashboard Start -->
+    <!-- Upload Artwork Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="row g-4">
-                <!-- Sidebar -->
-                <div class="col-lg-3">
-                    <div class="sidebar p-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <img src="https://ui-avatars.com/api/?name={{ user_name }}&background=6c5ce7&color=fff&size=64" alt="{{ user_name }}" class="rounded-circle me-3 floating" width="50">
-                            <div>
-                                <h5 class="mb-0">{{ user_name }}</h5>
-                                <small class="text-muted">Artist</small>
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h1 class="mb-5">Share Your Creativity</h1>
+                <p class="lead text-muted mb-5">Upload your artwork and join our vibrant community of creators</p>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-xl-7">
+                    <!-- Feedback Message -->
+                    <div id="upload-feedback" class="alert" role="alert"></div>
+                    
+                    <!-- Upload Artwork Form -->
+                    <form id="uploadForm" action="{{ url_for('upload_artwork') }}" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded-3 shadow-sm">
+                        <div class="form-group mb-4">
+                            <label for="title" class="form-label fw-bold">Artwork Title*</label>
+                            <input type="text" id="title" name="title" class="form-control" placeholder="Give your artwork a captivating title" required>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="description" class="form-label fw-bold">Description*</label>
+                            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Tell the story behind your creation, your inspiration, techniques used..." required></textarea>
+                            <div class="form-text">Minimum 10 characters. The more descriptive, the better!</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="price" class="form-label fw-bold">Price*</label>
+                                    <div class="price-container">
+                                        <input type="number" id="price" name="price" class="form-control" step="0.01" min="0" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label for="category" class="form-label fw-bold">Category</label>
+                                    <select id="category" name="category" class="form-select" required>
+                                        <option value="">Select a category</option>
+                                        <option value="painting">Painting</option>
+                                        <option value="photography">Photography</option>
+                                        <option value="digital">Digital Art</option>
+                                        <option value="sculpture">Sculpture</option>
+                                        <option value="music">Music</option>
+                                        <option value="animation">Animation</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="form-group mb-4">
+                            <label for="tags" class="form-label fw-bold">Tags*</label>
+                            <input type="text" id="tags" name="tags" class="form-control" placeholder="abstract, modern, portrait, landscape..." required>
+                            <div class="form-text">Separate tags with commas. Helps others discover your work.</div>
+                            
+                            <div class="tag-suggestions">
+                                <div class="tag-suggestion">abstract</div>
+                                <div class="tag-suggestion">modern</div>
+                                <div class="tag-suggestion">portrait</div>
+                                <div class="tag-suggestion">landscape</div>
+                                <div class="tag-suggestion">digital</div>
+                                <div class="tag-suggestion">minimalist</div>
+                                <div class="tag-suggestion">surreal</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label fw-bold">Upload Your Artwork*</label>
+                            <div class="drag-drop-area bg-light p-5 text-center" id="drag-drop-area">
+                                <i class="fas fa-cloud-upload-alt mb-3"></i>
+                                <h5 class="mb-2">Drag & Drop Your Files Here</h5>
+                                <p class="text-muted mb-3">or click to browse your files</p>
+                                <small class="text-muted">Supports: JPG, PNG, GIF, MP3, MP4 (Max 20MB)</small>
+                                <input type="file" id="media" name="media" accept="image/*,audio/*,video/*" required style="display: none;">
+                            </div>
+                            <div class="file-info" id="file-info"></div>
+                            
+                            <div class="preview-container mt-3" id="preview-container">
+                                <img id="preview-image" class="preview img-fluid rounded" alt="Artwork Preview">
+                                <div class="position-absolute top-0 end-0 p-2">
+                                    <button type="button" class="btn btn-sm btn-danger" id="remove-file">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <audio controls id="preview-audio" class="w-100 mt-3 d-none"></audio>
+                            <video controls id="preview-video" class="w-100 mt-3 d-none"></video>
+                        </div>
+
+                        <div class="form-group form-check mb-4">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">I confirm this is my original work and I have the rights to share it</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-upload w-100 py-3 mb-3">
+                            <i class="fas fa-upload me-2"></i> Publish Your Artwork
+                        </button>
                         
-                        <h4 class="mb-4">Dashboard</h4>
-                        <a href="{{ url_for('marketplace') }}" class="d-block mb-3"><i class="fas fa-store me-2"></i>Marketplace</a>
-                        <a href="{{ url_for('upload_artwork') }}" class="d-block mb-3"><i class="fas fa-upload me-2"></i>Upload Artwork</a>
-                        <a href="{{ url_for('art_challenges') }}" class="d-block mb-3"><i class="fas fa-trophy me-2"></i>Challenges</a>
-                        <a href="{{ url_for('collaboration_hub') }}" class="d-block mb-3"><i class="fas fa-users me-2"></i>Collaborations</a>
-                        <a href="{{ url_for('virtual_gallery') }}" class="d-block mb-3"><i class="fas fa-landmark me-2"></i>Virtual Gallery</a>
+                        <div class="text-center">
+                            <small class="text-muted">By uploading, you agree to our <a href="#">Terms of Service</a></small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Upload Artwork End -->
+
+    <!-- Duplicate Artwork Modal -->
+    <div class="modal fade" id="duplicateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content duplicate-modal-content">
+                <div class="modal-header duplicate-header">
+                    <h5 class="modal-title duplicate-title"><i class="fas fa-exclamation-triangle me-2"></i> Duplicate Artwork Detected</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body duplicate-body">
+                    <p id="duplicate-message"></p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-info-circle me-2"></i> If you're sure this is your original work, you can proceed with the upload.
                     </div>
                 </div>
+                <div class="modal-footer duplicate-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-force" id="force-upload">
+                        <i class="fas fa-upload me-2"></i> Upload Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Content -->
-                <div class="col-lg-9">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h1 class="welcome-header mb-2 animate__animated animate__fadeIn">Welcome back, {{ user_name }}! 🎨</h1>
-                            <p class="text-muted">Your creative journey continues. Here's what's happening in your world.</p>
-                        </div>
-                        <div class="d-flex">
-                            <div class="input-group me-3" style="width: 250px;">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <button class="btn btn-primary ripple" type="button"><i class="fas fa-search"></i></button>
-                            </div>
-                            <button class="btn btn-outline-secondary ripple custom-tooltip" data-tooltip="Notifications"><i class="fas fa-bell"></i></button>
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-check fa-2x"></i>
                         </div>
                     </div>
-
-                    <!-- Stat Cards -->
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center total-artwork pulse">
-                                <h4>Your Artwork</h4>
-                                <p class="display-4">24</p>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="badge bg-success"><i class="fas fa-arrow-up me-1"></i> 3 new</span>
-                                    <i class="fas fa-paint-brush fa-3x text-primary opacity-25 floating"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center challenges">
-                                <h4>Active Challenges</h4>
-                                <p class="display-4">5</p>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="badge bg-success"><i class="fas fa-arrow-up me-1"></i> 1 new</span>
-                                    <i class="fas fa-trophy fa-3x text-primary opacity-25 floating"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card bg-light p-4 rounded text-center collaborations">
-                                <h4>Collaborations</h4>
-                                <p class="display-4">3</p>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="badge bg-success"><i class="fas fa-arrow-up me-1"></i> 2 new</span>
-                                    <i class="fas fa-users fa-3x text-primary opacity-25 floating"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Cards -->
-                    <div class="row g-4 mb-4">
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-paint-brush"></i>
-                                    <h5 class="card-title">Upload Artwork</h5>
-                                    <p class="card-text">Showcase your creativity by uploading your latest artwork.</p>
-                                    <a href="{{ url_for('upload_artwork') }}" class="btn btn-primary ripple">Upload Now</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-store"></i>
-                                    <h5 class="card-title">Visit Marketplace</h5>
-                                    <p class="card-text">Browse and purchase unique artworks from talented artists.</p>
-                                    <a href="{{ url_for('marketplace') }}" class="btn btn-primary ripple">Explore</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-landmark"></i>
-                                    <h5 class="card-title">Virtual Gallery</h5>
-                                    <p class="card-text">Experience a virtual gallery showcasing amazing artworks.</p>
-                                    <a href="{{ url_for('virtual_gallery') }}" class="btn btn-primary ripple">Visit</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-trophy"></i>
-                                    <h5 class="card-title">Art Challenges</h5>
-                                    <p class="card-text">Participate in creative challenges and showcase your skills.</p>
-                                    <a href="{{ url_for('art_challenges') }}" class="btn btn-primary ripple">Join Now</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-users"></i>
-                                    <h5 class="card-title">Collaboration Hub</h5>
-                                    <p class="card-text">Connect with fellow artists to work on exciting projects.</p>
-                                    <a href="{{ url_for('collaboration_hub') }}" class="btn btn-primary ripple">Explore</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card action-card">
-                                <div class="card-body">
-                                    <i class="fas fa-robot"></i>
-                                    <h5 class="card-title">Chat with ArtBot</h5>
-                                    <p class="card-text">Get creative inspiration and feedback from our AI assistant.</p>
-                                    <a href="{{ url_for('chat') }}" class="btn btn-primary ripple">Start Chat</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Activity -->
-                    <div class="row g-4">
-                        <!-- Activity Chart -->
-                        <div class="col-lg-8">
-                            <div class="card p-4 gradient-border">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h4>Your Activity</h4>
-                                    <div>
-                                        <button class="btn btn-sm btn-outline-secondary ripple">Day</button>
-                                        <button class="btn btn-sm btn-primary ripple active">Week</button>
-                                        <button class="btn btn-sm btn-outline-secondary ripple">Month</button>
-                                    </div>
-                                </div>
-                                <div class="chart-container">
-                                    <canvas id="activityChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Recent Notifications -->
-                        <div class="col-lg-4">
-                            <div class="card p-4">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h4>Recent Activity</h4>
-                                    <span class="badge bg-primary rounded-pill">3 new</span>
-                                </div>
-                                <div class="timeline">
-                                    <div class="timeline-item mb-3">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>New artwork liked</strong>
-                                            <span class="timeline-date">15 min ago</span>
-                                        </div>
-                                        <p class="mb-0 small">"Ocean Dreams" received 5 new likes</p>
-                                    </div>
-                                    <div class="timeline-item mb-3">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>Challenge update</strong>
-                                            <span class="timeline-date">2 hours ago</span>
-                                        </div>
-                                        <p class="mb-0 small">New "Abstract Emotions" challenge started</p>
-                                    </div>
-                                    <div class="timeline-item mb-3">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>Collaboration request</strong>
-                                            <span class="timeline-date">1 day ago</span>
-                                        </div>
-                                        <p class="mb-0 small">From Alex Turner for mural project</p>
-                                    </div>
-                                    <div class="timeline-item">
-                                        <div class="d-flex justify-content-between">
-                                            <strong>Artwork featured</strong>
-                                            <span class="timeline-date">3 days ago</span>
-                                        </div>
-                                        <p class="mb-0 small">"Mountain Sunset" featured in gallery</p>
-                                    </div>
-                                </div>
-                                <a href="#" class="btn btn-link text-primary mt-3 ripple">View all activity</a>
-                            </div>
-                        </div>
+                    <h4 class="mb-3">Upload Successful!</h4>
+                    <p class="text-muted mb-4" id="success-message">Your artwork has been published to the marketplace. Share it with the world!</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('profile') }}" class="btn btn-primary">View My Profile</a>
+                        <a href="{{ url_for('upload_artwork') }}" class="btn btn-outline-primary">Upload Another</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Artist Dashboard End -->
 
-    <!-- Floating Action Button -->
-    <div class="fab ripple" id="quickActionBtn">
-        <i class="fas fa-plus"></i>
-    </div>
-    
-    <!-- Quick Action Menu (hidden by default) -->
-    <div class="card position-fixed d-none" id="quickActionMenu" style="bottom: 100px; right: 100px; width: 250px; z-index: 999; border-radius: 15px;">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Quick Actions</h5>
-            <button class="btn btn-sm btn-primary w-100 mb-2 ripple"><i class="fas fa-upload me-2"></i> Upload Art</button>
-            <button class="btn btn-sm btn-success w-100 mb-2 ripple"><i class="fas fa-trophy me-2"></i> Join Challenge</button>
-            <button class="btn btn-sm btn-info w-100 ripple"><i class="fas fa-users me-2"></i> Start Collaboration</button>
+    <!-- Review Needed Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-3">Upload Under Review</h4>
+                    <p class="text-muted mb-4">Your artwork has been uploaded but requires admin approval before being published. This usually takes 24-48 hours.</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-primary">View My Profile</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Dark Mode Toggle -->
-    <div class="dark-mode-toggle" id="darkModeToggle">
-        <i class="fas fa-moon"></i>
-    </div>
-
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Template Javascript -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-    <!-- Artist Dashboard Script -->
+    <!-- Upload Artwork Script -->
     <script>
-        // Floating particles background
-        function initParticles() {
-            const canvas = document.getElementById('particles');
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const particles = [];
-            const particleCount = window.innerWidth < 768 ? 30 : 100;
-            
-            for (let i = 0; i < particleCount; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 3 + 1,
-                    speedX: Math.random() * 0.5 - 0.25,
-                    speedY: Math.random() * 0.5 - 0.25,
-                    color: `rgba(${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.random() * 0.5 + 0.1})`
-                });
-            }
-            
-            function animateParticles() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                for (let i = 0; i < particles.length; i++) {
-                    const p = particles[i];
-                    
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = p.color;
-                    ctx.fill();
-                    
-                    p.x += p.speedX;
-                    p.y += p.speedY;
-                    
-                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-                }
-                
-                requestAnimationFrame(animateParticles);
-            }
-            
-            animateParticles();
-            
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const dragDropArea = document.getElementById('drag-drop-area');
+            const fileInput = document.getElementById('media');
+            const previewImage = document.getElementById('preview-image');
+            const previewAudio = document.getElementById('preview-audio');
+            const previewVideo = document.getElementById('preview-video');
+            const previewContainer = document.getElementById('preview-container');
+            const fileInfo = document.getElementById('file-info');
+            const feedbackDiv = document.getElementById('upload-feedback');
+            const removeFileBtn = document.getElementById('remove-file');
+            const form = document.getElementById('uploadForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalSubmitText = submitBtn.innerHTML;
+            const duplicateModal = new bootstrap.Modal(document.getElementById('duplicateModal'));
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+            const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+            const duplicateMessage = document.getElementById('duplicate-message');
+            const forceUploadBtn = document.getElementById('force-upload');
+            const tagInput = document.getElementById('tags');
+            const tagSuggestions = document.querySelectorAll('.tag-suggestion');
 
-        // Initialize Chart
-        function initChart() {
-            const ctx = document.getElementById('activityChart').getContext('2d');
-            const chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [
-                        {
-                            label: 'Artwork Views',
-                            data: [45, 32, 28, 35, 41, 38, 45],
-                            borderColor: '#6c5ce7',
-                            backgroundColor: 'rgba(108, 92, 231, 0.1)',
-                            tension: 0.3,
-                            fill: true,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#6c5ce7',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        },
-                        {
-                            label: 'New Likes',
-                            data: [12, 19, 15, 27, 22, 18, 24],
-                            borderColor: '#fd79a8',
-                            backgroundColor: 'rgba(253, 121, 168, 0.1)',
-                            tension: 0.3,
-                            fill: true,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#fd79a8',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20
-                            }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 12
-                            },
-                            padding: 12,
-                            usePointStyle: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0,0,0,0.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeOutQuart'
+            // Click to open file dialog
+            dragDropArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Handle drag and drop
+            dragDropArea.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                dragDropArea.classList.add('active');
+            });
+
+            dragDropArea.addEventListener('dragleave', () => {
+                dragDropArea.classList.remove('active');
+            });
+
+            dragDropArea.addEventListener('drop', (event) => {
+                event.preventDefault();
+                dragDropArea.classList.remove('active');
+                const files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFileSelection(files[0]);
+                }
+            });
+
+            // Preview uploaded file
+            fileInput.addEventListener('change', (event) => {
+                const files = event.target.files;
+                if (files.length > 0) {
+                    handleFileSelection(files[0]);
+                }
+            });
+
+            // Remove file
+            removeFileBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                fileInput.value = '';
+                previewImage.style.display = 'none';
+                previewAudio.classList.add('d-none');
+                previewVideo.classList.add('d-none');
+                previewContainer.classList.remove('show');
+                fileInfo.textContent = '';
+            });
+
+            // Tag suggestions
+            tagSuggestions.forEach(suggestion => {
+                suggestion.addEventListener('click', () => {
+                    const currentTags = tagInput.value;
+                    const newTag = suggestion.textContent;
+                    
+                    if (currentTags === '') {
+                        tagInput.value = newTag;
+                    } else if (!currentTags.includes(newTag)) {
+                        tagInput.value = currentTags + ', ' + newTag;
                     }
-                }
+                });
             });
-        }
 
-        // Dark mode toggle
-        function setupDarkMode() {
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const body = document.body;
-            
-            // Check for saved user preference
-            const darkMode = localStorage.getItem('darkMode') === 'enabled';
-            if (darkMode) {
-                body.classList.add('dark-mode');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            function handleFileSelection(file) {
+                // Check file size (max 20MB)
+                if (file.size > 20 * 1024 * 1024) {
+                    showFeedback('File size exceeds 20MB limit', 'danger');
+                    return;
+                }
+                
+                // Display file info
+                fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                
+                // Preview based on file type
+                previewImage.style.display = 'none';
+                previewAudio.classList.add('d-none');
+                previewVideo.classList.add('d-none');
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = "block";
+                        previewContainer.classList.add('show');
+                    };
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('audio/')) {
+                    previewAudio.src = URL.createObjectURL(file);
+                    previewAudio.classList.remove('d-none');
+                    previewContainer.classList.add('show');
+                } else if (file.type.startsWith('video/')) {
+                    previewVideo.src = URL.createObjectURL(file);
+                    previewVideo.classList.remove('d-none');
+                    previewContainer.classList.add('show');
+                }
             }
             
-            darkModeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-                const isDarkMode = body.classList.contains('dark-mode');
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+            
+            // Show feedback message
+            function showFeedback(message, type) {
+                feedbackDiv.className = `alert alert-${type} show`;
+                feedbackDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i> ${message}`;
                 
-                if (isDarkMode) {
-                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                    localStorage.setItem('darkMode', 'enabled');
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    feedbackDiv.classList.remove('show');
+                }, 5000);
+            }
+            
+            // Handle form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const file = fileInput.files[0];
+                const title = document.getElementById('title').value;
+                const description = document.getElementById('description').value;
+                const category = document.getElementById('category').value;
+                
+                if (!file) {
+                    showFeedback('Please select a file first', 'warning');
+                    return;
+                }
+                
+                if (description.length < 10) {
+                    showFeedback('Description should be at least 10 characters', 'warning');
+                    return;
+                }
+                
+                if (!category) {
+                    showFeedback('Please select a category', 'warning');
+                    return;
+                }
+                
+                // Show uploading status
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
+                
+                // Create FormData object
+                const formData = new FormData(form);
+                
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Handle server response
+                    if (data.success) {
+                        if (data.needs_review) {
+                            reviewModal.show();
+                        } else {
+                            document.getElementById('success-message').textContent = data.message || 'Your artwork has been published to the marketplace. Share it with the world!';
+                            successModal.show();
+                        }
+                        form.reset();
+                        previewContainer.classList.remove('show');
+                        fileInfo.textContent = '';
+                    } else if (data.is_duplicate) {
+                        // Show duplicate artwork modal
+                        duplicateMessage.innerHTML = `
+                            <p>This artwork was already uploaded by <strong>${data.original_owner}</strong> as <strong>"${data.original_title}"</strong>.</p>
+                            <p>It has been detected ${data.duplicate_count} time(s) in our system.</p>
+                        `;
+                        duplicateModal.show();
+                        
+                        // Handle force upload
+                        forceUploadBtn.onclick = function() {
+                            const forceInput = document.createElement('input');
+                            forceInput.type = 'hidden';
+                            forceInput.name = 'force_upload';
+                            forceInput.value = 'true';
+                            form.appendChild(forceInput);
+                            form.submit();
+                        };
+                    } else {
+                        showFeedback(data.message || 'Upload failed. Please try again.', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Upload failed:', error);
+                    showFeedback('Error during upload. Please try again.', 'danger');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalSubmitText;
+                }
+            });
+            
+            // Add pulse animation to upload button when file is selected
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    submitBtn.classList.add('pulse-animation');
                 } else {
-                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                    localStorage.setItem('darkMode', 'disabled');
+                    submitBtn.classList.remove('pulse-animation');
                 }
             });
-        }
-
-        // Quick action button functionality
-        function setupQuickActions() {
-            const quickActionBtn = document.getElementById('quickActionBtn');
-            const quickActionMenu = document.getElementById('quickActionMenu');
-            
-            quickActionBtn.addEventListener('click', () => {
-                quickActionMenu.classList.toggle('d-none');
-                quickActionMenu.classList.toggle('animate__animated', 'animate__fadeInUp');
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!quickActionBtn.contains(e.target) && !quickActionMenu.contains(e.target)) {
-                    quickActionMenu.classList.add('d-none');
-                }
-            });
-        }
-
-        // Call the functions when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            initParticles();
-            initChart();
-            setupDarkMode();
-            setupQuickActions();
-            
-            // Remove spinner
-            setTimeout(() => {
-                const spinner = document.getElementById('spinner');
-                if (spinner) {
-                    spinner.classList.remove('show');
-                    spinner.classList.add('hide');
-                    setTimeout(() => spinner.remove(), 500);
-                }
-            }, 500);
-            
-            // Add animation to elements
-            const animateElements = document.querySelectorAll('.animate-on-scroll');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate__animated', 'animate__fadeInUp');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            animateElements.forEach(el => observer.observe(el));
         });
     </script>
 </body>
