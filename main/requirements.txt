@@ -13,3 +13,6 @@ flask-migrate
 werkzeug
 paypalrestsdk
 opt-einsum
+flask_talisman
+flask-cors
+python-dotenv
