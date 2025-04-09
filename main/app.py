@@ -53,11 +53,6 @@ app.config['PROFILE_PICS_FOLDER'] = "main/static/profile_pics"
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB limit
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
-TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
-TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
-TWILIO_PHONE_NUMBER = '+2330203419613'
-SENDGRID_API_KEY = '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'
-MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['PROFILE_PICS_FOLDER'], exist_ok=True)
@@ -67,7 +62,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'art_showcase'
+    'database': 'test_db'
 }
 
 # Third-party service configurations
@@ -336,7 +331,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="art_showcase"
+        database="test_db"
     )
 
 def get_user_data(username):
@@ -1957,4 +1952,4 @@ def predict():
 
 if __name__ == "__main__":
     load_model()  # Load chatbot model
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, use_reloader=False)

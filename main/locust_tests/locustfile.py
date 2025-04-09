@@ -1,173 +1,117 @@
-from locust import HttpUser, task, between, TaskSet, tag
+from locust import HttpUser, task, between
 import random
-from faker import Faker
-import os
-from datetime import datetime
+import string
 
-# ========== CONFIGURATION ==========
-class TestConfig:
-    BASE_URL = "http://localhost:5000"  # Update for your environment
-    WAIT_TIME = (1, 5)                  # Min/max seconds between tasks
-    USER_CREDENTIALS = {
-        "admin": {"username": "cicada", "password": "57sfafgh@As6t"},
-        "regular": {"username": "cicada", "password": "57sfafgh@As6t"}
-    }
-    TEST_FILES = {
-        "images": ["test_image.jpg"],
-        "max_upload_size": 2 * 1024 * 1024  # 2MB
-    }
+class QuickstartUser(HttpUser):
+    wait_time = between(1, 5)  # Simulate realistic user think time
 
-# ========== UTILITIES ==========
-class TestUtils:
-    fake = Faker()
-    
-    @staticmethod
-    def generate_artwork_data():
-        return {
-            "title": TestUtils.fake.sentence(),
-            "description": TestUtils.fake.text(),
-            "price": random.randint(10, 1000),
-            "tags": ", ".join(TestUtils.fake.words(3)),
-            "category": random.choice(["Painting", "Sculpture", "Digital"])
-        }
-    
-    @staticmethod
-    def validate_response(response, success_codes=[200, 201, 302]):
-        if response.status_code not in success_codes:
-            response.failure(f"Unexpected status {response.status_code}")
-            return False
-        return True
-
-# ========== TEST BEHAVIORS ==========
-class AuthBehavior(TaskSet):
     def on_start(self):
-        """Executed when a user starts before any tasks"""
-        self.client.cookies.clear()
-        if random.random() < 0.1:  # 10% chance admin
-            self.login(TestConfig.USER_CREDENTIALS["admin"])
-        else:
-            if random.random() < 0.3:  # 30% register new users
-                new_user = self.register_new_user()
-                if new_user:
-                    self.login(new_user)
-                else:
-                    raise Exception("User registration failed")
-            else:
-                self.login(TestConfig.USER_CREDENTIALS["regular"])
-
-    def register_new_user(self):
-        user_data = {
-            "username": TestUtils.fake.user_name(),
-            "password": "LocustTest123!",
-            "email": TestUtils.fake.email()
+        """Executed when a simulated user starts."""
+        self.auth_token = ""
+        self.headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
         }
-        with self.client.post("/registration", data={
-            "username": user_data["username"],
-            "firstName": TestUtils.fake.first_name(),
-            "lastName": TestUtils.fake.last_name(),
-            "phone": TestUtils.fake.phone_number(),
-            "role": "Artist" if random.random() < 0.5 else "Regular User",
-            "address": TestUtils.fake.address(),
-            "email": user_data["email"],
-            "password": user_data["password"],
-            "confirmPassword": user_data["password"]
-        }, catch_response=True) as response:
-            if not TestUtils.validate_response(response):
-                return None
-        return user_data
+        self.login()
 
-    def login(self, credentials):
-        with self.client.post("/login", data={
-            "username": credentials["username"],
-            "password": credentials["password"]
-        }, catch_response=True) as response:
-            if not TestUtils.validate_response(response):
-                raise Exception("Login failed")
-
-    @task(3)
-    @tag("auth")
-    def view_profile(self):
-        with self.client.get("/profile", catch_response=True) as response:
-            TestUtils.validate_response(response)
+    def login(self):
+        credentials = {
+            "username": "cicada",
+            "password": "57sfafgh@As6t"
+        }
+        with self.client.post("/login", json=credentials, catch_response=True) as response:
+            if response.status_code == 200:
+                self.auth_token = response.json().get("token", "")
+                self.headers["Authorization"] = f"Bearer {self.auth_token}"
+            else:
+                response.failure("Login failed")
 
     @task(1)
-    @tag("auth")
-    def logout(self):
-        with self.client.get("/logout", catch_response=True) as response:
-            TestUtils.validate_response(response)
-
-class ArtworkBehavior(TaskSet):
-    @task(5)
-    @tag("artwork")
-    def browse_gallery(self):
-        with self.client.get("/virtual_gallery", catch_response=True) as response:
-            TestUtils.validate_response(response)
+    def register_user(self):
+        """Test user registration endpoint"""
+        user_data = {
+            "username": "user_" + ''.join(random.choices(string.ascii_lowercase, k=5)),
+            "email": ''.join(random.choices(string.ascii_lowercase, k=5)) + "@example.com",
+            "password": "Test@1234"
+        }
+        self.client.post("/register", json=user_data)
 
     @task(3)
-    @tag("artwork")
+    def view_homepage(self):
+        self.client.get("/")
+
+    @task(2)
+    def view_virtual_gallery(self):
+        self.client.get("/virtual_gallery")
+
+    @task(2)
+    def view_marketplace(self):
+        self.client.get("/marketplace")
+
+    @task(2)
     def view_artwork_detail(self):
-        artwork_id = random.randint(1, 100)  # Replace with dynamic ID retrieval if needed
-        with self.client.get(f"/artwork/{artwork_id}", name="/artwork/[id]", 
-                             catch_response=True) as response:
-            if response.status_code == 404:
-                response.success()  # 404s are okay if ID doesn't exist
-            else:
-                TestUtils.validate_response(response)
+        artwork_id = random.randint(1, 100)  # Assuming 1–100 are valid
+        self.client.get(f"/artwork/{artwork_id}")
 
-    @task(2)
-    @tag("artwork")
+    @task(1)
+    def view_dashboard(self):
+        self.client.get("/dashboard", headers=self.headers)
+
+    @task(1)
+    def view_profile(self):
+        self.client.get("/profile", headers=self.headers)
+
+    @task(1)
     def upload_artwork(self):
-        image_path = TestConfig.TEST_FILES["images"][0]
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"Missing test image: {image_path}")
+        artwork_data = {
+            "title": "Test Artwork " + ''.join(random.choices(string.ascii_letters, k=5)),
+            "description": "This is a test artwork upload",
+            "price": random.randint(10, 1000),
+            "tags": "test,locust",
+            "category": random.choice(["painting", "digital", "sculpture", "photography"])
+        }
+        self.client.post("/upload", json=artwork_data, headers=self.headers)
 
-        if os.path.getsize(image_path) > TestConfig.TEST_FILES["max_upload_size"]:
-            raise Exception("Test image exceeds max_upload_size")
+    @task(1)
+    def send_message(self):
+        message_data = {
+            "room": "general",
+            "message": "Test message from load test",
+            "username": "test_user"
+        }
+        self.client.post("/send_message", json=message_data, headers=self.headers)
 
-        with open(image_path, "rb") as f:
-            data = TestUtils.generate_artwork_data()
-            files = {
-                "media": (image_path, f, "image/jpeg")
-            }
+    @task(1)
+    def comment_on_artwork(self):
+        artwork_id = random.randint(1, 30)
+        comment_data = {
+            "artwork_id": artwork_id,
+            "comment": "This is a test comment",
+            "username": "test_user"
+        }
+        self.client.post("/artwork/comment", json=comment_data, headers=self.headers)
 
-            with self.client.post("/upload", files=files, data=data, catch_response=True) as response:
-                TestUtils.validate_response(response)
+    @task(1)
+    def view_leaderboard(self):
+        self.client.get("/leaderboard")
 
-class MarketplaceBehavior(TaskSet):
-    @task(4)
-    @tag("marketplace")
-    def browse_marketplace(self):
-        with self.client.get("/marketplace", catch_response=True) as response:
-            TestUtils.validate_response(response)
+    @task(1)
+    def view_insights(self):
+        self.client.get("/insights", headers=self.headers)
 
-    @task(2)
-    @tag("marketplace")
-    def simulate_purchase(self):
-        artwork_id = random.randint(1, 100)
-        with self.client.post(f"/checkout/{artwork_id}", 
-                              data={
-                                  "payment_method": random.choice(["paypal", "momo"]),
-                                  "agree_terms": "on"
-                              },
-                              name="/checkout/[id]",
-                              catch_response=True) as response:
-            TestUtils.validate_response(response)
+    @task(1)
+    def chat_with_bot(self):
+        questions = [
+            "What is this platform about?",
+            "How do I upload artwork?",
+            "Tell me about the challenges",
+            "What payment methods do you accept?",
+            "How can I contact support?"
+        ]
+        question = random.choice(questions)
+        self.client.post("/predict", json={"input_text": question}, headers=self.headers)
 
-# ========== MAIN USER CLASS ==========
-class WebsiteUser(HttpUser):
-    host = TestConfig.BASE_URL
-    wait_time = between(*TestConfig.WAIT_TIME)
-
-    tasks = {
-        AuthBehavior: 3,
-        ArtworkBehavior: 4,
-        MarketplaceBehavior: 2
-    }
-
-    def on_start(self):
-        self.start_time = datetime.now()
-
-    def on_stop(self):
-        elapsed = datetime.now() - self.start_time
-        print(f"User session duration: {elapsed}")
-        self.client.cookies.clear()
+    @task(1)
+    def logout(self):
+        self.client.get("/logout", headers=self.headers)
+        self.auth_token = ""
