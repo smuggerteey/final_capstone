@@ -43,8 +43,8 @@ from opt_einsum import contract
 # =============================================
 
 app = Flask(__name__)
-from flask_talisman import Talisman
-Talisman(app)
+#from flask_talisman import Talisman
+#Talisman(app)
 
 # Configuration
 app.secret_key = 'tinotenda'
@@ -67,7 +67,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'creative_showcase'
+    'database': 'art_showcase'
 }
 
 # Third-party service configurations
@@ -336,7 +336,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="creative_showcase"
+        database="art_showcase"
     )
 
 def get_user_data(username):
@@ -382,7 +382,7 @@ class Users(UserMixin):
     """User model for authentication."""
     def __init__(self, id, username, password, first_name=None, last_name=None, 
                  phone=None, role=None, address=None, email=None, points=0, 
-                 badges="", bio=None, profile_picture=None):
+                 badges="", bio=None, profile_picture=None,is_admin=False, **kwargs):
         self.id = id
         self.username = username
         self.password = password
@@ -396,6 +396,7 @@ class Users(UserMixin):
         self.badges = badges
         self.bio = bio
         self.profile_picture = profile_picture
+        self.is_admin = is_admin
 
 # =============================================
 # FLASK-LOGIN CONFIGURATION
@@ -679,7 +680,30 @@ def gallery():
         cursor.close()
         conn.close()
         
-        return render_template('gallery.html', artworks=artworks)
+        # Get current user data if logged in
+        username = session.get('username')
+        user_role = session.get('role', 'Guest')  # Default to 'Guest' if not logged in
+
+                # Get user data if logged in
+        user_data = None
+        if 'username' in session:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE username = %s", (session['username'],))
+            user_data = cursor.fetchone()
+            cursor.close()
+            conn.close()
+
+                # In your route, before render_template:
+            cursor.execute("SELECT role FROM users WHERE username = %s", (session['username'],))
+            user_data = cursor.fetchone()
+        
+        return render_template('gallery.html', 
+                             artworks=artworks,
+                             username=username,
+                             user_role=user_role,
+                             user_data=user_data,
+                             current_year=datetime.now().year)
     
     except Exception as e:
         return f"Error fetching artworks: {str(e)}", 500
@@ -691,33 +715,68 @@ def serve_media(filename):
 
 @app.route('/artwork/<int:artwork_id>')
 def view_artwork(artwork_id):
-    """View detailed artwork with proper media player"""
+    """View detailed artwork with proper media player and related artworks"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         
+        # Get main artwork details
         cursor.execute("""
             SELECT a.*, u.username as artist_name
             FROM artwork a
             JOIN users u ON a.user_id = u.id
             WHERE a.id = %s
         """, (artwork_id,))
-        
         artwork = cursor.fetchone()
         
-        if artwork:
-            artwork['media_url'] = get_media_url(artwork['media'])
-            artwork['media_type'] = get_media_type(artwork['media'])
+        if not artwork:
+            cursor.close()
+            conn.close()
+            return "Artwork not found", 404
+            
+        # Determine media type and URL
+        artwork['media_url'] = get_media_url(artwork['media'])
+        artwork['media_type'] = get_media_type(artwork['media'])
+        
+        # Get 4 related artworks from the same artist (excluding current artwork)
+        cursor.execute("""
+            SELECT a.id, a.title, a.media, a.price
+            FROM artwork a
+            WHERE a.user_id = %s AND a.id != %s
+            ORDER BY a.created_at DESC
+            LIMIT 4
+        """, (artwork['user_id'], artwork_id))
+        
+        related_artworks = []
+        for row in cursor.fetchall():
+            row['media_url'] = get_media_url(row['media'])
+            row['media_type'] = get_media_type(row['media'])
+            related_artworks.append(row)
         
         cursor.close()
         conn.close()
         
-        if not artwork:
-            return "Artwork not found", 404
-            
-        return render_template('artwork_detail.html', artwork=artwork)
+        # Get user data if logged in
+        user_data = None
+        if 'username' in session:
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE username = %s", (session['username'],))
+            user_data = cursor.fetchone()
+            cursor.close()
+            conn.close()
+        
+        return render_template(
+            'artwork_detail.html',
+            artwork=artwork,
+            related_artworks=related_artworks,
+            user_data=user_data,
+            username=session.get('username')
+        )
     
     except Exception as e:
+        if 'conn' in locals():
+            conn.close()
         return f"Error fetching artwork: {str(e)}", 500
 
 @app.route('/dashboard')
@@ -1046,126 +1105,279 @@ def remove_user(user_id):
 @app.route('/upload', methods=['GET', 'POST'])
 @login_required
 def upload_artwork():
-    """Upload artwork."""
     if request.method == 'POST':
-        title = request.form.get("title")
-        description = request.form.get("description")
-        price = request.form.get("price")
-        tags = request.form.get("tags")
+        # Get form data
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        price = request.form.get("price", "0").strip()
+        tags = request.form.get("tags", "").strip()
         media = request.files.get("media")
-        category = request.form.get("category")
+        category = request.form.get("category", "").strip()
+        force_upload = request.form.get("force_upload", "false").lower() == "true"
 
+        # Validate required fields
         if not all([title, description, price, tags, media, category]):
-            return jsonify({'success': False, 'message': 'Please fill in all fields and upload an artwork!'}), 400
+            return jsonify({
+                'success': False,
+                'message': 'Please fill in all required fields'
+            }), 400
 
-        if media.filename == '':
-            return jsonify({'success': False, 'message': 'No file selected!'}), 400
-
-        file_hash = hashlib.sha256(media.read()).hexdigest()
-        media.seek(0)
-
-        conn = create_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT id FROM artwork WHERE file_hash = %s", (file_hash,))
-        if cursor.fetchone():
-            return jsonify({'success': False, 'message': 'Artwork already exists!'}), 409
-
-        filename = secure_filename(media.filename)
-        file_path = os.path.join("static/uploads", filename)
-        media.save(file_path)
-
-        cursor.execute("""
-            INSERT INTO artwork (title, description, price, tags, media, user_id, file_hash, category) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (title, description, price, tags, file_path, current_user.id, file_hash, category))
-        conn.commit()
-
-        return jsonify({'success': True, 'message': 'Artwork uploaded successfully!'}), 200
-
-    return render_template("upload_artwork.html")
-
-@app.route('/api/check_artwork', methods=['POST'])
-@login_required
-def check_artwork():
-    """Check for duplicate artwork."""
-    if 'media' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
-
-    media = request.files['media']
-    if media.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-
-    try:
-        file_hash = hashlib.sha256(media.read()).hexdigest()
-        media.seek(0)
-        
-        perceptual_hash = None
-        if media.content_type.startswith('image'):
-            try:
-                img = Image.open(media.stream)
-                perceptual_hash = str(imagehash.average_hash(img))
-                media.seek(0)
-            except Exception as e:
-                logging.error(f"Image processing error: {e}")
-                return jsonify({'error': 'Error processing image'}), 400
-
-        conn = create_connection()
-        cursor = conn.cursor()
-        
         try:
+            price = float(price)
+            if price < 0:
+                raise ValueError("Price cannot be negative")
+        except ValueError:
+            return jsonify({
+                'success': False,
+                'message': 'Please enter a valid price'
+            }), 400
+
+        # Create uploads directory if it doesn't exist
+        os.makedirs('static/uploads', exist_ok=True)
+
+        # Calculate file hash
+        file_content = media.read()
+        file_hash = hashlib.sha256(file_content).hexdigest()
+        media.seek(0)  # Reset file pointer
+
+        conn = create_connection()
+        if conn is None:
+            return jsonify({
+                'success': False,
+                'message': 'Database connection error'
+            }), 500
+            
+        cursor = conn.cursor(dictionary=True)
+
+        try:
+            # Check for duplicate artwork
             cursor.execute("""
-                SELECT id, title, user_id 
-                FROM artwork 
-                WHERE file_hash = %s
+                SELECT a.id, a.title, a.user_id, a.duplicate_count, u.username
+                FROM artwork a
+                JOIN users u ON a.user_id = u.id
+                WHERE a.file_hash = %s 
+                ORDER BY a.created_at ASC 
                 LIMIT 1
             """, (file_hash,))
-            exact_match = cursor.fetchone()
+            existing_art = cursor.fetchone()
 
-            if exact_match:
+            if existing_art and not force_upload:
                 return jsonify({
-                    'status': 'duplicate',
-                    'match_type': 'exact',
-                    'existing': {
-                        'id': exact_match['id'],
-                        'title': exact_match['title'],
-                        'is_own': exact_match['user_id'] == current_user.id
-                    }
-                })
+                    'success': False,
+                    'is_duplicate': True,
+                    'message': f'This artwork was already uploaded by {existing_art["username"]}.',
+                    'original_owner': existing_art["username"],
+                    'original_title': existing_art["title"],
+                    'duplicate_count': existing_art["duplicate_count"]
+                }), 409
 
-            similar = []
-            if perceptual_hash:
+            # Save the file
+            filename = secure_filename(media.filename)
+            file_path = os.path.join("static/uploads", filename)
+            
+            # Ensure unique filename
+            counter = 1
+            while os.path.exists(file_path):
+                name, ext = os.path.splitext(filename)
+                file_path = os.path.join("static/uploads", f"{name}_{counter}{ext}")
+                counter += 1
+            
+            media.save(file_path)
+
+            # Calculate perceptual hash for images
+            perceptual_hash = None
+            if media.content_type.startswith('image'):
+                try:
+                    img = Image.open(media.stream)
+                    perceptual_hash = str(imagehash.average_hash(img))
+                    media.seek(0)
+                except Exception as e:
+                    logging.error(f"Image processing error: {e}")
+
+            # Determine if this needs review
+            needs_review = False
+            original_upload_id = None
+            duplicate_count = 0
+            
+            if existing_art:
+                original_upload_id = existing_art['id']
+                duplicate_count = existing_art['duplicate_count'] + 1
+                needs_review = duplicate_count >= 2
+                
+                # Update duplicate count on original
                 cursor.execute("""
-                    SELECT id, title, user_id 
-                    FROM artwork 
-                    WHERE perceptual_hash LIKE %s
-                    AND user_id != %s
-                    LIMIT 3
-                """, (f"{perceptual_hash[:5]}%", current_user.id))
-                similar = cursor.fetchall()
+                    UPDATE artwork 
+                    SET duplicate_count = duplicate_count + 1 
+                    WHERE id = %s
+                """, (original_upload_id,))
 
-                if similar:
-                    return jsonify({
-                        'status': 'similar',
-                        'matches': [{
-                            'id': m['id'],
-                            'title': m['title'],
-                            'is_own': m['user_id'] == current_user.id
-                        } for m in similar]
-                    })
+            # Insert new artwork
+            cursor.execute("""
+                INSERT INTO artwork (
+                    title, description, price, tags, media, user_id, 
+                    file_hash, perceptual_hash, category, original_upload_id, 
+                    duplicate_count, needs_admin_review, is_approved
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (
+                title, description, price, tags, file_path, 
+                current_user.id, file_hash, perceptual_hash, category, original_upload_id,
+                duplicate_count, needs_review, not needs_review
+            ))
+            
+            artwork_id = cursor.lastrowid
+            
+            # Add "second-hand" tag if this is a duplicate
+            if original_upload_id:
+                cursor.execute("""
+                    UPDATE artwork 
+                    SET tags = CONCAT(tags, ', second-hand') 
+                    WHERE id = %s
+                """, (artwork_id,))
+            
+            conn.commit()
 
-            return jsonify({'status': 'unique'})
+            return jsonify({
+                'success': True,
+                'message': 'Artwork uploaded successfully!',
+                'needs_review': needs_review,
+                'artwork_id': artwork_id
+            })
 
-        except pymysql.MySQLError as e:
-            logging.error(f"Database error: {e}")
-            return jsonify({'error': 'Database error'}), 500
+        except Exception as e:
+            conn.rollback()
+            logging.error(f"Upload error: {str(e)}", exc_info=True)
+            return jsonify({
+                'success': False,
+                'message': 'Error uploading artwork'
+            }), 500
         finally:
             cursor.close()
             conn.close()
 
+    return render_template("upload_artwork.html")
+
+@app.route('/admin/review')
+@login_required
+def admin_review():
+    return render_template("admin_review.html")
+
+@app.route('/api/artworks_needing_review')
+@login_required
+def artworks_needing_review():
+    conn = create_connection()
+    if conn is None:
+        return jsonify({'error': 'Database connection failed'}), 500
+        
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Fetch both artworks needing review AND all duplicates
+        cursor.execute("""
+            SELECT a.*, u.username as owner_username 
+            FROM artwork a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.needs_admin_review = TRUE 
+               OR a.original_upload_id IS NOT NULL
+               OR a.duplicate_count > 0
+            ORDER BY 
+                CASE 
+                    WHEN a.needs_admin_review = TRUE THEN 0
+                    WHEN a.original_upload_id IS NOT NULL THEN 1
+                    ELSE 2
+                END,
+                a.created_at DESC
+        """)
+        artworks = cursor.fetchall()
+        
+        # Enhance the data with duplicate information
+        enhanced_artworks = []
+        for artwork in artworks:
+            if artwork['original_upload_id']:
+                cursor.execute("""
+                    SELECT title, user_id 
+                    FROM artwork 
+                    WHERE id = %s
+                """, (artwork['original_upload_id'],))
+                original = cursor.fetchone()
+                if original:
+                    cursor.execute("""
+                        SELECT username 
+                        FROM users 
+                        WHERE id = %s
+                    """, (original['user_id'],))
+                    original_owner = cursor.fetchone()
+                    artwork['original_title'] = original['title']
+                    artwork['original_owner'] = original_owner['username'] if original_owner else 'Unknown'
+            
+            enhanced_artworks.append(artwork)
+        
+        return jsonify(enhanced_artworks)
     except Exception as e:
-        logging.error(f"Unexpected error: {e}")
-        return jsonify({'error': 'Internal server error'}), 500
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/admin/review_artwork', methods=['POST'])
+@login_required
+def review_artwork():
+    artwork_id = request.form.get('artwork_id')
+    action = request.form.get('action')
+    
+    if not artwork_id or not action:
+        return jsonify({'success': False, 'message': 'Missing parameters'}), 400
+    
+    conn = create_connection()
+    if conn is None:
+        return jsonify({'success': False, 'message': 'Database connection failed'}), 500
+        
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        if action == 'approve':
+            # For duplicates, we might want to keep track of approved duplicates
+            cursor.execute("""
+                UPDATE artwork 
+                SET is_approved = TRUE, 
+                    needs_admin_review = FALSE,
+                    is_approved = 1
+                WHERE id = %s
+            """, (artwork_id,))
+            message = 'Artwork approved successfully'
+        else:
+            # For duplicates, we might want to reject all copies
+            cursor.execute("""
+                SELECT media, original_upload_id 
+                FROM artwork 
+                WHERE id = %s
+            """, (artwork_id,))
+            artwork_data = cursor.fetchone()
+            file_path = artwork_data['media']
+            
+            if artwork_data['original_upload_id']:
+                # If this is a duplicate, we might want to reject all copies
+                cursor.execute("""
+                    DELETE FROM artwork 
+                    WHERE original_upload_id = %s OR id = %s
+                """, (artwork_data['original_upload_id'], artwork_id))
+            else:
+                cursor.execute("DELETE FROM artwork WHERE id = %s", (artwork_id,))
+            
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except Exception as e:
+                    logging.error(f"Error deleting file: {e}")
+            message = 'Artwork rejected and removed'
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': message})
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
 
 @app.route('/marketplace')
 def marketplace():
@@ -1225,6 +1437,13 @@ def delete_artwork():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/admin/reports')
+@login_required
+def admin_reports():
+    # Get all reports from the database
+    return render_template('admin_reports.html')
+
 
 # =============================================
 # ROUTES - USER PROFILE
@@ -1533,69 +1752,6 @@ def payment_cancel():
 # ROUTES - ADMINISTRATION
 # =============================================
 
-@app.route('/settings')
-@login_required
-def settings():
-    """System settings dashboard."""
-    try:
-        conn = create_connection()
-        cursor = conn.cursor(dictionary=True)
-        
-        settings_data = {
-            'general': {},
-            'users': {},
-            'content': {},
-            'security': {},
-            'email': {},
-            'system': {}
-        }
-        
-        cursor.execute("SELECT * FROM system_settings")
-        for setting in cursor.fetchall():
-            settings_data[setting['category']][setting['setting_name']] = setting['setting_value']
-        
-        cursor.execute("SELECT role, GROUP_CONCAT(permission) as permissions FROM role_permissions GROUP BY role")
-        role_permissions = {row['role']: row['permissions'].split(',') for row in cursor.fetchall()}
-        
-        cursor.execute("SELECT file_type FROM allowed_file_types")
-        allowed_file_types = [row['file_type'] for row in cursor.fetchall()]
-        
-        cursor.execute("SELECT * FROM system_info LIMIT 1")
-        system_info = cursor.fetchone() or {}
-        
-        cursor.execute("""
-            SELECT * FROM system_logs 
-            WHERE log_type IN ('SETTINGS_CHANGE', 'SYSTEM_ACTION')
-            ORDER BY created_at DESC 
-            LIMIT 10
-        """)
-        recent_activities = cursor.fetchall()
-        
-        cursor.execute("SELECT * FROM backups ORDER BY created_at DESC LIMIT 5")
-        backup_history = cursor.fetchall()
-        
-        return render_template('settings.html',
-                           user_data={
-                               'username': current_user.username,
-                               'role': current_user.role
-                           },
-                           settings=settings_data,
-                           role_permissions=role_permissions,
-                           allowed_file_types=allowed_file_types,
-                           system_info=system_info,
-                           recent_activities=recent_activities,
-                           backup_history=backup_history)
-    
-    except Exception as e:
-        logging.error(f"Error loading settings: {e}")
-        flash('Failed to load system settings', 'danger')
-        return redirect(url_for('admindashboard'))
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-
 def get_leaderboard():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
@@ -1610,313 +1766,6 @@ def get_leaderboard():
     finally:
         cursor.close()
         conn.close()
-
-@app.route('/api/settings/update', methods=['POST'])
-@login_required
-def update_settings():
-    """Update system settings."""
-    data = request.get_json()
-    if not data or 'category' not in data or 'settings' not in data:
-        return jsonify({'error': 'Invalid request format'}), 400
-    
-    category = data['category']
-    settings = data['settings']
-    
-    if category not in ['general', 'users', 'content', 'security', 'email']:
-        return jsonify({'error': 'Invalid settings category'}), 400
-    
-    conn = None
-    cursor = None
-    try:
-        conn = create_connection()
-        cursor = conn.cursor()
-        
-        conn.start_transaction()
-        
-        for key, value in settings.items():
-            if isinstance(value, bool):
-                value = '1' if value else '0'
-            
-            cursor.execute("""
-                INSERT INTO system_settings (setting_name, setting_value, category)
-                VALUES (%s, %s, %s)
-                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
-            """, (key, str(value), category))
-        
-        log_system_activity(
-            user_id=current_user.id,
-            activity_type='SETTINGS_UPDATE',
-            description=f'Updated {category} settings',
-            ip_address=request.remote_addr
-        )
-        
-        conn.commit()
-        return jsonify({'success': True, 'message': 'Settings updated successfully'})
-    
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        logging.error(f"Error updating settings: {e}")
-        return jsonify({'error': 'Failed to update settings'}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-@app.route('/api/settings/roles', methods=['POST'])
-@login_required
-def update_role_permissions():
-    """Update role permissions."""
-    data = request.get_json()
-    if not data or 'roles' not in data:
-        return jsonify({'error': 'Invalid request format'}), 400
-    
-    conn = None
-    cursor = None
-    try:
-        conn = create_connection()
-        cursor = conn.cursor()
-        
-        conn.start_transaction()
-        
-        cursor.execute("DELETE FROM role_permissions")
-        
-        for role, permissions in data['roles'].items():
-            for permission in permissions:
-                cursor.execute("""
-                    INSERT INTO role_permissions (role, permission)
-                    VALUES (%s, %s)
-                """, (role, permission))
-        
-        log_system_activity(
-            user_id=current_user.id,
-            activity_type='ROLE_UPDATE',
-            description='Updated role permissions',
-            ip_address=request.remote_addr
-        )
-        
-        conn.commit()
-        return jsonify({'success': True, 'message': 'Role permissions updated successfully'})
-    
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        logging.error(f"Error updating role permissions: {e}")
-        return jsonify({'error': 'Failed to update role permissions'}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-@app.route('/api/settings/filetypes', methods=['POST'])
-@login_required
-def update_file_types():
-    """Update allowed file types."""
-    data = request.get_json()
-    if not data or 'file_types' not in data:
-        return jsonify({'error': 'Invalid request format'}), 400
-    
-    conn = None
-    cursor = None
-    try:
-        conn = create_connection()
-        cursor = conn.cursor()
-        
-        conn.start_transaction()
-        
-        cursor.execute("DELETE FROM allowed_file_types")
-        
-        for file_type in data['file_types']:
-            cursor.execute("""
-                INSERT INTO allowed_file_types (file_type)
-                VALUES (%s)
-            """, (file_type,))
-        
-        log_system_activity(
-            user_id=current_user.id,
-            activity_type='SETTINGS_UPDATE',
-            description='Updated allowed file types',
-            ip_address=request.remote_addr
-        )
-        
-        conn.commit()
-        return jsonify({'success': True, 'message': 'Allowed file types updated successfully'})
-    
-    except Exception as e:
-        if conn:
-            conn.rollback()
-        logging.error(f"Error updating file types: {e}")
-        return jsonify({'error': 'Failed to update file types'}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-@app.route('/api/settings/test_email', methods=['POST'])
-@login_required
-def test_email_configuration():
-    """Test email configuration."""
-    data = request.get_json()
-    if not data or 'email' not in data:
-        return jsonify({'error': 'Email address is required'}), 400
-    
-    try:
-        conn = create_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM system_settings WHERE category = 'email'")
-        email_settings = {row['setting_name']: row['setting_value'] for row in cursor.fetchall()}
-        
-        subject = "Test Email from System Settings"
-        body = "This is a test email to verify your email configuration is working properly."
-        
-        if send_email(
-            to_email=data['email'],
-            subject=subject,
-            body=body,
-            smtp_host=email_settings.get('smtp_host'),
-            smtp_port=email_settings.get('smtp_port'),
-            smtp_username=email_settings.get('smtp_username'),
-            smtp_password=email_settings.get('smtp_password'),
-            use_ssl=email_settings.get('smtp_ssl') == '1',
-            from_email=email_settings.get('from_email'),
-            from_name=email_settings.get('from_name')
-        ):
-            log_system_activity(
-                user_id=current_user.id,
-                activity_type='EMAIL_TEST',
-                description='Sent test email successfully',
-                ip_address=request.remote_addr
-            )
-            return jsonify({'success': True, 'message': 'Test email sent successfully'})
-        else:
-            return jsonify({'error': 'Failed to send test email'}), 500
-            
-    except Exception as e:
-        logging.error(f"Error testing email configuration: {e}")
-        return jsonify({'error': 'Failed to test email configuration'}), 500
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-
-@app.route('/api/settings/backup', methods=['POST'])
-@login_required
-def create_system_backup():
-    """Create system backup."""
-    data = request.get_json()
-    backup_type = data.get('type', 'full')
-    
-    try:
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        backup_filename = f"backup_{timestamp}.zip"
-        
-        if backup_type == 'database':
-            success = backup_database(backup_filename)
-        elif backup_type == 'files':
-            success = backup_files(backup_filename)
-        else:
-            success = backup_database(backup_filename) and backup_files(backup_filename)
-        
-        if success:
-            conn = create_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO backups (filename, backup_type, created_by)
-                VALUES (%s, %s, %s)
-            """, (backup_filename, backup_type, current_user.id))
-            conn.commit()
-            
-            cursor.execute("""
-                UPDATE system_info 
-                SET last_backup = NOW()
-                WHERE id = 1
-            """)
-            conn.commit()
-            
-            log_system_activity(
-                user_id=current_user.id,
-                activity_type='BACKUP_CREATED',
-                description=f'Created {backup_type} backup: {backup_filename}',
-                ip_address=request.remote_addr
-            )
-            
-            return jsonify({
-                'success': True,
-                'message': 'Backup created successfully',
-                'filename': backup_filename
-            })
-        else:
-            return jsonify({'error': 'Failed to create backup'}), 500
-            
-    except Exception as e:
-        logging.error(f"Error creating backup: {e}")
-        return jsonify({'error': 'Failed to create backup'}), 500
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-
-@app.route('/api/settings/maintenance', methods=['POST'])
-@login_required
-def perform_maintenance_action():
-    """Perform system maintenance."""
-    data = request.get_json()
-    action = data.get('action')
-    
-    if not action:
-        return jsonify({'error': 'No action specified'}), 400
-    
-    try:
-        if action == 'clear_cache':
-            clear_application_cache()
-            message = 'Application cache cleared successfully'
-            
-        elif action == 'optimize_db':
-            conn = create_connection()
-            cursor = conn.cursor()
-            cursor.execute("SHOW TABLES")
-            tables = [row[0] for row in cursor.fetchall()]
-            
-            for table in tables:
-                cursor.execute(f"OPTIMIZE TABLE {table}")
-            
-            message = 'Database optimization completed successfully'
-            
-        elif action == 'purge_logs':
-            conn = create_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                DELETE FROM system_logs 
-                WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
-            """)
-            conn.commit()
-            message = 'Purged logs older than 30 days'
-            
-        else:
-            return jsonify({'error': 'Invalid maintenance action'}), 400
-        
-        log_system_activity(
-            user_id=current_user.id,
-            activity_type='MAINTENANCE',
-            description=f'Performed maintenance: {action}',
-            ip_address=request.remote_addr
-        )
-        
-        return jsonify({'success': True, 'message': message})
-    
-    except Exception as e:
-        logging.error(f"Error performing maintenance: {e}")
-        return jsonify({'error': 'Failed to perform maintenance'}), 500
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
 
 # =============================================
 # ROUTES - ANALYTICS AND REPORTS

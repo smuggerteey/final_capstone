@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ artwork.title }} | Creative Showcase</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -13,7 +12,7 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +20,6 @@
 
     <!-- Libraries Stylesheet -->
     <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
 
     <!-- Customized Bootstrap Stylesheet -->
@@ -30,507 +28,441 @@
     <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
-    <!-- Artwork Page Styles -->
     <style>
         :root {
-            --primary-color: #06BBCC;
-            --primary-light: rgba(78, 102, 248, 0.1);
-            --secondary-color: #FF6B6B;
-            --dark-color: #1A1A2E;
-            --light-color: #F8F9FA;
-            --text-color: #4A4A68;
-            --text-light: #8C8CA1;
-            --border-radius: 16px;
-            --box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --primary: #06BBCC;
+            --secondary: #f8f1ff;
+            --light: #f9f9f9;
+            --dark: #1a1423;
+            --accent: #ff7e5f;
         }
         
         body {
-            font-family: 'Heebo', sans-serif;
-            color: var(--text-color);
-            background-color: #FAFAFC;
-            line-height: 1.7;
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            background-color: var(--light);
         }
         
-        .artwork-header {
-            background: linear-gradient(135deg, var(--dark-color) 0%, #16213E 100%);
-            padding: 140px 0 60px;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
         }
         
-        .artwork-header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(78, 102, 248, 0.15) 0%, transparent 70%);
-            z-index: 0;
+        .bg-primary {
+            background-color: var(--primary) !important;
+        }
+        
+        .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        .text-accent {
+            color: var(--accent) !important;
         }
         
         .artwork-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 50px;
             background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            position: relative;
-            z-index: 1;
-            margin-top: -80px;
-            border: none;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
         }
         
         .media-display {
-            width: 100%;
-            margin-bottom: 50px;
-            text-align: center;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-            position: relative;
-            background: #f8f9fa;
-            min-height: 400px;
+            background-color: #f8f9fa;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: var(--transition);
+            padding: 30px;
+            min-height: 500px;
+            border-bottom: 1px solid #eee;
         }
         
-        .media-display:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.12);
-        }
-        
-        .media-display img {
+        .artwork-image {
+            max-height: 70vh;
+            width: auto;
             max-width: 100%;
-            max-height: 70vh;
             object-fit: contain;
-            transition: transform 0.5s ease;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
         
-        .media-display:hover img {
-            transform: scale(1.03);
+        .artwork-image:hover {
+            transform: scale(1.02);
         }
         
-        .media-display video {
+        .artwork-video {
             width: 100%;
             max-height: 70vh;
-            background: #000;
-            border-radius: var(--border-radius);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .media-display audio {
+        .artwork-audio {
             width: 100%;
-            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .artwork-meta {
-            margin-bottom: 45px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            position: relative;
-        }
-        
-        .artwork-meta::after {
-            content: "";
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 120px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 3px;
+        .artwork-details {
+            padding: 40px;
+            background: white;
         }
         
         .artwork-title {
-            font-size: 2.8rem;
-            margin: 0 0 20px 0;
-            color: var(--dark-color);
-            font-family: 'Playfair Display', serif;
-            font-weight: 800;
-            line-height: 1.2;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .artwork-title::after {
-            content: "";
-            position: absolute;
-            bottom: -12px;
-            left: 0;
-            width: 80px;
-            height: 4px;
-            background: var(--secondary-color);
-            border-radius: 2px;
-        }
-        
-        .artwork-artist {
-            font-size: 1.4rem;
-            color: var(--text-light);
+            font-size: 2.5rem;
             margin-bottom: 20px;
-            font-weight: 500;
+            color: var(--dark);
+            position: relative;
+            padding-bottom: 15px;
         }
         
-        .artwork-artist a {
-            color: var(--primary-color);
-            text-decoration: none;
-            transition: var(--transition);
-            font-weight: 600;
-        }
-        
-        .artwork-artist a:hover {
-            color: var(--secondary-color);
-            text-decoration: underline;
-        }
-        
-        .artwork-date {
-            color: var(--text-light);
-            font-size: 1rem;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .artwork-date i {
-            color: var(--secondary-color);
-            font-size: 1.1rem;
+        .artwork-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
         }
         
         .artwork-description {
-            line-height: 1.9;
-            margin-bottom: 45px;
-            white-space: pre-line;
-            font-size: 1.15rem;
-            color: var(--text-color);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 30px;
         }
         
-        .media-controls {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
-        .tags {
-            margin: 30px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        
-        .tag {
-            display: inline-block;
-            padding: 8px 18px;
-            background: var(--primary-light);
-            border-radius: 30px;
-            font-size: 0.9rem;
-            color: var(--primary-color);
-            transition: var(--transition);
-            border: none;
-            font-weight: 500;
-        }
-        
-        .tag:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(78, 102, 248, 0.2);
-        }
-        
-        .artwork-actions {
-            display: flex;
-            gap: 15px;
-            margin: 35px 0;
-            flex-wrap: wrap;
-        }
-        
-        .action-btn {
+        .artist-info {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: var(--transition);
-            border: none;
-            cursor: pointer;
-        }
-        
-        .like-btn {
-            background: rgba(255, 107, 107, 0.1);
-            color: var(--secondary-color);
-        }
-        
-        .like-btn:hover, .like-btn.active {
-            background: var(--secondary-color);
-            color: white;
-            box-shadow: 0 6px 12px rgba(255, 107, 107, 0.3);
-        }
-        
-        .save-btn {
-            background: rgba(78, 102, 248, 0.1);
-            color: var(--primary-color);
-        }
-        
-        .save-btn:hover, .save-btn.active {
-            background: var(--primary-color);
-            color: white;
-            box-shadow: 0 6px 12px rgba(78, 102, 248, 0.2);
-        }
-        
-        .share-btn {
-            background: rgba(26, 26, 46, 0.1);
-            color: var(--dark-color);
-        }
-        
-        .share-btn:hover {
-            background: var(--dark-color);
-            color: white;
-            box-shadow: 0 6px 12px rgba(26, 26, 46, 0.2);
-        }
-        
-        .artist-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 30px;
-            margin: 50px 0;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: var(--transition);
-            box-shadow: var(--box-shadow);
-        }
-        
-        .artist-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 16px 32px -8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
         }
         
         .artist-avatar {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
         }
         
-        .artist-info h4 {
-            margin-bottom: 8px;
+        .artist-details {
+            margin-left: 20px;
+        }
+        
+        .artist-name {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .artist-role {
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        .price-section {
+            background: linear-gradient(135deg, var(--primary), #6a8fc7);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .price {
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--dark-color);
-            font-size: 1.4rem;
+            margin-bottom: 10px;
         }
         
-        .artist-info p {
-            color: var(--text-light);
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-        }
-        
-        .artist-social {
+        .rating {
             display: flex;
-            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
         }
         
-        .artist-social a {
-            color: var(--text-light);
+        .rating-stars {
+            color: #ffc107;
+            margin-right: 10px;
+        }
+        
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .meta-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .meta-label {
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
             font-size: 1.1rem;
-            transition: var(--transition);
+            font-weight: 500;
+            color: var(--dark);
         }
         
-        .artist-social a:hover {
-            color: var(--primary-color);
+        .action-buttons {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            padding: 12px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8c;
+            border-color: #3a5a8c;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background-color: #e66a4a;
+            border-color: #e66a4a;
+            color: white;
+        }
+        
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-icon:hover {
             transform: translateY(-3px);
         }
         
-        .related-works {
-            margin-top: 70px;
+        .facebook {
+            background-color: #3b5998;
+        }
+        
+        .twitter {
+            background-color: #1da1f2;
+        }
+        
+        .instagram {
+            background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+        }
+        
+        .pinterest {
+            background-color: #e60023;
+        }
+        
+        .accordion-item {
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            margin-bottom: 10px;
+            border-radius: 8px !important;
+            overflow: hidden;
+        }
+        
+        .accordion-button {
+            font-weight: 500;
+            background-color: #f9f9f9;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .related-artworks-section {
+            padding: 60px 0;
+            background-color: #f9f9f9;
         }
         
         .section-title {
             position: relative;
             margin-bottom: 40px;
-            font-weight: 800;
-            color: var(--dark-color);
-            font-size: 2rem;
-            font-family: 'Playfair Display', serif;
+            padding-bottom: 15px;
         }
         
-        .section-title::after {
-            content: "";
+        .section-title:after {
+            content: '';
             position: absolute;
-            bottom: -12px;
+            bottom: 0;
             left: 0;
             width: 60px;
-            height: 4px;
-            background: var(--secondary-color);
-            border-radius: 2px;
+            height: 3px;
+            background: var(--accent);
         }
         
-        .btn {
-            padding: 12px 28px;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover {
-            background: #3A56F7;
-            border-color: #3A56F7;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(78, 102, 248, 0.3);
-        }
-        
-        .btn-outline-primary {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-        
-        .btn-outline-primary:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(78, 102, 248, 0.2);
-        }
-        
-        .floating-share {
-            position: fixed;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
+        .related-artwork-card {
             background: white;
-            border-radius: 50px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            padding: 12px 6px;
-            z-index: 99;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
         }
         
-        .floating-share a {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: var(--transition);
+        .related-artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .related-artwork-img {
+            height: 220px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .related-artwork-body {
+            padding: 20px;
+        }
+        
+        .related-artwork-title {
             font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: var(--dark);
         }
         
-        .floating-share a:hover {
-            transform: scale(1.15) translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        .related-artwork-price {
+            color: var(--primary);
+            font-weight: 600;
         }
         
-        .facebook { background: #3b5998; }
-        .twitter { background: #1da1f2; }
-        .pinterest { background: #e60023; }
-        .linkedin { background: #0077b5; }
-        
-        /* Animation classes */
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+        .tag {
+            display: inline-block;
+            background-color: #e9f0f8;
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            transition: all 0.3s;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .tag:hover {
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
         }
         
-        .pulse {
-            animation: pulse 3s ease-in-out infinite;
+        .back-to-gallery {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+            transition: all 0.3s;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 992px) {
-            .artwork-container {
-                padding: 40px;
-                margin-top: -60px;
-            }
-            
-            .artwork-title {
-                font-size: 2.4rem;
-            }
+        .back-to-gallery:hover {
+            color: var(--accent);
+            transform: translateX(-5px);
         }
         
         @media (max-width: 768px) {
-            .artwork-header {
-                padding: 100px 0 40px;
-            }
-            
-            .artwork-container {
-                padding: 30px;
-                margin-top: -40px;
-            }
-            
             .artwork-title {
                 font-size: 2rem;
             }
             
-            .artist-card {
-                flex-direction: column;
-                text-align: center;
+            .media-display {
+                min-height: 300px;
+                padding: 15px;
             }
             
-            .artist-info {
-                text-align: center;
+            .artwork-details {
+                padding: 25px;
             }
             
-            .artist-social {
-                justify-content: center;
+            .meta-info {
+                flex-wrap: wrap;
+                gap: 15px;
             }
             
-            .floating-share {
-                position: static;
-                flex-direction: row;
-                justify-content: center;
-                margin: 40px 0;
-                transform: none;
-                padding: 12px 20px;
-                border-radius: 30px;
+            .meta-item {
+                flex: 0 0 calc(50% - 15px);
             }
         }
+
+        /* Report modal specific styles */
+        .report-modal .modal-header {
+            background-color: var(--primary);
+            color: white;
+        }
         
-        @media (max-width: 576px) {
-            .artwork-title {
-                font-size: 1.8rem;
-            }
-            
-            .artwork-artist {
-                font-size: 1.2rem;
-            }
-            
-            .artwork-actions {
-                justify-content: center;
-            }
-            
-            .action-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
+        .report-modal .modal-footer {
+            background-color: #f8f9fa;
+        }
+        
+        .report-modal .btn-submit {
+            background-color: var(--accent);
+            border-color: var(--accent);
+        }
+        
+        .report-modal .btn-submit:hover {
+            background-color: #e66a4a;
+            border-color: #e66a4a;
+        }
+        
+        .report-success {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .report-success i {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
         }
     </style>
 </head>
+
 <body>
     <!-- Spinner -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
@@ -539,122 +471,249 @@
         </div>
     </div>
 
-    <!-- Navbar -->
+    <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fas fa-palette me-3"></i>Creative Showcase</h2>
+            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active"></a>
-                <a href="#about" class="nav-item nav-link"></a>
-                <a href="#artists" class="nav-item nav-link"></a>
-                <a href="#contact" class="nav-item nav-link"></a>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
             </div>
         </div>
     </nav>
-
-    <!-- Artwork Header -->
-    <div class="container-fluid artwork-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container text-center py-5 position-relative">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">{{ artwork.title }}</h1>
-            <nav aria-label="breadcrumb animated slideInDown">
-                <ol class="breadcrumb justify-content-center mb-0">
-                    <li class="breadcrumb-item"><a class="text-white" href="{{ url_for('marketplace') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Gallery</a></li>
-                    <li class="breadcrumb-item text-primary active" aria-current="page">{{ artwork.title }}</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
+    <!-- Navbar End -->
 
     <!-- Artwork Content -->
-    <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-        <div class="artwork-container">
-            <div class="media-display pulse">
-                {% if artwork.media_type == 'image' %}
-                    <a href="{{ artwork.media_url }}" data-lightbox="artwork" data-title="{{ artwork.title }}">
-                        <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="img-fluid">
-                    </a>
-                {% elif artwork.media_type == 'video' %}
-                    <video controls class="img-fluid">
-                        <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
-                        Your browser does not support the video tag.
-                    </video>
-                {% elif artwork.media_type == 'audio' %}
-                    <audio controls>
-                        <source src="{{ artwork.media_url }}" type="audio/{{ artwork.media.split('.')[-1] }}">
-                        Your browser does not support the audio element.
-                    </audio>
-                {% else %}
-                    <div class="alert alert-warning">Unsupported media type</div>
-                {% endif %}
-            </div>
-
-            <div class="artwork-meta fade-in">
-                <h1 class="artwork-title">{{ artwork.title }}</h1>
-                <div class="artwork-artist">By <a href="#"><strong>{{ artwork.artist_name }}</strong></a></div>
-                <div class="artwork-date">
-                    <i class="far fa-calendar-alt"></i>Uploaded on {{ artwork.upload_date.strftime('%B %d, %Y') }} • 
-                    <i class="fas fa-eye"></i>{{ "{:,}".format(artwork.views) }} views
-                </div>
-                
-                <div class="artwork-actions">
-                    <button class="action-btn like-btn" id="likeBtn" data-artwork-id="{{ artwork.id }}">
-                        <i class="far fa-heart"></i> <span>{{ "{:,}".format(artwork.likes) }} Likes</span>
-                    </button>
-                    <button class="action-btn save-btn" id="saveBtn" data-artwork-id="{{ artwork.id }}">
-                        <i class="far fa-bookmark"></i> <span>Save</span>
-                    </button>
-                    <button class="action-btn share-btn" id="shareBtn">
-                        <i class="fas fa-share-alt"></i> <span>Share</span>
-                    </button>
-                </div>
-            </div>
-            
-            {% if artwork.tags %}
-            <div class="tags">
-                {% for tag in artwork.tags.split(',') %}
-                    <span class="tag"><i class="fas fa-tag me-1"></i>{{ tag.strip() }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
-            
-            <div class="artwork-description fade-in">
-                {{ artwork.description }}
-            </div>
-            
-            <!-- Artist Card -->
-            <div class="artist-card fade-in">
-                <img src="{{ url_for('static', filename='img/artist-avatar.jpg') }}" alt="Artist" class="artist-avatar">
-                <div class="artist-info">
-                    <h4>{{ artwork.artist_name }}</h4>
-                    <p>Digital Artist & Photographer</p>
-                    <div class="artist-social">
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-behance"></i></a>
-                        <a href="#"><i class="fab fa-dribbble"></i></a>
+    <div class="container py-5">        
+        <div class="row">
+            <!-- Media Column -->
+            <div class="col-lg-7 mb-5 mb-lg-0">
+                <div class="artwork-container">
+                    <div class="media-display">
+                        {% if artwork.media_type == 'image' %}
+                            <a href="{{ artwork.media_url }}" data-lightbox="artwork" data-title="{{ artwork.title }}">
+                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="artwork-image">
+                            </a>
+                        {% elif artwork.media_type == 'video' %}
+                            <video controls class="artwork-video">
+                                <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% elif artwork.media_type == 'audio' %}
+                            <audio controls class="artwork-audio">
+                                <source src="{{ artwork.media_url }}" type="audio/{{ artwork.media.split('.')[-1] }}">
+                                Your browser does not support the audio element.
+                            </audio>
+                        {% else %}
+                            <div class="alert alert-warning">Unsupported media type</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Tags -->
+                    {% if artwork.tags %}
+                    <div class="p-4">
+                        <h5 class="mb-3">Tags</h5>
+                        <div>
+                            {% for tag in artwork.tags.split(',') %}
+                            <a href="#" class="tag">{{ tag.strip() }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Report Button -->
+                    <div class="p-3 text-end">
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#reportModal" 
+                                data-type="artwork" data-id="{{ artwork.id }}">
+                            <i class="fas fa-flag me-1"></i> Report Artwork
+                        </button>
                     </div>
                 </div>
-                <a href="#" class="btn btn-outline-primary ms-md-auto">View Profile</a>
             </div>
             
-            <div class="text-center mt-5">
-                <a href="{{ url_for('marketplace') }}" class="btn btn-primary py-3 px-5 me-3">
-                    <i class="fa fa-arrow-left me-2"></i>Back to Gallery
-                </a>
-                <a href="{{ url_for('checkout') }}" class="btn btn-outline-primary py-3 px-5">
-                    <i class="fas fa-shopping-cart me-2"></i>Purchase Artwork
-                </a>
+            <!-- Details Column -->
+            <div class="col-lg-5">
+                <div class="artwork-details">
+                    <h1 class="artwork-title">{{ artwork.title }}</h1>
+                    <p class="artwork-description">{{ artwork.description }}</p>
+                    
+                    <div class="artist-info">
+                        <img src="{{ url_for('static', filename='img/user.jpg') }}" alt="{{ artwork.artist_name }}" class="artist-avatar">
+                        <div class="artist-details">
+                            <h5 class="artist-name">{{ artwork.artist_name }}</h5>
+                            <p class="artist-role mb-0">Visual Artist</p>
+                        </div>
+                    </div>
+                    
+                    <div class="price-section">
+                        <div class="price">${{ artwork.price }}</div>
+                        <div class="rating">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span>4.8 (24 reviews)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="meta-info">
+                        <div class="meta-item">
+                            <div class="meta-label">Category</div>
+                            <div class="meta-value">{{ artwork.category }}</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Created</div>
+                            <div class="meta-value">{{ artwork.created_at.strftime('%b %d, %Y') }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a href="/checkout" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-shopping-cart me-2"></i> Purchase
+                        </a>
+                        <button class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-heart me-2"></i> Add to Favorites
+                        </button>
+                       
+                    </div>
+                    
+                    <div class="accordion" id="artworkAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    <i class="fas fa-truck me-2"></i> Delivery Information
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#artworkAccordion">
+                                <div class="accordion-body">
+                                    <p>Digital items will be available for download immediately after purchase. Physical items will be shipped within 3-5 business days.</p>
+                                    <p class="mb-0">Shipping costs will be calculated at checkout based on your location.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                    <i class="fas fa-exchange-alt me-2"></i> Return Policy
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#artworkAccordion">
+                                <div class="accordion-body">
+                                    <p>Digital downloads are non-refundable. Physical artworks may be returned within 14 days of receipt for a full refund, minus shipping costs.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    
+    <!-- Related Artworks -->
+    <div class="related-artworks-section">
+        <div class="container">
+            <h3 class="section-title">More from {{ artwork.artist_name }}</h3>
+            <div class="row g-4">
+                {% for related in related_artworks %}
+                <div class="col-lg-3 col-md-6">
+                    <a href="/artwork/{{ related.id }}" class="text-decoration-none">
+                        <div class="related-artwork-card">
+                            <div class="position-relative">
+                                {% if related.media_type == 'image' %}
+                                    <img src="{{ url_for('static', filename='uploads/' + related.media_url) if not related.media_url.startswith('http') else related.media_url }}" 
+                                         class="related-artwork-img" 
+                                         alt="{{ related.title }}">
+                                {% elif related.media_type == 'video' %}
+                                    <div class="related-artwork-img bg-dark d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-play text-white fa-3x"></i>
+                                    </div>
+                                {% elif related.media_type == 'audio' %}
+                                    <div class="related-artwork-img bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-music text-primary fa-3x"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="related-artwork-img bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-file-alt fa-3x"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="related-artwork-body">
+                                <h5 class="related-artwork-title">{{ related.title }}</h5>
+                                <p class="related-artwork-price mb-0">${{ related.price }}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% else %}
+                <div class="col-12 text-center py-4">
+                    <p class="text-muted">No other artworks available from this artist.</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
+<!-- Report Modal -->
+<div class="modal fade report-modal" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel"><i class="fas fa-flag me-2"></i> Report Artwork</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <input type="hidden" id="reportType" name="reportType" value="artwork">
+                    <input type="hidden" id="reportId" name="reportId">
+                    <input type="hidden" id="reporterId" name="reporterId" value="{{ current_user.id if current_user.is_authenticated else '' }}">
+
+                    <div class="mb-3">
+                        <label for="reportReason" class="form-label">Reason for Reporting</label>
+                        <select class="form-select" id="reportReason" name="reportReason" required>
+                            <option value="" selected disabled>Select a reason</option>
+                            <option value="Inappropriate Content">Inappropriate Content</option>
+                            <option value="Copyright Violation">Copyright Violation</option>
+                            <option value="Spam or Misleading">Spam or Misleading</option>
+                            <option value="Harassment or Hate Speech">Harassment or Hate Speech</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reportDescription" class="form-label">Additional Details (optional)</label>
+                        <textarea class="form-control" id="reportDescription" name="reportDescription" rows="4" placeholder="Please provide any additional information that might help us understand your report..."></textarea>
+                    </div>
+                </form>
+                <div class="report-success" id="reportSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <h4>Report Submitted Successfully!</h4>
+                    <p>Thank you for helping us keep the community safe. Our team will review your report shortly.</p>
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-submit text-white" id="submitReport">Submit Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Back to Dashboard -->
+    <div class="text-center mt-5">
+        <a href="{{ url_for('marketplace')}}" class="btn btn-secondary dashboard-btn">
+            <i class="fas fa-arrow-left me-2"></i> Back to Marketplace
+        </a>
+    </div>
+
+    <!-- Footer Start -->
     <div id="footer" class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
@@ -690,20 +749,11 @@
                         <div class="col-4">
                             <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
                         </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News and Updates</p>
+                    <p>Sign Up For News.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                         <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
@@ -729,107 +779,171 @@
             </div>
         </div>
     </div>
+    <!-- Footer End -->
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/lightbox/js/lightbox.min.js') }}"></script>
 
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
-    <!-- Custom Artwork Page Script -->
+
     <script>
-        // Like button functionality
-        document.getElementById('likeBtn').addEventListener('click', function() {
-            this.classList.toggle('active');
-            const icon = this.querySelector('i');
-            const span = this.querySelector('span');
-            
-            if (this.classList.contains('active')) {
-                icon.classList.replace('far', 'fas');
-                const currentLikes = parseInt(span.textContent.replace(/,/g, '')) + 1;
-                span.textContent = currentLikes.toLocaleString() + ' Likes';
+        // Initialize tooltips
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+        
+        // Spinner
+        var spinner = function () {
+            setTimeout(function () {
+                if ($('#spinner').length > 0) {
+                    $('#spinner').removeClass('show');
+                }
+            }, 1);
+        };
+        spinner();
+        
+        // Back to top button
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 300) {
+                $('.back-to-top').fadeIn('slow');
             } else {
-                icon.classList.replace('fas', 'far');
-                const currentLikes = parseInt(span.textContent.replace(/,/g, '')) - 1;
-                span.textContent = currentLikes.toLocaleString() + ' Likes';
+                $('.back-to-top').fadeOut('slow');
             }
         });
         
-        // Save button functionality
-        document.getElementById('saveBtn').addEventListener('click', function() {
-            this.classList.toggle('active');
-            const icon = this.querySelector('i');
-            const span = this.querySelector('span');
-            
-            if (this.classList.contains('active')) {
-                icon.classList.replace('far', 'fas');
-                span.textContent = 'Saved';
-            } else {
-                icon.classList.replace('fas', 'far');
-                span.textContent = 'Save';
-            }
+        $('.back-to-top').click(function () {
+            $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
+            return false;
         });
         
-        // Share button functionality
-        document.getElementById('shareBtn').addEventListener('click', function() {
-            if (navigator.share) {
-                navigator.share({
-                    title: '{{ artwork.title }}',
-                    text: 'Check out this amazing artwork by {{ artwork.artist_name }}',
-                    url: window.location.href
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const shareUrl = window.location.href;
-                const tempInput = document.createElement('input');
-                document.body.appendChild(tempInput);
-                tempInput.value = shareUrl;
-                tempInput.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempInput);
-                
-                alert('Link copied to clipboard: ' + shareUrl);
-            }
-        });
-        
-        // Initialize lightbox for image zoom
+        // Initialize lightbox for images
         lightbox.option({
             'resizeDuration': 200,
             'wrapAround': true,
             'showImageNumberLabel': false
         });
         
-        // Add animation to elements when they come into view
+        // Force video controls to show (fix for some browsers)
         document.addEventListener('DOMContentLoaded', function() {
-            const fadeElements = document.querySelectorAll('.fade-in');
-            
-            const fadeInObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = 1;
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            fadeElements.forEach(el => {
-                el.style.opacity = 0;
-                el.style.transform = 'translateY(30px)';
-                el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-                fadeInObserver.observe(el);
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                video.controls = true;
             });
         });
+        
+        // Add smooth scrolling to all links
+        $("a").on('click', function(event) {
+            if (this.hash !== "") {
+                event.preventDefault();
+                var hash = this.hash;
+                $('html, body').animate({
+                    scrollTop: $(hash).offset().top
+                }, 800, function(){
+                    window.location.hash = hash;
+                });
+            }
+        });
+        
+// Report modal functionality
+$(document).ready(function() {
+    // Initialize modal with data
+    $('#reportModal').on('show.bs.modal', function(event) {
+        const button = $(event.relatedTarget);
+        $('#reportId').val(button.data('id'));
+        
+        // Reset form when modal is shown
+        $('#reportForm')[0].reset();
+        $('#reportSuccess').hide();
+        $('#reportForm').show();
+        $('#submitReport').show();
+    });
+
+    // Handle report submission
+    $('#submitReport').click(function() {
+        const reportType = $('#reportType').val();
+        const reportId = $('#reportId').val();
+        const reporterId = $('#reporterId').val();
+        const reason = $('#reportReason').val();
+        const description = $('#reportDescription').val();
+
+        // Validate required fields
+        if (!reason) {
+            alert('Please select a reason for reporting');
+            return;
+        }
+
+        // Check if user is logged in
+        if (!reporterId) {
+            alert('Please log in to submit a report');
+            return;
+        }
+
+        // Prepare data for submission
+        let reportData = {
+            reporter_id: reporterId,
+            reported_artwork_id: reportId,
+            type: reportType,
+            reason: reason,
+            description: description || null, // Send null if description is empty
+            status: 'pending' // Default status
+        };
+
+        // Show loading state
+        const submitBtn = $(this);
+        submitBtn.prop('disabled', true);
+        submitBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...');
+
+        // Submit via AJAX
+        $.ajax({
+            url: '/api/reports', // Update this to your actual endpoint
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(reportData),
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    $('#reportForm').hide();
+                    $('#submitReport').hide();
+                    $('#reportSuccess').fadeIn();
+                    
+                    // Close modal after 3 seconds
+                    setTimeout(function() {
+                        $('#reportModal').modal('hide');
+                    }, 3000);
+                } else {
+                    alert('Error: ' + response.message);
+                    submitBtn.prop('disabled', false);
+                    submitBtn.text('Submit Report');
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = 'Error submitting report';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg += ': ' + xhr.responseJSON.error;
+                }
+                alert(errorMsg);
+                submitBtn.prop('disabled', false);
+                submitBtn.text('Submit Report');
+            }
+        });
+    });
+
+    // Reset form when modal is hidden
+    $('#reportModal').on('hidden.bs.modal', function() {
+        $('#reportForm')[0].reset();
+        $('#reportSuccess').hide();
+        $('#reportForm').show();
+        $('#submitReport').show().prop('disabled', false).text('Submit Report');
+    });
+});
     </script>
 </body>
 </html>

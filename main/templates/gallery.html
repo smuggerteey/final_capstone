@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Art Gallery Experience</title>
+    <title>Neon Dreams Art Gallery</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -19,32 +19,55 @@
     
     <style>
         :root {
-            --primary: #2a3f54;
-            --secondary: #f8f8f8;
-            --accent: #d4af37;
-            --accent-light: #f0d991;
-            --text: #333;
-            --light-text: #777;
-            --wall-color: #f5e9d9;
-            --frame-color: #c9b18d;
-            --wood-color: #8b5a2b;
-            --floor-color: #6d4c3d;
-            --molding-color: #e6d5b8;
-            --gallery-light: #fff9e6;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --primary: #0f0f1a;
+            --secondary: #1a1a2e;
+            --accent: #00f0ff;
+            --accent-dark: #0088ff;
+            --accent-light: #7df9ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --text: #e6e6ff;
+            --light-text: #b8b8d8;
+            --dark-text: #6e6e8a;
+            --glass: rgba(15, 15, 26, 0.7);
+            --glass-light: rgba(26, 26, 46, 0.5);
+            --shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            --glow: 0 0 10px var(--accent), 0 0 20px var(--accent-light);
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Exo 2', sans-serif;
             margin: 0;
             padding: 0;
             color: var(--text);
             min-height: 100vh;
-            background-color: var(--wall-color);
+            background-color: var(--primary);
+            background-image: 
+                radial-gradient(circle at 20% 30%, var(--neon-purple) 0%, transparent 25%),
+                radial-gradient(circle at 80% 70%, var(--accent-dark) 0%, transparent 25%),
+                linear-gradient(to bottom, var(--primary) 0%, var(--secondary) 100%);
             position: relative;
             overflow-x: hidden;
             line-height: 1.6;
-            padding-top: 160px; /* Added for fixed header */
+            padding-top: 120px;
+        }
+        
+        /* Cyberpunk Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
         }
         
         /* Gallery Layout */
@@ -55,9 +78,10 @@
             min-height: 100vh;
         }
         
-        /* Header styles - Combined main and gallery header */
+        /* Cyberpunk Header */
         .main-header {
-            background: linear-gradient(135deg, rgba(42, 63, 84, 0.95) 0%, rgba(31, 47, 63, 0.95) 100%);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 1rem 2rem;
             display: flex;
@@ -67,9 +91,9 @@
             left: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid var(--accent);
+            border-image: linear-gradient(90deg, transparent, var(--accent), transparent) 1;
         }
         
         .header-top {
@@ -80,53 +104,43 @@
         }
         
         .header-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
             margin: 0;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(to right, var(--accent), #f5f7fa);
+            color: transparent;
+            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(125, 249, 255, 0.3);
+            letter-spacing: 2px;
             position: relative;
+            text-transform: uppercase;
+            font-weight: 700;
         }
         
         .header-title::after {
             content: '';
             position: absolute;
-            bottom: -5px;
+            bottom: -8px;
             left: 0;
-            width: 50px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 3px;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
+            box-shadow: var(--shadow);
         }
         
         .gallery-title {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Rajdhani', sans-serif;
             font-size: 1.5rem;
             margin: 0.5rem 0 0 0;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .gallery-title::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--accent);
-            transition: width 0.3s ease;
+            color: var(--accent-light);
+            font-weight: 500;
+            letter-spacing: 1px;
         }
         
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
         .gallery-controls {
@@ -134,19 +148,21 @@
             gap: 1rem;
             margin-top: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
-        /* Footer styles */
+        /* Cyberpunk Footer */
         .main-footer {
-            background: linear-gradient(135deg, rgba(42, 63, 84, 0.95) 0%, rgba(31, 47, 63, 0.95) 100%);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 1.5rem;
             text-align: center;
             position: relative;
             z-index: 100;
-            box-shadow: 0 -2px 20px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-top: 1px solid var(--accent);
+            border-image: linear-gradient(90deg, transparent, var(--accent), transparent) 1;
         }
         
         .footer-content {
@@ -160,17 +176,30 @@
         .copyright {
             font-size: 0.9rem;
             opacity: 0.8;
+            font-family: 'Rajdhani', sans-serif;
         }
         
         .social-links {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
         .social-links a {
-            color: white;
+            color: var(--text);
             font-size: 1.2rem;
             transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .social-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
         }
         
         .social-links a:hover {
@@ -178,76 +207,268 @@
             transform: translateY(-3px);
         }
         
-        /* Room elements */
+        .social-links a:hover::after {
+            width: 100%;
+        }
+        
+        /* Cyberpunk Room */
         .media-room {
             position: relative;
             min-height: calc(100vh - 120px);
-            padding: 20px 20px 180px;
-            background-color: var(--wall-color);
-            background-image: 
-                linear-gradient(rgba(245, 233, 217, 0.7), rgba(245, 233, 217, 0.7)),
-                url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
-            background-size: cover;
-            background-attachment: fixed;
+            padding: 40px 20px 120px;
             overflow: hidden;
-        }
-        
-        .floor {
-            position: fixed;
-            bottom: 60px;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            background-color: var(--floor-color);
-            background-image: 
-                linear-gradient(rgba(109, 76, 61, 0.7), rgba(109, 76, 61, 0.7)),
-                url('https://images.unsplash.com/photo-1565538810643-b5bdb714032a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80');
-            background-size: cover;
             z-index: 1;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.4);
         }
         
-        .wall-molding {
-            position: fixed;
-            top: 160px; /* Adjusted for combined header */
-            left: 0;
-            width: 100%;
-            height: 30px;
-            background: linear-gradient(to bottom, var(--molding-color), #d8c9a8);
-            z-index: 5;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        
-        .ceiling-molding {
-            position: fixed;
+        /* Grid Background Effect */
+        .grid-bg {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 20px;
-            background: linear-gradient(to bottom, #f5e9d9, var(--molding-color));
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.5;
         }
         
-        /* Button styles */
+        /* Cyberpunk Room Content */
+        .room-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            position: relative;
+            z-index: 20;
+            background: var(--glass-light);
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .room-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 240, 255, 0.1) 0%,
+                rgba(157, 0, 255, 0.1) 100%
+            );
+            z-index: -1;
+        }
+        
+        .room-content:hover {
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+            border-color: rgba(0, 240, 255, 0.4);
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-light);
+            margin-top: 0;
+            padding-bottom: 0.8rem;
+            position: relative;
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
+            box-shadow: var(--shadow);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+        
+        .section-title:hover::after {
+            width: 120px;
+        }
+        
+        .section-description {
+            color: var(--light-text);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        /* Cyberpunk Artwork Grid */
+        .artwork-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .artwork-card {
+            background: var(--glass);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .artwork-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid transparent;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 240, 255, 0.3) 0%,
+                rgba(157, 0, 255, 0.3) 100%
+            );
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
+            border-color: var(--accent);
+        }
+        
+        .artwork-card:hover::before {
+            opacity: 1;
+        }
+        
+        .artwork-card:hover .artwork-title {
+            color: var(--accent-light);
+        }
+        
+        .artwork-card:hover .media-preview {
+            transform: scale(1.05);
+        }
+        
+        .artwork-card:hover .media-type {
+            background: var(--accent);
+            color: var(--primary);
+        }
+        
+        .media-container {
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        
+        .media-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        video.media-preview {
+            width: 100%;
+            height: 100%;
+            background: #000;
+        }
+        
+        .artwork-details {
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .artwork-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            margin: 0 0 0.8rem 0;
+            color: var(--text);
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .artwork-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .media-type {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-light);
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .media-date {
+            color: var(--light-text);
+            font-size: 0.85em;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        
+        .audio-icon {
+            font-size: 3.5rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            opacity: 0.8;
+            text-shadow: 0 0 10px var(--accent);
+        }
+        
+        /* Cyberpunk Button Styles */
         .dashboard-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, var(--accent) 0%, #e8c874 100%);
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             color: var(--primary);
             text-decoration: none;
-            border-radius: 30px;
+            border-radius: 4px;
             transition: all 0.4s ease;
             border: none;
             cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
             gap: 8px;
             position: relative;
             overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
         }
         
         .dashboard-btn::before {
@@ -257,15 +478,15 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: all 0.6s ease;
         }
         
         .dashboard-btn:hover {
-            background: linear-gradient(135deg, #c99e1b 0%, #e8c874 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+            color: var(--primary);
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
         }
         
         .dashboard-btn:hover::before {
@@ -290,264 +511,49 @@
         .btn-outline:hover {
             background: var(--accent);
             color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
         }
         
         .filter-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 4px;
             cursor: pointer;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Rajdhani', sans-serif;
             font-size: 0.9rem;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 5px;
-            color: white;
+            gap: 8px;
+            color: var(--text);
+            letter-spacing: 1px;
+        }
+        
+        .filter-btn i {
+            transition: transform 0.3s ease;
         }
         
         .filter-btn:hover {
             background: var(--accent);
             color: var(--primary);
             transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        
+        .filter-btn:hover i {
+            transform: scale(1.2);
         }
         
         .filter-btn.active {
             background: var(--accent);
             color: var(--primary);
-            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            border-color: var(--accent);
         }
         
-        /* Room Content */
-        .room-content {
-            max-width: 1400px;
-            margin: 3rem auto 2rem;
-            padding: 2.5rem;
-            position: relative;
-            z-index: 20;
-            background-color: rgba(255, 255, 255, 0.88);
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            backdrop-filter: blur(5px);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .room-content:hover {
-            background-color: rgba(255, 255, 255, 0.93);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            transform: translateY(-5px);
-        }
-        
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary);
-            margin-top: 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            padding-bottom: 0.8rem;
-            position: relative;
-            font-size: 2.2rem;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            font-weight: 700;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(to right, var(--accent), var(--accent-light));
-            border-radius: 2px;
-            transition: width 0.4s ease;
-        }
-        
-        .section-title:hover::after {
-            width: 120px;
-        }
-        
-        .section-description {
-            color: var(--light-text);
-            margin-bottom: 2rem;
-            max-width: 700px;
-            font-size: 1.05rem;
-        }
-        
-        /* Artwork Grid */
-        .artwork-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        
-        .artwork-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            border: 15px solid var(--frame-color);
-            position: relative;
-            background-color: #fff;
-            transform-style: preserve-3d;
-            perspective: 1000px;
-        }
-        
-        .artwork-card::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: -15px;
-            right: -15px;
-            bottom: -15px;
-            border: 5px solid rgba(0,0,0,0.1);
-            pointer-events: none;
-            border-radius: 12px;
-        }
-        
-        .artwork-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-        
-        .artwork-card:hover {
-            transform: translateY(-10px) rotateY(5deg) rotateX(2deg);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-            z-index: 10;
-        }
-        
-        .artwork-card:hover::after {
-            opacity: 1;
-        }
-        
-        .artwork-card:hover .artwork-title {
-            color: var(--accent);
-        }
-        
-        .artwork-card:hover .media-preview {
-            transform: scale(1.08);
-        }
-        
-        .media-container {
-            width: 100%;
-            height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background-color: #f5f5f5;
-            position: relative;
-        }
-        
-        .media-preview {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        video.media-preview {
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-        
-        .artwork-details {
-            padding: 1.2rem;
-            background: white;
-            transition: all 0.4s ease;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .artwork-card:hover .artwork-details {
-            background: var(--secondary);
-        }
-        
-        .artwork-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            margin: 0 0 0.5rem 0;
-            color: var(--primary);
-            transition: all 0.3s ease;
-            font-weight: 700;
-        }
-        
-        .artwork-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .media-type {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(42, 63, 84, 0.1);
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--primary);
-            transition: all 0.3s ease;
-        }
-        
-        .artwork-card:hover .media-type {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .media-date {
-            color: var(--light-text);
-            font-size: 0.85em;
-        }
-        
-        .audio-icon {
-            font-size: 3.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            opacity: 0.8;
-        }
-        
-        /* Floating Gallery Lights */
-        .gallery-light {
-            position: absolute;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, var(--gallery-light) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.5;
-            animation: float 8s infinite ease-in-out;
-        }
-        
-        .gallery-light:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            animation-delay: 2s;
-            animation-duration: 10s;
-        }
-        
-        .gallery-light:nth-child(3) {
-            width: 100px;
-            height: 100px;
-            animation-delay: 4s;
-            animation-duration: 6s;
-        }
-        
-        /* Modal */
+        /* Cyberpunk Modal */
         .modal {
             display: none;
             position: fixed;
@@ -555,7 +561,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -564,18 +570,19 @@
         }
         
         .modal-content {
-            background: white;
-            border-radius: 12px;
+            background: var(--glass);
+            border-radius: 8px;
             max-width: 900px;
             width: 90%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-            border: 15px solid var(--frame-color);
-            box-shadow: 0 0 0 15px rgba(0,0,0,0.3);
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
             transform: scale(0.9);
             opacity: 0;
             animation: modalOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
+            backdrop-filter: blur(10px);
         }
         
         .close-modal {
@@ -585,7 +592,7 @@
             font-size: 1.8rem;
             cursor: pointer;
             color: white;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0, 0, 0, 0.7);
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -594,13 +601,13 @@
             justify-content: center;
             z-index: 2;
             transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid var(--accent);
         }
         
         .close-modal:hover {
             background: var(--accent);
             transform: rotate(90deg) scale(1.1);
-            border-color: rgba(255,255,255,0.3);
+            color: var(--primary);
         }
         
         .modal-media-container {
@@ -609,9 +616,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000;
+            background: rgba(0, 0, 0, 0.5);
             overflow: hidden;
             position: relative;
+            border-bottom: 1px solid var(--accent);
         }
         
         .modal-media {
@@ -630,36 +638,39 @@
         }
         
         .modal-details h2 {
-            font-family: 'Playfair Display', serif;
-            color: var(--primary);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-light);
             margin-top: 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
             padding-bottom: 0.8rem;
             position: relative;
             font-size: 2rem;
             font-weight: 700;
+            letter-spacing: 1px;
         }
         
         .modal-details h2::after {
             content: '';
             position: absolute;
-            bottom: -3px;
+            bottom: 0;
             left: 0;
             width: 60px;
-            height: 4px;
-            background: linear-gradient(to right, var(--accent), var(--accent-light));
-            border-radius: 2px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
+            box-shadow: var(--shadow);
         }
         
         .modal-details p {
             margin: 0.8rem 0;
             line-height: 1.7;
+            color: var(--light-text);
+            font-family: 'Rajdhani', sans-serif;
         }
         
         .modal-meta {
             display: flex;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
         
         .modal-meta-item {
@@ -667,6 +678,7 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.95rem;
+            font-family: 'Rajdhani', sans-serif;
         }
         
         .modal-meta-item i {
@@ -677,16 +689,17 @@
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
+            flex-wrap: wrap;
         }
         
         .btn-accent {
-            background: linear-gradient(135deg, var(--accent) 0%, #e8c874 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             color: var(--primary);
         }
         
         .btn-accent:hover {
-            background: linear-gradient(135deg, #c99e1b 0%, #e8c874 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
+            color: var(--primary);
         }
         
         .text-center {
@@ -697,25 +710,38 @@
             margin-top: 3rem;
         }
         
-        /* Floating particles */
-        .particles {
+        /* Cyberpunk Scanlines Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(0, 0, 0, 0) 50%,
+                rgba(0, 0, 0, 0.2) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+        }
+        
+        /* Cyberpunk Glitch Effect */
+        .glitch-effect {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 50 -25"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.1"/></svg>');
             pointer-events: none;
-            z-index: 0;
+            z-index: 100;
+            mix-blend-mode: overlay;
+            animation: glitch 0.3s infinite alternate;
         }
         
-        .particle {
-            position: absolute;
-            background: rgba(255,255,255,0.6);
-            border-radius: 50%;
-            animation: floatParticle linear infinite;
-        }
-        
-        /* Animations */
+        /* Cyberpunk Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -732,6 +758,15 @@
             }
         }
         
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
         @keyframes float {
             0%, 100% {
                 transform: translateY(0) translateX(0);
@@ -741,24 +776,16 @@
             }
         }
         
-        @keyframes floatParticle {
-            0% {
-                transform: translateY(0) translateX(0);
-                opacity: 0;
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.8;
             }
-            10% {
+            50% {
                 opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(20px);
-                opacity: 0;
             }
         }
         
-        /* Responsive */
+        /* Cyberpunk Responsive */
         @media (max-width: 992px) {
             .room-content {
                 padding: 1.5rem;
@@ -786,9 +813,12 @@
                 text-align: center;
             }
             
-            .header-title::after, .gallery-title::after {
-                left: 50%;
-                transform: translateX(-50%);
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .gallery-title {
+                font-size: 1.3rem;
             }
             
             .gallery-controls {
@@ -814,11 +844,7 @@
             }
             
             body {
-                padding-top: 200px; /* Adjusted for responsive header */
-            }
-            
-            .wall-molding {
-                top: 200px;
+                padding-top: 160px;
             }
         }
         
@@ -840,7 +866,7 @@
             }
             
             .gallery-title {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
             .filter-btn {
@@ -851,58 +877,51 @@
     </style>
 </head>
 <body>
+    <!-- Cyberpunk Scanlines Effect -->
+    <div class="scanlines"></div>
+    <div class="glitch-effect"></div>
+    
     <div class="gallery-container">
-        <!-- Main Header - Combined with gallery header -->
+        <!-- Cyberpunk Header -->
         <header class="main-header">
             <div class="header-top">
-                <h1 class="header-title">Art Gallery Experience</h1>
-                
-                <!-- Back to Dashboard -->
+                <h1 class="header-title">NEON DREAMS GALLERY</h1>
                 <div class="header-controls">
-                    <a href="{% if username in ['smuggerteey', 'cicada403'] %}{{ url_for('admindashboard') }}{% else %}{{ url_for('dashboard') if session.get('role') == 'Artist' else url_for('userdashboard') }}{% endif %}" 
-                       class="dashboard-btn">
-                        <i class="fas fa-arrow-left"></i> Back..........
+                    <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('userdashboard' if user_data['role'] == 'Artist' else 'dashboard') }}" 
+                       class="dashboard-btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> Dashboard
                     </a>
                 </div>
             </div>
             
-            <h2 class="gallery-title">Curated Collection</h2>
+            <h2 class="gallery-title">DIGITAL ART COLLECTION</h2>
             
             <div class="gallery-controls">
                 <button class="filter-btn active" data-filter="all">
-                    <i class="fas fa-th"></i> All
+                    <i class="fas fa-globe"></i> ALL
                 </button>
                 <button class="filter-btn" data-filter="image">
-                    <i class="fas fa-image"></i> Images
+                    <i class="fas fa-image"></i> IMAGES
                 </button>
                 <button class="filter-btn" data-filter="video">
-                    <i class="fas fa-video"></i> Videos
+                    <i class="fas fa-video"></i> VIDEOS
                 </button>
                 <button class="filter-btn" data-filter="audio">
-                    <i class="fas fa-music"></i> Audio
+                    <i class="fas fa-music"></i> AUDIO
                 </button>
             </div>
         </header>
         
-        <!-- Wall Molding -->
-        <div class="wall-molding"></div>
-        <div class="ceiling-molding"></div>
-        
-        <!-- Gallery Lights -->
-        <div class="gallery-light" style="top: 20%; left: 10%;"></div>
-        <div class="gallery-light" style="top: 60%; left: 70%;"></div>
-        <div class="gallery-light" style="top: 30%; left: 50%;"></div>
-        
-        <!-- Floating Particles -->
-        <div class="particles" id="particles"></div>
+        <!-- Grid Background -->
+        <div class="grid-bg"></div>
         
         <!-- Media Room -->
         <div class="media-room">
             <div class="room-content animate__animated animate__fadeIn">
-                <h2 class="section-title">Featured Artworks</h2>
+                <h2 class="section-title">CYBER ART COLLECTION</h2>
                 <p class="section-description">
-                    Explore our carefully curated collection of digital masterpieces. 
-                    Each piece tells a unique story and represents the creative vision of talented artists.
+                    Immerse yourself in our cutting-edge digital art exhibition. 
+                    Each piece is a fusion of technology and creativity, pushing the boundaries of digital expression.
                 </p>
                 
                 <div class="artwork-grid" id="artworkGrid">
@@ -920,16 +939,16 @@
                             {% elif artwork.media_type == 'audio' %}
                                 <div style="text-align: center;">
                                     <i class="fas fa-music audio-icon"></i>
-                                    <p>Audio Composition</p>
+                                    <p>DIGITAL SOUNDSCAPE</p>
                                 </div>
                             {% else %}
-                                <div>Unsupported Media</div>
+                                <div>UNSUPPORTED FORMAT</div>
                             {% endif %}
                         </div>
                         <div class="artwork-details">
                             <h3 class="artwork-title">{{ artwork.title }}</h3>
                             <div class="artwork-meta">
-                                <span class="media-type">{{ artwork.media_type }}</span>
+                                <span class="media-type">{{ artwork.media_type|upper }}</span>
                                 <span class="media-date">{{ artwork.upload_date }}</span>
                             </div>
                         </div>
@@ -937,35 +956,32 @@
                     {% endfor %}
                 </div>
 
-                <!-- View More Button -->
+                <!-- Load More Button -->
                 <div class="text-center mt-5">
                     <button class="dashboard-btn btn-accent">
-                        <i class="fas fa-plus"></i> Load More
+                        <i class="fas fa-sync-alt"></i> LOAD MORE
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Floor -->
-        <div class="floor"></div>
-        
-        <!-- Footer -->
+        <!-- Cyberpunk Footer -->
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="copyright">
-                    &copy; {{ current_year }} Art Gallery Experience. All rights reserved.
+                    &copy; {{ current_year }} NEON DREAMS GALLERY. ALL RIGHTS RESERVED.
                 </div>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><i class="fab fa-artstation"></i></a>
+                    <a href="#"><i class="fab fa-deviantart"></i></a>
                 </div>
             </div>
         </footer>
     </div>
     
-    <!-- Modal -->
+    <!-- Cyberpunk Modal -->
     <div class="modal" id="mediaModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -986,11 +1002,11 @@
                 </div>
                 <p id="modalDescription"></p>
                 <div class="modal-actions">
-                    <a href="#" id="downloadLink" class="dashboard-btn">
-                        <i class="fas fa-download"></i> Download
+                    <a href="#" id="downloadLink" class="dashboard-btn btn-accent">
+                        <i class="fas fa-download"></i> DOWNLOAD
                     </a>
                     <button class="dashboard-btn btn-outline">
-                        <i class="fas fa-share-alt"></i> Share
+                        <i class="fas fa-share-alt"></i> SHARE
                     </button>
                 </div>
             </div>
@@ -998,7 +1014,7 @@
     </div>
     
     <script>
-        // Initialize GSAP animations
+        // Initialize GSAP animations with cyberpunk style
         gsap.from(".room-content", {
             duration: 1,
             y: 50,
@@ -1016,33 +1032,15 @@
             delay: 0.5
         });
         
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 30;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Random size between 1px and 3px
-                const size = Math.random() * 2 + 1;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Random position
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.bottom = `-10px`;
-                
-                // Random animation duration between 10s and 20s
-                const duration = Math.random() * 10 + 10;
-                particle.style.animation = `floatParticle ${duration}s linear infinite`;
-                
-                // Random delay
-                particle.style.animationDelay = `${Math.random() * 10}s`;
-                
-                particlesContainer.appendChild(particle);
-            }
+        // Create cyberpunk grid animation
+        function createGridAnimation() {
+            const gridBg = document.querySelector('.grid-bg');
+            gsap.to(gridBg, {
+                duration: 20,
+                backgroundPosition: '100px 100px',
+                repeat: -1,
+                ease: "none"
+            });
         }
         
         // Filter functionality
@@ -1052,13 +1050,30 @@
             
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Update active button
-                    filterBtns.forEach(b => b.classList.remove('active'));
+                    // Update active button with cyberpunk effect
+                    filterBtns.forEach(b => {
+                        gsap.to(b, {
+                            duration: 0.3,
+                            background: 'rgba(0, 240, 255, 0.1)',
+                            color: 'var(--text)',
+                            borderColor: 'rgba(0, 240, 255, 0.3)',
+                            ease: "power2.out"
+                        });
+                        b.classList.remove('active');
+                    });
+                    
+                    gsap.to(btn, {
+                        duration: 0.3,
+                        background: 'var(--accent)',
+                        color: 'var(--primary)',
+                        borderColor: 'var(--accent)',
+                        ease: "power2.out"
+                    });
                     btn.classList.add('active');
                     
                     const filter = btn.dataset.filter;
                     
-                    // Filter artwork cards
+                    // Filter artwork cards with cyberpunk transition
                     artworkCards.forEach(card => {
                         if (filter === 'all' || card.dataset.type === filter) {
                             gsap.to(card, {
@@ -1082,7 +1097,45 @@
             });
         }
         
-        // Modal functions
+        // Add cyberpunk hover effects to cards
+        function setupCardHoverEffects() {
+            document.querySelectorAll('.artwork-card').forEach(card => {
+                // Create cyberpunk glow effect
+                const glow = document.createElement('div');
+                glow.style.position = 'absolute';
+                glow.style.top = '0';
+                glow.style.left = '0';
+                glow.style.width = '100%';
+                glow.style.height = '100%';
+                glow.style.borderRadius = '8px';
+                glow.style.boxShadow = '0 0 15px var(--accent)';
+                glow.style.opacity = '0';
+                glow.style.transition = 'opacity 0.3s ease';
+                glow.style.pointerEvents = 'none';
+                glow.style.zIndex = '-1';
+                card.appendChild(glow);
+                
+                card.addEventListener('mouseenter', () => {
+                    glow.style.opacity = '0.7';
+                    gsap.to(card, {
+                        duration: 0.3,
+                        boxShadow: '0 0 30px rgba(0, 240, 255, 0.5)',
+                        ease: "power2.out"
+                    });
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    glow.style.opacity = '0';
+                    gsap.to(card, {
+                        duration: 0.3,
+                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
+                        ease: "power2.out"
+                    });
+                });
+            });
+        }
+        
+        // Modal functions with cyberpunk style
         function openModal(title, type, url, date, description) {
             const modal = document.getElementById('mediaModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -1094,10 +1147,10 @@
             const downloadLink = document.getElementById('downloadLink');
             
             // Set content
-            modalTitle.textContent = title;
-            modalType.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+            modalTitle.textContent = title.toUpperCase();
+            modalType.textContent = type.toUpperCase();
             modalDate.textContent = date;
-            modalDescription.textContent = description || "No description available for this artwork.";
+            modalDescription.textContent = description || "NO DESCRIPTION AVAILABLE FOR THIS ARTWORK.";
             downloadLink.href = url;
             downloadLink.download = title + '.' + url.split('.').pop();
             
@@ -1119,15 +1172,30 @@
             // Clear previous media
             modalMediaContainer.innerHTML = '';
             
-            // Add appropriate media
+            // Add appropriate media with cyberpunk style
             if (type === 'image') {
+                const imgContainer = document.createElement('div');
+                imgContainer.style.width = '100%';
+                imgContainer.style.height = '100%';
+                imgContainer.style.display = 'flex';
+                imgContainer.style.alignItems = 'center';
+                imgContainer.style.justifyContent = 'center';
+                imgContainer.style.overflow = 'hidden';
+                imgContainer.style.position = 'relative';
+                
                 const img = document.createElement('img');
                 img.src = url;
                 img.alt = title;
                 img.className = 'modal-media';
-                modalMediaContainer.appendChild(img);
+                img.style.maxWidth = '90%';
+                img.style.maxHeight = '90%';
+                img.style.objectFit = 'contain';
+                img.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.3)';
                 
-                // Add zoom effect on hover
+                imgContainer.appendChild(img);
+                modalMediaContainer.appendChild(imgContainer);
+                
+                // Add cyberpunk hover effect
                 img.addEventListener('mousemove', (e) => {
                     const rect = e.target.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -1152,14 +1220,16 @@
                 videoContainer.style.display = 'flex';
                 videoContainer.style.alignItems = 'center';
                 videoContainer.style.justifyContent = 'center';
+                videoContainer.style.background = 'rgba(0, 0, 0, 0.7)';
                 
                 const video = document.createElement('video');
                 video.src = url;
                 video.controls = true;
                 video.autoplay = true;
                 video.className = 'modal-media';
-                video.style.maxHeight = '100%';
-                video.style.maxWidth = '100%';
+                video.style.maxHeight = '90%';
+                video.style.maxWidth = '90%';
+                video.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.3)';
                 
                 videoContainer.appendChild(video);
                 modalMediaContainer.appendChild(videoContainer);
@@ -1174,26 +1244,29 @@
                 audioContainer.style.flexDirection = 'column';
                 audioContainer.style.alignItems = 'center';
                 audioContainer.style.justifyContent = 'center';
-                audioContainer.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #e8e8e8 100%)';
+                audioContainer.style.background = 'linear-gradient(135deg, var(--secondary) 0%, rgba(0, 0, 0, 0.7) 100%)';
                 
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-music audio-icon';
                 icon.style.fontSize = '6rem';
                 icon.style.color = 'var(--accent)';
                 icon.style.marginBottom = '2rem';
+                icon.style.textShadow = '0 0 20px var(--accent)';
                 
                 const titleElement = document.createElement('h3');
-                titleElement.textContent = title;
-                titleElement.style.fontFamily = "'Playfair Display', serif";
-                titleElement.style.color = 'var(--primary)';
+                titleElement.textContent = title.toUpperCase();
+                titleElement.style.fontFamily = "'Orbitron', sans-serif";
+                titleElement.style.color = 'var(--accent-light)';
                 titleElement.style.margin = '0 0 1.5rem 0';
                 titleElement.style.fontSize = '1.5rem';
+                titleElement.style.letterSpacing = '1px';
                 
                 const audio = document.createElement('audio');
                 audio.src = url;
                 audio.controls = true;
                 audio.style.width = '80%';
                 audio.style.marginTop = '1rem';
+                audio.style.filter = 'drop-shadow(0 0 10px var(--accent))';
                 
                 audioContainer.appendChild(icon);
                 audioContainer.appendChild(titleElement);
@@ -1201,31 +1274,48 @@
                 modalMediaContainer.appendChild(audioContainer);
             } 
             else {
-                modalMediaContainer.textContent = 'Unsupported media type';
-                modalMediaContainer.style.display = 'flex';
-                modalMediaContainer.style.alignItems = 'center';
-                modalMediaContainer.style.justifyContent = 'center';
-                modalMediaContainer.style.color = 'white';
-                modalMediaContainer.style.fontSize = '1.2rem';
+                const unsupportedContainer = document.createElement('div');
+                unsupportedContainer.style.width = '100%';
+                unsupportedContainer.style.height = '100%';
+                unsupportedContainer.style.display = 'flex';
+                unsupportedContainer.style.alignItems = 'center';
+                unsupportedContainer.style.justifyContent = 'center';
+                unsupportedContainer.style.color = 'var(--accent)';
+                unsupportedContainer.style.fontFamily = "'Orbitron', sans-serif";
+                unsupportedContainer.style.fontSize = '1.5rem';
+                unsupportedContainer.style.letterSpacing = '1px';
+                unsupportedContainer.textContent = 'UNSUPPORTED MEDIA TYPE';
+                
+                modalMediaContainer.appendChild(unsupportedContainer);
             }
             
-            // Show modal with animation
+            // Show modal with cyberpunk animation
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
-            // Animate in
+            // Animate in with cyberpunk style
             gsap.from(".modal-content", {
                 duration: 0.5,
                 scale: 0.9,
                 opacity: 0,
-                ease: "back.out(1.7)"
+                ease: "back.out(1.7)",
+                onStart: () => {
+                    // Add cyberpunk glitch effect on open
+                    gsap.to(".modal-content", {
+                        duration: 0.1,
+                        x: 10,
+                        repeat: 5,
+                        yoyo: true,
+                        ease: "power1.inOut"
+                    });
+                }
             });
         }
         
         function closeModal() {
             const modal = document.getElementById('mediaModal');
             
-            // Animate out
+            // Animate out with cyberpunk style
             gsap.to(".modal-content", {
                 duration: 0.3,
                 scale: 0.9,
@@ -1251,65 +1341,44 @@
             }
         }
         
-        // Add 3D hover effect to artwork cards
+        // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
+            createGridAnimation();
             setupFilters();
+            setupCardHoverEffects();
             
-            document.querySelectorAll('.artwork-card').forEach(card => {
-                card.addEventListener('mousemove', function(e) {
-                    const x = e.offsetX;
-                    const y = e.offsetY;
-                    const centerX = this.offsetWidth / 2;
-                    const centerY = this.offsetHeight / 2;
-                    
-                    const angleX = (centerY - y) / 15;
-                    const angleY = (x - centerX) / 15;
-                    
-                    this.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-10px)`;
-                    this.style.boxShadow = `0 30px 50px rgba(0,0,0,0.3)`;
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
-                    this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
-                });
-            });
-            
-            // Add floating light effect to cards on hover
-            const cards = document.querySelectorAll('.artwork-card');
-            cards.forEach(card => {
-                const light = document.createElement('div');
-                light.style.position = 'absolute';
-                light.style.width = '100px';
-                light.style.height = '100px';
-                light.style.background = 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 70%)';
-                light.style.borderRadius = '50%';
-                light.style.top = '-30px';
-                light.style.left = '-30px';
-                light.style.pointerEvents = 'none';
-                light.style.opacity = '0';
-                light.style.transition = 'opacity 0.3s ease';
-                light.style.zIndex = '1';
-                card.appendChild(light);
-                
-                card.addEventListener('mouseenter', () => {
-                    light.style.opacity = '0.6';
-                    // Position light based on mouse position
-                    card.addEventListener('mousemove', (e) => {
-                        const rect = card.getBoundingClientRect();
-                        const x = e.clientX - rect.left;
-                        const y = e.clientY - rect.top;
-                        
-                        light.style.left = `${x - 50}px`;
-                        light.style.top = `${y - 50}px`;
+            // Add cyberpunk effect to buttons
+            document.querySelectorAll('.dashboard-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', () => {
+                    gsap.to(btn, {
+                        duration: 0.2,
+                        boxShadow: '0 0 20px rgba(0, 240, 255, 0.5)',
+                        ease: "power2.out"
                     });
                 });
                 
-                card.addEventListener('mouseleave', () => {
-                    light.style.opacity = '0';
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, {
+                        duration: 0.2,
+                        boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+                        ease: "power2.out"
+                    });
                 });
             });
+            
+            // Add random glitch effect to header
+            setInterval(() => {
+                if (Math.random() > 0.9) {
+                    const header = document.querySelector('.header-title');
+                    gsap.to(header, {
+                        duration: 0.1,
+                        x: 5,
+                        repeat: 3,
+                        yoyo: true,
+                        ease: "power1.inOut"
+                    });
+                }
+            }, 3000);
         });
     </script>
 </body>

@@ -233,6 +233,33 @@
             height: 2px;
             background: linear-gradient(90deg, var(--primary), transparent);
         }
+
+        /* Modal styles */
+        .modal-content {
+            border-radius: 0.75rem;
+            border: none;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            border-radius: 0.75rem 0.75rem 0 0 !important;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #eee;
+        }
+
+        /* Form styles */
+        .form-control, .form-select {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ddd;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(6, 187, 204, 0.25);
+        }
     </style>
 </head>
 
@@ -267,7 +294,7 @@
             <p class="lead mb-5 animate__animated animate__fadeIn animate__delay-1s">Explore and collect exceptional art from talented creators worldwide</p>
             <div class="d-flex justify-content-center gap-3 animate__animated animate__fadeIn animate__delay-2s">
                 <a href="#marketplace" class="btn btn-light btn-lg px-4 py-2">Browse Art</a>
-                <a href="#" class="btn btn-outline-light btn-lg px-4 py-2">Become a Seller</a>
+                <a href="#" class="btn btn-outline-light btn-lg px-4 py-2" data-bs-toggle="modal" data-bs-target="#becomeSellerModal">Become a Seller</a>
             </div>
         </div>
     </div>
@@ -289,80 +316,80 @@
                 </div>
             </div>
 
-<!-- Artwork Grid by Category -->
-<div class="row g-4">
-    {% for category, artworks in artworks_by_category.items() %}
-    <div class="col-12 artwork-category-section" id="category-{{ category }}">
-        <div class="category-header">
-            <h2 class="text-capitalize">{{ category }} <small class="text-muted">({{ artworks|length }} items)</small></h2>
-        </div>
-        <div class="row g-4">
-            {% for artwork in artworks %}
-            <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="artwork-item position-relative">
-                    <div class="position-relative overflow-hidden">
-                        {% if artwork.media.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
-                            <!-- Image Display -->
-                            <img src="{{ artwork.media }}" alt="{{ artwork.title }}" class="img-fluid artwork-image">
-                        {% elif artwork.media.lower().endswith(('.mp4', '.webm', '.ogg')) %}
-                            <!-- Video Display -->
-                            <video class="img-fluid artwork-image" controls>
-                                <source src="{{ artwork.media }}" type="video/{{ artwork.media.split('.')[-1] }}">
-                                Your browser does not support the video tag.
-                            </video>
-                        {% elif artwork.media.lower().endswith(('.mp3', '.wav', '.ogg')) %}
-                            <!-- Audio Display -->
-                            <div class="audio-container" style="background: #f8f9fa; padding: 20px; text-align: center;">
-                                <i class="fas fa-music fa-3x mb-3" style="color: #6c757d;"></i>
-                                <audio controls style="width: 100%">
-                                    <source src="{{ artwork.media }}" type="audio/{{ artwork.media.split('.')[-1] }}">
-                                    Your browser does not support the audio element.
-                                </audio>
-                                <p class="mt-2">{{ artwork.title }}</p>
-                            </div>
-                        {% else %}
-                            <!-- Fallback for unknown types -->
-                            <div class="unknown-media" style="background: #f8f9fa; padding: 40px 20px; text-align: center;">
-                                <i class="fas fa-file-alt fa-3x mb-3" style="color: #6c757d;"></i>
-                                <p>Media preview not available</p>
-                            </div>
-                        {% endif %}
-                        
-                        <div class="artwork-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
-                            <a href="/artwork/{{ artwork.id }}" class="btn btn-outline-light btn-lg rounded-pill">View Details</a>
-                        </div>
+            <!-- Artwork Grid by Category -->
+            <div class="row g-4">
+                {% for category, artworks in artworks_by_category.items() %}
+                <div class="col-12 artwork-category-section" id="category-{{ category }}">
+                    <div class="category-header">
+                        <h2 class="text-capitalize">{{ category }} <small class="text-muted">({{ artworks|length }} items)</small></h2>
                     </div>
-                    <div class="p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h3 class="artwork-title mb-0">{{ artwork.title }}</h3>
-                            <span class="badge bg-primary">NEW</span>
-                        </div>
-                        <p class="text-muted mb-2">by {{ artwork.artist }}</p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <p class="artwork-price mb-0">${{ artwork.price }}</p>
-                            <div>
-                                <i class="fas fa-star text-warning"></i>
-                                <span class="text-muted">4.8 (24)</span>
+                    <div class="row g-4">
+                        {% for artwork in artworks %}
+                        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="artwork-item position-relative">
+                                <div class="position-relative overflow-hidden">
+                                    {% if artwork.media.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                                        <!-- Image Display -->
+                                        <img src="{{ artwork.media }}" alt="{{ artwork.title }}" class="img-fluid artwork-image">
+                                    {% elif artwork.media.lower().endswith(('.mp4', '.webm', '.ogg')) %}
+                                        <!-- Video Display -->
+                                        <video class="img-fluid artwork-image" controls>
+                                            <source src="{{ artwork.media }}" type="video/{{ artwork.media.split('.')[-1] }}">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    {% elif artwork.media.lower().endswith(('.mp3', '.wav', '.ogg')) %}
+                                        <!-- Audio Display -->
+                                        <div class="audio-container" style="background: #f8f9fa; padding: 20px; text-align: center;">
+                                            <i class="fas fa-music fa-3x mb-3" style="color: #6c757d;"></i>
+                                            <audio controls style="width: 100%">
+                                                <source src="{{ artwork.media }}" type="audio/{{ artwork.media.split('.')[-1] }}">
+                                                Your browser does not support the audio element.
+                                            </audio>
+                                            <p class="mt-2">{{ artwork.title }}</p>
+                                        </div>
+                                    {% else %}
+                                        <!-- Fallback for unknown types -->
+                                        <div class="unknown-media" style="background: #f8f9fa; padding: 40px 20px; text-align: center;">
+                                            <i class="fas fa-file-alt fa-3x mb-3" style="color: #6c757d;"></i>
+                                            <p>Media preview not available</p>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="artwork-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                        <a href="/artwork/{{ artwork.id }}" class="btn btn-outline-light btn-lg rounded-pill">View Details</a>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h3 class="artwork-title mb-0">{{ artwork.title }}</h3>
+                                        <span class="badge bg-primary">NEW</span>
+                                    </div>
+                                    <p class="text-muted mb-2">by {{ artwork.artist }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="artwork-price mb-0">${{ artwork.price }}</p>
+                                        <div>
+                                            <i class="fas fa-star text-warning"></i>
+                                            <span class="text-muted">4.8 (24)</span>
+                                        </div>
+                                    </div>
+                                    <a href="/checkout" class="btn btn-primary w-100 mt-3">
+                                        <i class="fas fa-shopping-cart me-2"></i> Purchase
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <a href="/checkout" class="btn btn-primary w-100 mt-3">
-                            <i class="fas fa-shopping-cart me-2"></i> Purchase
-                        </a>
+                        {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                <div class="col-12 text-center py-5">
+                    <img src="https://source.unsplash.com/random/300x300/?empty,art" alt="No artworks" class="img-fluid mb-4" style="max-height: 200px;">
+                    <h3 class="mb-3">No Artworks Available</h3>
+                    <p class="lead">Check back soon for new creative additions!</p>
+                    <a href="#" class="btn btn-primary">Notify Me</a>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% else %}
-    <div class="col-12 text-center py-5">
-        <img src="https://source.unsplash.com/random/300x300/?empty,art" alt="No artworks" class="img-fluid mb-4" style="max-height: 200px;">
-        <h3 class="mb-3">No Artworks Available</h3>
-        <p class="lead">Check back soon for new creative additions!</p>
-        <a href="#" class="btn btn-primary">Notify Me</a>
-    </div>
-    {% endfor %}
-</div>
             <!-- Back to Dashboard -->
             <div class="text-center mt-5">
                 <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
@@ -374,8 +401,94 @@
     </div>
     <!-- Marketplace Section End -->
 
-       <!-- Footer Start -->
-       <div id="footer" class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <!-- Become Seller Modal -->
+    <div class="modal fade" id="becomeSellerModal" tabindex="-1" aria-labelledby="becomeSellerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="becomeSellerModalLabel">Register as an Artist</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-4">To sell your artwork, you need to register as an artist. Please fill out the form below:</p>
+                    
+                    <form id="artistRegistrationForm">
+                        <div class="mb-3">
+                            <label for="artistName" class="form-label">Artist Name</label>
+                            <input type="text" class="form-control" id="artistName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="artistBio" class="form-label">Short Bio</label>
+                            <textarea class="form-control" id="artistBio" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="artistSpecialty" class="form-label">Primary Art Medium</label>
+                            <select class="form-select" id="artistSpecialty" required>
+                                <option value="">Select your specialty</option>
+                                <option value="painting">Painting</option>
+                                <option value="photography">Photography</option>
+                                <option value="digital">Digital Art</option>
+                                <option value="sculpture">Sculpture</option>
+                                <option value="music">Music</option>
+                                <option value="animation">Animation</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="portfolioLink" class="form-label">Portfolio Link (optional)</label>
+                            <input type="url" class="form-control" id="portfolioLink">
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                I agree to the <a href="#" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitArtistRegistration">Submit Application</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms and Conditions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h4>Artist Agreement</h4>
+                    <p>By registering as an artist on our platform, you agree to the following terms:</p>
+                    <ol>
+                        <li>You own all rights to the artwork you upload or have permission to sell it.</li>
+                        <li>You will provide accurate descriptions of your artwork.</li>
+                        <li>The platform takes a 15% commission on all sales.</li>
+                        <li>You are responsible for shipping physical artwork to buyers.</li>
+                        <li>Digital artwork must be delivered within 48 hours of purchase.</li>
+                    </ol>
+                    <h4 class="mt-4">Content Guidelines</h4>
+                    <p>Artwork must not contain:</p>
+                    <ul>
+                        <li>Hate speech or discriminatory content</li>
+                        <li>Explicit adult content without proper labeling</li>
+                        <li>Copyrighted material you don't own</li>
+                        <li>AI-generated art must be clearly labeled as such</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div id="footer" class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
@@ -511,6 +624,29 @@
                 }
             });
         }
+
+        // Handle artist registration form
+        document.getElementById('submitArtistRegistration').addEventListener('click', function() {
+            const form = document.getElementById('artistRegistrationForm');
+            if (form.checkValidity()) {
+                // Here you would typically send the data to your server
+                // For now, we'll just show a success message
+                alert('Your artist application has been submitted successfully! Our team will review it shortly.');
+                
+                // Close the modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('becomeSellerModal'));
+                modal.hide();
+            } else {
+                // Trigger HTML5 validation
+                form.reportValidity();
+            }
+        });
+
+        // Initialize Bootstrap tooltips (for any tooltips you might add)
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
         
         window.addEventListener('scroll', animateOnScroll);
         window.addEventListener('load', animateOnScroll);

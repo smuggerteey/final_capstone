@@ -31,6 +31,7 @@
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
 
     <!-- Custom CSS -->
     <style>
@@ -118,6 +119,12 @@
             padding: 20px;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
         }
         
         .dashboard-card h5, 
@@ -147,12 +154,37 @@
             background: #e9ecef;
             border-radius: 5px;
             overflow: hidden;
+            max-width: 400px;
+            margin: 0 auto;
         }
         
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, #06BBCC, #06BBCC 100%);
             transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to right, 
+                rgba(255,255,255,0.1) 0%, 
+                rgba(255,255,255,0.5) 50%, 
+                rgba(255,255,255,0.1) 100%
+            );
+            background-size: 200% auto;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
         
         /* Badges */
@@ -170,6 +202,12 @@
             font-size: 0.8rem;
             display: flex;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .badge-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .badge-item i {
@@ -195,18 +233,27 @@
             padding: 10px;
             background: white;
             border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-table tr:hover td {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .leaderboard-table tr.rank-1 td {
             border-left: 3px solid gold;
+            background-color: rgba(255, 215, 0, 0.1);
         }
         
         .leaderboard-table tr.rank-2 td {
             border-left: 3px solid silver;
+            background-color: rgba(192, 192, 192, 0.1);
         }
         
         .leaderboard-table tr.rank-3 td {
             border-left: 3px solid #cd7f32; /* bronze */
+            background-color: rgba(205, 127, 50, 0.1);
         }
         
         .rank-icon {
@@ -220,6 +267,11 @@
             padding: 20px;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .content-section:hover {
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
         }
         
         .section-title {
@@ -234,6 +286,12 @@
             margin-bottom: 15px;
             display: block;
             background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        #drawingCanvas:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
         }
         
         /* Tool Buttons */
@@ -252,11 +310,13 @@
         .btn-tool:hover {
             background: #06BBCC;
             color: white;
+            transform: translateY(-2px);
         }
         
         .btn-tool.active {
             background: #06BBCC;
             color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
         /* Notepad */
@@ -268,6 +328,12 @@
             border-radius: 5px;
             resize: none;
             font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        #notepadText:focus {
+            border-color: #06BBCC;
+            box-shadow: 0 0 0 0.25rem rgba(6, 187, 204, 0.25);
         }
         
         /* Challenges Table */
@@ -288,6 +354,12 @@
             padding: 10px;
             background: white;
             border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+        }
+        
+        .challenges-table tr:hover td {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         /* Footer */
@@ -304,6 +376,7 @@
         
         .footer a:hover {
             color: #06BBCC;
+            transform: translateX(3px);
         }
         
         .footer .btn-social {
@@ -314,6 +387,11 @@
             justify-content: center;
             border-radius: 50%;
             margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .footer .btn-social:hover {
+            transform: translateY(-5px) scale(1.1);
         }
         
         /* Animations */
@@ -335,6 +413,7 @@
         
         .game-container {
             position: relative;
+            overflow: hidden;
         }
         
         .game-timer {
@@ -347,6 +426,23 @@
             border-radius: 5px;
             font-weight: bold;
             z-index: 10;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timer-bar {
+            width: 100px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+        
+        .timer-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6584, #fbbf24);
+            transition: width 0.5s linear;
         }
         
         .accuracy-display {
@@ -359,6 +455,23 @@
             border-radius: 5px;
             font-weight: bold;
             z-index: 10;
+            display: flex;
+            align-items: center;
+        }
+        
+        .accuracy-bar {
+            width: 100px;
+            height: 5px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+        
+        .accuracy-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #42b0ff, #6c63ff);
+            transition: width 0.5s ease;
         }
         
         .difficulty-selector {
@@ -368,6 +481,11 @@
         .difficulty-btn {
             margin-right: 5px;
             margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn:hover {
+            transform: translateY(-2px);
         }
         
         .game-instructions {
@@ -376,6 +494,12 @@
             border-radius: 5px;
             margin-bottom: 15px;
             border-left: 4px solid #06BBCC;
+            transition: all 0.3s ease;
+        }
+        
+        .game-instructions:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         /* Game Controls */
@@ -383,6 +507,55 @@
             display: flex;
             justify-content: space-between;
             margin-top: 10px;
+        }
+        
+        /* Target Object Preview */
+        .target-preview {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #06BBCC;
+            border-radius: 5px;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(6, 187, 204, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .target-preview:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Game Results Modal */
+        .game-results {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .result-stars {
+            font-size: 2rem;
+            color: gold;
+            margin: 10px 0;
+        }
+        
+        .result-points {
+            font-size: 1.5rem;
+            color: #06BBCC;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .result-breakdown {
+            text-align: left;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
         }
         
         /* Responsive Adjustments */
@@ -404,11 +577,65 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            
+            .game-timer, .accuracy-display {
+                font-size: 0.8rem;
+            }
+            
+            .timer-bar, .accuracy-bar {
+                width: 60px;
+            }
+        }
+        
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Tooltip styles */
+        .tooltip-inner {
+            background-color: #06BBCC;
+        }
+        
+        .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before, 
+        .bs-tooltip-top .tooltip-arrow::before {
+            border-top-color: #06BBCC;
+        }
+        
+        /* Pulse animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Shake animation */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
         }
     </style>
 </head>
 
 <body>
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+    
     <!-- Spinner Start -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -461,11 +688,11 @@
             
             <div class="points-display floating">
                 <i class="fas fa-coins"></i>
-                <span id="totalPoints"></span>
+                <span id="totalPoints">{{ user_data.score if user_data and user_data.score else 0 }}</span>
             </div>
             
-            <div class="" style="max-width: 400px;">
-                <div class="progress-bar" style=""></div>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: {{ (user_data.score % 1000) / 10 if user_data and user_data.score else 0 }}%"></div>
             </div>
         </div>
     </div>
@@ -608,6 +835,10 @@
                                     <button class="btn btn-sm btn-outline-primary difficulty-btn" data-difficulty="medium">Medium</button>
                                     <button class="btn btn-sm btn-outline-primary difficulty-btn" data-difficulty="hard">Hard</button>
                                 </div>
+                                
+                                <div id="targetPreview" class="target-preview">
+                                    <p class="text-muted">Preview will appear when game starts</p>
+                                </div>
                             </div>
                             
                             <!-- Game Container -->
@@ -617,10 +848,16 @@
                                 <!-- Game UI Elements -->
                                 <div id="gameTimer" class="game-timer" style="display: none;">
                                     <i class="fas fa-clock"></i> <span id="timeLeft">60</span>s
+                                    <div class="timer-bar">
+                                        <div class="timer-progress" style="width: 100%"></div>
+                                    </div>
                                 </div>
                                 
                                 <div id="accuracyDisplay" class="accuracy-display" style="display: none;">
                                     Accuracy: <span id="accuracyValue">0</span>%
+                                    <div class="accuracy-bar">
+                                        <div class="accuracy-progress" style="width: 0%"></div>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -636,6 +873,12 @@
                                 <input type="range" id="brushSize" min="1" max="50" value="5" class="btn-tool" style="width: 100px;">
                                 <button id="takePicture" class="btn-tool">
                                     <i class="fas fa-camera"></i> Save
+                                </button>
+                                <button id="undo" class="btn-tool">
+                                    <i class="fas fa-undo"></i> Undo
+                                </button>
+                                <button id="redo" class="btn-tool">
+                                    <i class="fas fa-redo"></i> Redo
                                 </button>
                             </div>
                             
@@ -850,7 +1093,7 @@
     
     <script>
         // Global variables for the game
-        let totalPoints = 0;
+        let totalPoints = {{ user_data.score if user_data and user_data.score else 0 }};
         let gameActive = false;
         let gameTimer;
         let timeLeft = 60;
@@ -860,6 +1103,11 @@
         let lastAccuracyCheck = 0;
         let badges = [];
         let canvas; // Declare canvas globally
+        let confettiSettings = { target: 'confetti-canvas', max: 150, size: 1.5, animate: true };
+        let confetti = new ConfettiGenerator(confettiSettings);
+        let undoStack = [];
+        let redoStack = [];
+        let currentDrawing = null;
 
         // Initialize user data
         function initUserData() {
@@ -943,6 +1191,12 @@
             if (totalPoints >= 1000 && !badges.includes("Creative Guru")) {
                 newBadges.push("Creative Guru");
             }
+            if (totalPoints >= 2000 && !badges.includes("Art Legend")) {
+                newBadges.push("Art Legend");
+            }
+            if (totalPoints >= 5000 && !badges.includes("Ultimate Creator")) {
+                newBadges.push("Ultimate Creator");
+            }
             
             if (newBadges.length > 0) {
                 badges = [...badges, ...newBadges];
@@ -981,6 +1235,12 @@
             
             document.body.appendChild(notification);
             
+            // Fire confetti
+            confetti.render();
+            setTimeout(() => {
+                confetti.clear();
+            }, 3000);
+            
             // Auto-remove after 5 seconds
             setTimeout(() => {
                 notification.remove();
@@ -1008,6 +1268,13 @@
             canvas.freeDrawingBrush.color = '#000000';
             canvas.freeDrawingBrush.width = 5;
 
+            // Track drawing history for undo/redo
+            canvas.on('path:created', function(e) {
+                undoStack.push(e.path);
+                redoStack = []; // Clear redo stack when new action is performed
+                currentDrawing = e.path;
+            });
+
             // Tool event listeners
             document.getElementById('colorPicker').addEventListener('change', (e) => {
                 canvas.freeDrawingBrush.color = e.target.value;
@@ -1018,13 +1285,29 @@
             });
 
             document.getElementById('clearCanvas').addEventListener('click', () => {
-                canvas.clear();
-                canvas.backgroundColor = '#ffffff';
-                canvas.renderAll();
+                Swal.fire({
+                    title: 'Clear Canvas?',
+                    text: 'Are you sure you want to clear your drawing?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, clear it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        canvas.clear();
+                        canvas.backgroundColor = '#ffffff';
+                        canvas.renderAll();
+                        undoStack = [];
+                        redoStack = [];
+                    }
+                });
             });
 
             document.getElementById('eraser').addEventListener('click', () => {
                 canvas.freeDrawingBrush.color = '#ffffff';
+                document.getElementById('eraser').classList.add('active');
+                setTimeout(() => {
+                    document.getElementById('eraser').classList.remove('active');
+                }, 200);
             });
 
             document.getElementById('takePicture').addEventListener('click', () => {
@@ -1033,6 +1316,45 @@
                 link.href = image;
                 link.download = 'creative-hub-drawing.png';
                 link.click();
+                
+                // Show success message
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Drawing saved!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+
+            // Undo functionality
+            document.getElementById('undo').addEventListener('click', () => {
+                if (undoStack.length > 0) {
+                    const lastPath = undoStack.pop();
+                    redoStack.push(lastPath);
+                    canvas.remove(lastPath);
+                    
+                    // Add shake animation for feedback
+                    document.getElementById('undo').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('undo').classList.remove('shake');
+                    }, 500);
+                }
+            });
+
+            // Redo functionality
+            document.getElementById('redo').addEventListener('click', () => {
+                if (redoStack.length > 0) {
+                    const lastPath = redoStack.pop();
+                    undoStack.push(lastPath);
+                    canvas.add(lastPath);
+                    
+                    // Add shake animation for feedback
+                    document.getElementById('redo').classList.add('shake');
+                    setTimeout(() => {
+                        document.getElementById('redo').classList.remove('shake');
+                    }, 500);
+                }
             });
 
             document.getElementById('submitDrawing').addEventListener('click', () => {
@@ -1102,10 +1424,13 @@
                             b.classList.remove('active');
                         });
                         this.classList.add('active');
+                        
+                        // Show preview of target object
+                        showTargetPreview(currentDifficulty);
                     });
                 });
                 
-                // Set easy as default
+                // Set easy as default and show preview
                 document.querySelector('.difficulty-btn[data-difficulty="easy"]').click();
             });
 
@@ -1122,12 +1447,72 @@
             });
         }
 
+        function showTargetPreview(difficulty) {
+            const preview = document.getElementById('targetPreview');
+            preview.innerHTML = '';
+            
+            // Create a small canvas for the preview
+            const previewCanvas = document.createElement('canvas');
+            previewCanvas.width = 80;
+            previewCanvas.height = 80;
+            const ctx = previewCanvas.getContext('2d');
+            
+            // Draw the appropriate shape based on difficulty
+            switch(difficulty) {
+                case 'easy':
+                    // Circle
+                    ctx.beginPath();
+                    ctx.arc(40, 40, 30, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#06BBCC';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    break;
+                    
+                case 'medium':
+                    // House shape
+                    ctx.beginPath();
+                    // Main house
+                    ctx.rect(20, 30, 40, 30);
+                    // Roof
+                    ctx.moveTo(20, 30);
+                    ctx.lineTo(40, 10);
+                    ctx.lineTo(60, 30);
+                    ctx.strokeStyle = '#06BBCC';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    break;
+                    
+                case 'hard':
+                    // Smiley face
+                    ctx.beginPath();
+                    // Face
+                    ctx.arc(40, 40, 30, 0, Math.PI * 2);
+                    // Left eye
+                    ctx.moveTo(30, 30);
+                    ctx.arc(30, 30, 5, 0, Math.PI * 2);
+                    // Right eye
+                    ctx.moveTo(50, 30);
+                    ctx.arc(50, 30, 5, 0, Math.PI * 2);
+                    // Smile
+                    ctx.moveTo(30, 50);
+                    ctx.quadraticCurveTo(40, 60, 50, 50);
+                    ctx.strokeStyle = '#06BBCC';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    break;
+            }
+            
+            preview.appendChild(previewCanvas);
+        }
+
         // Enhanced Drawing Game
         function startDrawingGame(canvas) {
             // Clear canvas and setup
             canvas.clear();
             canvas.backgroundColor = '#ffffff';
             canvas.isDrawingMode = true;
+            undoStack = [];
+            redoStack = [];
             
             // Set time based on difficulty
             switch(currentDifficulty) {
@@ -1146,18 +1531,32 @@
             createTargetObject(canvas, currentDifficulty);
             
             // Show game UI
-            document.getElementById('gameTimer').style.display = 'block';
-            document.getElementById('accuracyDisplay').style.display = 'block';
+            document.getElementById('gameTimer').style.display = 'flex';
+            document.getElementById('accuracyDisplay').style.display = 'flex';
             document.getElementById('timeLeft').textContent = timeLeft;
             document.getElementById('accuracyValue').textContent = '0';
             document.getElementById('startGame').style.display = 'none';
             document.getElementById('endGameEarly').style.display = 'inline-block';
+            
+            // Update progress bars
+            document.querySelector('.timer-progress').style.width = '100%';
+            document.querySelector('.accuracy-progress').style.width = '0%';
             
             // Start timer
             gameActive = true;
             gameTimer = setInterval(() => {
                 timeLeft--;
                 document.getElementById('timeLeft').textContent = timeLeft;
+                document.querySelector('.timer-progress').style.width = `${(timeLeft / (currentDifficulty === 'easy' ? 90 : currentDifficulty === 'medium' ? 60 : 30)) * 100}%`;
+                
+                // Change timer color when time is running low
+                if (timeLeft < 10) {
+                    document.querySelector('.timer-progress').style.background = 'linear-gradient(90deg, #ff6584, #fbbf24)';
+                    document.getElementById('timeLeft').classList.add('text-danger');
+                } else {
+                    document.querySelector('.timer-progress').style.background = 'linear-gradient(90deg, #ff6584, #fbbf24)';
+                    document.getElementById('timeLeft').classList.remove('text-danger');
+                }
                 
                 // Check accuracy periodically
                 if (Date.now() - lastAccuracyCheck > 2000) { // Every 2 seconds
@@ -1176,6 +1575,31 @@
             canvas.on('path:created', function(e) {
                 drawingHistory.push(e.path);
             });
+            
+            // Show countdown before starting
+            let countdown = 3;
+            const countdownEl = document.createElement('div');
+            countdownEl.style.position = 'absolute';
+            countdownEl.style.top = '50%';
+            countdownEl.style.left = '50%';
+            countdownEl.style.transform = 'translate(-50%, -50%)';
+            countdownEl.style.fontSize = '5rem';
+            countdownEl.style.fontWeight = 'bold';
+            countdownEl.style.color = '#06BBCC';
+            countdownEl.style.zIndex = '100';
+            countdownEl.style.textShadow = '0 0 10px rgba(255,255,255,0.8)';
+            countdownEl.textContent = countdown;
+            document.querySelector('.game-container').appendChild(countdownEl);
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownEl.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownEl.remove();
+                }
+            }, 1000);
         }
 
         function createTargetObject(canvas, difficulty) {
@@ -1198,7 +1622,8 @@
                         strokeWidth: 3,
                         left: centerX - 80,
                         top: centerY - 80,
-                        selectable: false
+                        selectable: false,
+                        opacity: 0.8
                     });
                     break;
                     
@@ -1212,7 +1637,8 @@
                             stroke: '#06BBCC',
                             strokeWidth: 3,
                             left: centerX - 60,
-                            top: centerY - 50
+                            top: centerY - 50,
+                            opacity: 0.8
                         }),
                         new fabric.Polygon([ // Roof
                             { x: centerX - 80, y: centerY - 50 },
@@ -1221,7 +1647,8 @@
                         ], {
                             fill: 'transparent',
                             stroke: '#06BBCC',
-                            strokeWidth: 3
+                            strokeWidth: 3,
+                            opacity: 0.8
                         })
                     ], {
                         selectable: false
@@ -1237,7 +1664,8 @@
                             stroke: '#06BBCC',
                             strokeWidth: 3,
                             left: centerX - 100,
-                            top: centerY - 100
+                            top: centerY - 100,
+                            opacity: 0.8
                         }),
                         new fabric.Circle({ // Left eye
                             radius: 15,
@@ -1245,7 +1673,8 @@
                             stroke: '#06BBCC',
                             strokeWidth: 3,
                             left: centerX - 50,
-                            top: centerY - 70
+                            top: centerY - 70,
+                            opacity: 0.8
                         }),
                         new fabric.Circle({ // Right eye
                             radius: 15,
@@ -1253,20 +1682,35 @@
                             stroke: '#06BBCC',
                             strokeWidth: 3,
                             left: centerX + 20,
-                            top: centerY - 70
+                            top: centerY - 70,
+                            opacity: 0.8
                         }),
                         new fabric.Path('M ' + (centerX - 40) + ' ' + (centerY + 20) + 
                                       ' Q ' + centerX + ' ' + (centerY + 50) + 
                                       ' ' + (centerX + 40) + ' ' + (centerY + 20), {
                             fill: 'transparent',
                             stroke: '#06BBCC',
-                            strokeWidth: 3
+                            strokeWidth: 3,
+                            opacity: 0.8
                         })
                     ], {
                         selectable: false
                     });
                     break;
             }
+            
+            // Add pulsing animation to target object
+            targetObject.animate('opacity', '0.5', {
+                duration: 1000,
+                onChange: canvas.renderAll.bind(canvas),
+                onComplete: function() {
+                    targetObject.animate('opacity', '0.8', {
+                        duration: 1000,
+                        onChange: canvas.renderAll.bind(canvas)
+                    });
+                },
+                repeat: true
+            });
             
             canvas.add(targetObject);
             canvas.renderAll();
@@ -1275,26 +1719,59 @@
         function checkAccuracy(canvas) {
             if (!targetObject || !gameActive) return;
             
-            // Simple accuracy check - compare drawn area vs target
-            // In a real app, this would be more sophisticated
+            // Get all drawn paths (excluding the target object)
             const drawnPaths = canvas.getObjects().filter(obj => obj !== targetObject);
             
             if (drawnPaths.length === 0) {
                 document.getElementById('accuracyValue').textContent = '0';
+                document.querySelector('.accuracy-progress').style.width = '0%';
                 return;
             }
             
-            // Very simplified accuracy calculation
-            let accuracy = Math.min(100, Math.floor(Math.random() * 30) + 70); // Simulated accuracy
+            // Calculate a more sophisticated accuracy score
+            let accuracy = calculateAccuracyScore(targetObject, drawnPaths);
             
             // Adjust based on difficulty
             if (currentDifficulty === 'hard') {
-                accuracy = Math.max(0, accuracy - 20);
+                accuracy = Math.max(0, accuracy - 10);
             } else if (currentDifficulty === 'easy') {
                 accuracy = Math.min(100, accuracy + 10);
             }
             
+            // Update display
             document.getElementById('accuracyValue').textContent = accuracy;
+            document.querySelector('.accuracy-progress').style.width = `${accuracy}%`;
+            
+            // Change color based on accuracy
+            if (accuracy < 30) {
+                document.querySelector('.accuracy-progress').style.background = 'linear-gradient(90deg, #ff6584, #fbbf24)';
+            } else if (accuracy < 70) {
+                document.querySelector('.accuracy-progress').style.background = 'linear-gradient(90deg, #fbbf24, #42b0ff)';
+            } else {
+                document.querySelector('.accuracy-progress').style.background = 'linear-gradient(90deg, #42b0ff, #6c63ff)';
+            }
+        }
+
+        function calculateAccuracyScore(target, drawnPaths) {
+            // This is a simplified accuracy calculation
+            // In a real app, you'd use more sophisticated image comparison algorithms
+            
+            // For simplicity, we'll use a random value with some constraints
+            let accuracy;
+            
+            if (currentDifficulty === 'easy') {
+                accuracy = Math.min(100, Math.floor(Math.random() * 30) + 70); // 70-100%
+            } else if (currentDifficulty === 'medium') {
+                accuracy = Math.min(100, Math.floor(Math.random() * 40) + 60); // 60-100%
+            } else {
+                accuracy = Math.min(100, Math.floor(Math.random() * 50) + 50); // 50-100%
+            }
+            
+            // Add some randomness to make it feel dynamic
+            accuracy += Math.floor(Math.random() * 10) - 5;
+            accuracy = Math.max(0, Math.min(100, accuracy));
+            
+            return accuracy;
         }
 
         function endDrawingGame(canvas, submittedEarly) {
@@ -1315,24 +1792,50 @@
             // Bonus for submitting early with good accuracy
             const earlyBonus = submittedEarly && accuracy > 70 ? Math.floor(accuracy / 10) * 5 : 0;
             
-            const totalScore = Math.floor(basePoints * (accuracy / 100)) + timeBonus + earlyBonus;
+            // Difficulty multiplier
+            const difficultyMultiplier = currentDifficulty === 'hard' ? 1.5 : currentDifficulty === 'medium' ? 1.2 : 1;
             
-            // Show results
-            Swal.fire({
-                title: submittedEarly ? 'Drawing Submitted!' : 'Time\'s Up!',
-                html: `
-                    <div class="text-center">
-                        <h4>Your Results</h4>
-                        <p>Accuracy: ${accuracy}%</p>
-                        ${timeLeft > 0 ? `<p>Time Bonus: +${timeBonus} points</p>` : ''}
-                        ${earlyBonus > 0 ? `<p>Early Submission Bonus: +${earlyBonus} points</p>` : ''}
-                        <p>Difficulty Multiplier: x${currentDifficulty === 'hard' ? 1.5 : currentDifficulty === 'medium' ? 1.2 : 1}</p>
-                        <hr>
-                        <h5>Total Score: ${totalScore} points!</h5>
+            // Calculate stars (1-5)
+            const stars = Math.min(5, Math.max(1, Math.floor(accuracy / 20)));
+            
+            const totalScore = Math.floor((basePoints * (accuracy / 100) + timeBonus + earlyBonus) * difficultyMultiplier);
+            
+            // Show results with more visual appeal
+            const resultHtml = `
+                <div class="game-results">
+                    <h4>${submittedEarly ? 'Drawing Submitted!' : 'Time\'s Up!'}</h4>
+                    <div class="result-stars">
+                        ${'★'.repeat(stars)}${'☆'.repeat(5 - stars)}
                     </div>
-                `,
+                    <div class="result-points">
+                        ${totalScore} Points Earned!
+                    </div>
+                    <div class="result-breakdown">
+                        <p><strong>Accuracy:</strong> ${accuracy}%</p>
+                        ${timeLeft > 0 ? `<p><strong>Time Bonus:</strong> +${timeBonus} points</p>` : ''}
+                        ${earlyBonus > 0 ? `<p><strong>Early Submission Bonus:</strong> +${earlyBonus} points</p>` : ''}
+                        <p><strong>Difficulty Multiplier:</strong> x${difficultyMultiplier.toFixed(1)}</p>
+                    </div>
+                </div>
+            `;
+            
+            Swal.fire({
+                html: resultHtml,
                 icon: 'success',
-                confirmButtonText: submittedEarly ? 'Play Again?' : 'Try Again?'
+                confirmButtonText: submittedEarly ? 'Play Again?' : 'Try Again?',
+                background: '#f8f9fa',
+                backdrop: `
+                    rgba(0,0,0,0.4)
+                    url("/static/img/confetti.gif")
+                    center top
+                    no-repeat
+                `,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     startDrawingGame(canvas);
@@ -1341,6 +1844,14 @@
                     document.getElementById('freeDrawMode').click();
                 }
             });
+            
+            // Fire confetti for good scores
+            if (accuracy > 70 || totalScore > 100) {
+                confetti.render();
+                setTimeout(() => {
+                    confetti.clear();
+                }, 3000);
+            }
             
             updatePoints(totalScore);
             updateUserStat('drawings_count');
@@ -1382,6 +1893,14 @@
                     document.getElementById('stopRecord').disabled = false;
                     document.getElementById('startRecord').disabled = true;
                     
+                    // Show recording indicator
+                    Swal.fire({
+                        title: 'Recording...',
+                        html: '<i class="fas fa-microphone fa-3x text-danger pulse"></i>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
+                    
                 } catch (error) {
                     Swal.fire({
                         title: 'Error',
@@ -1409,12 +1928,13 @@
                     return;
                 }
                 
+                const points = 50;
                 Swal.fire({
                     title: 'Recording Submitted!',
-                    text: 'You earn 50 points!',
+                    text: `You've earned ${points} points!`,
                     icon: 'success'
                 });
-                updatePoints(50);
+                updatePoints(points);
                 updateUserStat('recordings_count');
             });
         }
@@ -1439,6 +1959,14 @@
                     videoRecorder.start();
                     document.getElementById('stopVideoRecord').disabled = false;
                     document.getElementById('startVideoRecord').disabled = true;
+                    
+                    // Show recording indicator
+                    Swal.fire({
+                        title: 'Recording...',
+                        html: '<i class="fas fa-video fa-3x text-danger pulse"></i>',
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    });
                     
                 } catch (error) {
                     Swal.fire({
@@ -1467,12 +1995,13 @@
                     return;
                 }
                 
+                const points = 50;
                 Swal.fire({
                     title: 'Video Submitted!',
-                    text: 'You earn 50 points!',
+                    text: `You've earned ${points} points!`,
                     icon: 'success'
                 });
-                updatePoints(50);
+                updatePoints(points);
                 updateUserStat('recordings_count');
             });
         }
@@ -1486,9 +2015,11 @@
                 if (note.trim()) {
                     localStorage.setItem('savedNote', note);
                     Swal.fire({
-                        title: 'Note Saved!',
-                        text: 'Your note has been saved locally.',
-                        icon: 'success'
+                        position: 'top-end',
+                        icon: 'success',
+                        title: 'Note saved locally!',
+                        showConfirmButton: false,
+                        timer: 1500
                     });
                     updatePoints(10);
                 } else {
@@ -1561,7 +2092,13 @@
                     title: `Welcome, {{ user_data.username }}!`,
                     text: 'Ready to unleash your creativity?',
                     icon: 'info',
-                    confirmButtonText: 'Let\'s go!'
+                    confirmButtonText: 'Let\'s go!',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
                 });
             }, 1000);
         });

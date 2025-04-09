@@ -126,13 +126,13 @@
         /* Improved chart containers */
         .chart-container {
             position: relative;
-            height: 250px; /* Reduced from 400px */
+            height: 250px;
             width: 100%;
         }
         
         .small-chart-container {
             position: relative;
-            height: 180px; /* For smaller charts */
+            height: 180px;
             width: 100%;
         }
         
@@ -143,6 +143,102 @@
             padding: 10px 15px !important;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
             border: none !important;
+        }
+        
+        /* Enhanced dropdown styles */
+        .dropdown-toggle {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(67, 97, 238, 0.3);
+            background: white;
+            color: var(--primary-color);
+        }
+        
+        .dropdown-toggle:hover {
+            background: rgba(67, 97, 238, 0.1);
+            border-color: rgba(67, 97, 238, 0.5);
+        }
+        
+        .dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .dropdown-item {
+            padding: 8px 15px;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .dropdown-item:hover, .dropdown-item:focus {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .dropdown-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Add animation to dropdown */
+        .dropdown-menu.show {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Loading state */
+        .card.loading .chart-container {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .card.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card.loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(67, 97, 238, 0.2);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            z-index: 11;
+        }
+        
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
         /* Responsive adjustments */
@@ -226,7 +322,7 @@
                 </div>
             </div>
 
-            <!-- Charts Section with smaller graphs -->
+            <!-- Charts Section with enhanced dropdowns -->
             <div class="container mt-5 wow fadeInUp" data-wow-delay="0.7s">
                 <div class="row">
                     <div class="col-md-6 mb-4">
@@ -237,10 +333,10 @@
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="submissionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         Last 7 Days
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="submissionsDropdown">
-                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('week')">Last 7 Days</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('month')">Last 30 Days</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="fetchSubmissions('year')">Last Year</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="submissionsDropdown">
+                                        <li><a class="dropdown-item active" href="#" data-range="week">Last 7 Days</a></li>
+                                        <li><a class="dropdown-item" href="#" data-range="month">Last 30 Days</a></li>
+                                        <li><a class="dropdown-item" href="#" data-range="year">Last Year</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -262,9 +358,9 @@
                                     <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="activityDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         By Week
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="activityDropdown">
-                                        <li><a class="dropdown-item" href="#" onclick="fetchUserActivity('week')">By Week</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="fetchUserActivity('month')">By Month</a></li>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="activityDropdown">
+                                        <li><a class="dropdown-item active" href="#" data-range="week">By Week</a></li>
+                                        <li><a class="dropdown-item" href="#" data-range="month">By Month</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -450,6 +546,45 @@
             fetchSubmissions('week');
             fetchUserActivity('week');
             fetchCategories();
+            
+            // Handle submissions dropdown
+            $('#submissionsDropdown').next('.dropdown-menu').find('.dropdown-item').click(function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                $(this).addClass('active').siblings().removeClass('active');
+                
+                // Update button text
+                const buttonText = $(this).text();
+                $('#submissionsDropdown').text(buttonText);
+                
+                // Fetch data for selected range
+                const range = $(this).data('range');
+                fetchSubmissions(range);
+            });
+            
+            // Handle activity dropdown
+            $('#activityDropdown').next('.dropdown-menu').find('.dropdown-item').click(function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                $(this).addClass('active').siblings().removeClass('active');
+                
+                // Update button text
+                const buttonText = $(this).text();
+                $('#activityDropdown').text(buttonText);
+                
+                // Fetch data for selected range
+                const range = $(this).data('range');
+                fetchUserActivity(range);
+            });
+            
+            // Close dropdown when clicking outside
+            $(document).click(function(e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown-menu').removeClass('show');
+                }
+            });
         });
 
         // Fetch statistics from server
@@ -539,22 +674,28 @@
 
         // Fetch submissions data for chart
         function fetchSubmissions(timeRange) {
-            // In a real app, you would fetch this from your backend
-            // For now, we'll simulate with random data
-            let labels, data;
+            // Show loading state
+            const card = $('#submissionsChart').closest('.card');
+            card.addClass('loading');
             
-            if (timeRange === 'week') {
-                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                data = Array.from({length: 7}, () => Math.floor(Math.random() * 20) + 5);
-            } else if (timeRange === 'month') {
-                labels = Array.from({length: 4}, (_, i) => `Week ${i + 1}`);
-                data = Array.from({length: 4}, () => Math.floor(Math.random() * 50) + 20);
-            } else {
-                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                data = Array.from({length: 12}, () => Math.floor(Math.random() * 100) + 30);
-            }
-            
-            updateSubmissionsChart(labels, data);
+            // Simulate API delay
+            setTimeout(function() {
+                let labels, data;
+                
+                if (timeRange === 'week') {
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data = Array.from({length: 7}, () => Math.floor(Math.random() * 20) + 5);
+                } else if (timeRange === 'month') {
+                    labels = Array.from({length: 4}, (_, i) => `Week ${i + 1}`);
+                    data = Array.from({length: 4}, () => Math.floor(Math.random() * 50) + 20);
+                } else {
+                    labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    data = Array.from({length: 12}, () => Math.floor(Math.random() * 100) + 30);
+                }
+                
+                updateSubmissionsChart(labels, data);
+                card.removeClass('loading');
+            }, 800);
         }
 
         // Update submissions chart with improved styling
@@ -639,20 +780,27 @@
 
         // Fetch user activity data
         function fetchUserActivity(timeRange) {
-            // In a real app, you would fetch this from your backend
-            let labels, viewsData, likesData;
+            // Show loading state
+            const card = $('#userActivityChart').closest('.card');
+            card.addClass('loading');
             
-            if (timeRange === 'week') {
-                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                viewsData = Array.from({length: 7}, () => Math.floor(Math.random() * 100) + 30);
-                likesData = Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 10);
-            } else {
-                labels = Array.from({length: 12}, (_, i) => new Date(0, i).toLocaleString('default', {month: 'short'}));
-                viewsData = Array.from({length: 12}, () => Math.floor(Math.random() * 300) + 100);
-                likesData = Array.from({length: 12}, () => Math.floor(Math.random() * 200) + 50);
-            }
-            
-            updateUserActivityChart(labels, viewsData, likesData);
+            // Simulate API delay
+            setTimeout(function() {
+                let labels, viewsData, likesData;
+                
+                if (timeRange === 'week') {
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    viewsData = Array.from({length: 7}, () => Math.floor(Math.random() * 100) + 30);
+                    likesData = Array.from({length: 7}, () => Math.floor(Math.random() * 50) + 10);
+                } else {
+                    labels = Array.from({length: 12}, (_, i) => new Date(0, i).toLocaleString('default', {month: 'short'}));
+                    viewsData = Array.from({length: 12}, () => Math.floor(Math.random() * 300) + 100);
+                    likesData = Array.from({length: 12}, () => Math.floor(Math.random() * 200) + 50);
+                }
+                
+                updateUserActivityChart(labels, viewsData, likesData);
+                card.removeClass('loading');
+            }, 800);
         }
 
         // Update user activity chart with improved styling
@@ -822,77 +970,77 @@
             });
         }
 
-// Export analytics data
-function exportAnalytics() {
-    const format = $('#exportFormat').val();
-    const dateRange = $('#dateRange').val();
-    const includeCharts = $('#includeCharts').is(':checked');
-    const includeRawData = $('#includeRawData').is(':checked');
-    const includeInsights = $('#includeInsights').is(':checked');
+        // Export analytics data
+        function exportAnalytics() {
+            const format = $('#exportFormat').val();
+            const dateRange = $('#dateRange').val();
+            const includeCharts = $('#includeCharts').is(':checked');
+            const includeRawData = $('#includeRawData').is(':checked');
+            const includeInsights = $('#includeInsights').is(':checked');
 
-    // Show loading state
-    const exportBtn = $('#exportModal').find('.btn-primary');
-    exportBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Exporting...');
+            // Show loading state
+            const exportBtn = $('#exportModal').find('.btn-primary');
+            exportBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Exporting...');
 
-    // Collect chart data URLs
-    const chartData = {
-        submissionsChart: submissionsChart ? document.getElementById('submissionsChart').toDataURL('image/png') : null,
-        userActivityChart: userActivityChart ? document.getElementById('userActivityChart').toDataURL('image/png') : null,
-        categoriesChart: categoriesChart ? document.getElementById('categoriesChart').toDataURL('image/png') : null
-    };
+            // Collect chart data URLs
+            const chartData = {
+                submissionsChart: submissionsChart ? document.getElementById('submissionsChart').toDataURL('image/png') : null,
+                userActivityChart: userActivityChart ? document.getElementById('userActivityChart').toDataURL('image/png') : null,
+                categoriesChart: categoriesChart ? document.getElementById('categoriesChart').toDataURL('image/png') : null
+            };
 
-    // Prepare data to send
-    const exportData = {
-        format: format,
-        dateRange: dateRange,
-        includeCharts: includeCharts,
-        includeRawData: includeRawData,
-        includeInsights: includeInsights,
-        chartData: chartData,
-        stats: {
-            totalUsers: $('#totalUsers').text(),
-            totalArtworks: $('#totalArtworks').text(),
-            activeChallenges: $('#activeChallenges').text()
+            // Prepare data to send
+            const exportData = {
+                format: format,
+                dateRange: dateRange,
+                includeCharts: includeCharts,
+                includeRawData: includeRawData,
+                includeInsights: includeInsights,
+                chartData: chartData,
+                stats: {
+                    totalUsers: $('#totalUsers').text(),
+                    totalArtworks: $('#totalArtworks').text(),
+                    activeChallenges: $('#activeChallenges').text()
+                }
+            };
+
+            // Send request to server
+            fetch('/export_report', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(exportData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Export failed');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics_report_${new Date().toISOString().split('T')[0]}.${format.toLowerCase()}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                
+                // Close modal and reset button
+                $('#exportModal').modal('hide');
+            })
+            .catch(error => {
+                console.error('Export error:', error);
+                alert('Failed to generate report. Please try again.');
+            })
+            .finally(() => {
+                exportBtn.prop('disabled', false).html('<i class="fas fa-download me-2"></i>Export');
+            });
         }
-    };
-
-    // Send request to server
-    fetch('/export_report', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(exportData)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Export failed');
-        }
-        return response.blob();
-    })
-    .then(blob => {
-        // Create download link
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `analytics_report_${new Date().toISOString().split('T')[0]}.${format.toLowerCase()}`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-        
-        // Close modal and reset button
-        $('#exportModal').modal('hide');
-    })
-    .catch(error => {
-        console.error('Export error:', error);
-        alert('Failed to generate report. Please try again.');
-    })
-    .finally(() => {
-        exportBtn.prop('disabled', false).html('<i class="fas fa-download me-2"></i>Export');
-    });
-}
     </script>
 </body>
 </html>

@@ -15,9 +15,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <!-- Libraries Stylesheet -->
-    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Template Stylesheet -->
@@ -252,43 +249,42 @@
             font-size: 20px;
         }
         
-        .footer {
-            background: linear-gradient(135deg, #2d3748, #1a202c);
+        /* Duplicate artwork modal styles */
+        .duplicate-modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
         }
         
-        /* Floating animation for decorative elements */
-        .floating {
-            animation: floating 3s ease-in-out infinite;
+        .duplicate-header {
+            background-color: #ffebee;
+            border-bottom: none;
         }
         
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        .duplicate-title {
+            color: #d32f2f;
+            font-weight: 700;
         }
         
-        /* Decorative elements */
-        .decorative-circle {
-            position: absolute;
-            border-radius: 50%;
-            opacity: 0.1;
-            z-index: -1;
+        .duplicate-body {
+            padding: 30px;
         }
         
-        .circle-1 {
-            width: 200px;
-            height: 200px;
-            background: var(--primary-color);
-            top: 10%;
-            left: -100px;
+        .duplicate-footer {
+            border-top: none;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
         }
         
-        .circle-2 {
-            width: 300px;
-            height: 300px;
-            background: var(--secondary-color);
-            bottom: 10%;
-            right: -150px;
+        .btn-force {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+        }
+        
+        .btn-force:hover {
+            background-color: #b71c1c;
         }
     </style>
 </head>
@@ -301,10 +297,6 @@
     </div>
     <!-- Spinner End -->
 
-    <!-- Decorative elements -->
-    <div class="decorative-circle circle-1 floating"></div>
-    <div class="decorative-circle circle-2 floating" style="animation-delay: 0.5s;"></div>
-
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-light shadow sticky-top p-0">
         <div class="container">
@@ -315,11 +307,6 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    
-                    <a href="/marketplace" class="nav-item nav-link"><i class="fas fa-store me-2"></i>Marketplace</a>
-                    <a href="/profile" class="nav-item nav-link"><i class="fas fa-user me-2"></i>My Profile</a>
-                </div>
             </div>
         </div>
     </nav>
@@ -335,22 +322,6 @@
             
             <div class="row justify-content-center">
                 <div class="col-lg-8 col-xl-7">
-                    <!-- Artwork Type Selector -->
-                    <div class="artwork-type-selector mb-4">
-                        <div class="artwork-type-btn active" data-type="all">
-                            <i class="fas fa-images"></i> All Types
-                        </div>
-                        <div class="artwork-type-btn" data-type="image">
-                            <i class="fas fa-image"></i> Image
-                        </div>
-                        <div class="artwork-type-btn" data-type="audio">
-                            <i class="fas fa-music"></i> Audio
-                        </div>
-                        <div class="artwork-type-btn" data-type="video">
-                            <i class="fas fa-video"></i> Video
-                        </div>
-                    </div>
-                    
                     <!-- Feedback Message -->
                     <div id="upload-feedback" class="alert" role="alert"></div>
                     
@@ -379,7 +350,8 @@
                             <div class="col-md-6">
                                 <div class="form-group mb-4">
                                     <label for="category" class="form-label fw-bold">Category</label>
-                                    <select id="category" name="category" class="form-select">
+                                    <select id="category" name="category" class="form-select" required>
+                                        <option value="">Select a category</option>
                                         <option value="painting">Painting</option>
                                         <option value="photography">Photography</option>
                                         <option value="digital">Digital Art</option>
@@ -445,17 +417,35 @@
                             <small class="text-muted">By uploading, you agree to our <a href="#">Terms of Service</a></small>
                         </div>
                     </form>
-
-                    <div class="text-center mt-4">
-                        <a href="{{ url_for('marketplace') }}" class="btn btn-outline-primary px-4">
-                            <i class="fas fa-store me-2"></i> Explore Marketplace
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Upload Artwork End -->
+
+    <!-- Duplicate Artwork Modal -->
+    <div class="modal fade" id="duplicateModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content duplicate-modal-content">
+                <div class="modal-header duplicate-header">
+                    <h5 class="modal-title duplicate-title"><i class="fas fa-exclamation-triangle me-2"></i> Duplicate Artwork Detected</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body duplicate-body">
+                    <p id="duplicate-message"></p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-info-circle me-2"></i> If you're sure this is your original work, you can proceed with the upload.
+                    </div>
+                </div>
+                <div class="modal-footer duplicate-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-force" id="force-upload">
+                        <i class="fas fa-upload me-2"></i> Upload Anyway
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Success Modal -->
     <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
@@ -468,38 +458,64 @@
                         </div>
                     </div>
                     <h4 class="mb-3">Upload Successful!</h4>
-                    <p class="text-muted mb-4">Your artwork has been published to the marketplace. Share it with the world!</p>
-                    <div class="d-flex gap-3 justify-content-center">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Continue Uploading</button>
-                        <a href="{{ url_for('marketplace') }}" class="btn btn-primary">View in Marketplace</a>
+                    <p class="text-muted mb-4" id="success-message">Your artwork has been published to the marketplace. Share it with the world!</p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{{ url_for('profile') }}" class="btn btn-primary">View My Profile</a>
+                        <a href="{{ url_for('upload_artwork') }}" class="btn btn-outline-primary">Upload Another</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+    <!-- Review Needed Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-4">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                    <h4 class="mb-3">Upload Under Review</h4>
+                    <p class="text-muted mb-4">Your artwork has been uploaded but requires admin approval before being published. This usually takes 24-48 hours.</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-primary">View My Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+            <!-- Back to Dashboard -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('dashboard') }}" 
+                   class="btn btn-secondary dashboard-btn">
+                    Back to Dashboard
+                </a>
+            </div>
+    <!-- Marketplace Section End -->
+
+       <!-- Footer Start -->
+       <div id="footer" class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="#about">About Us</a>
+                    <a class="btn btn-link" href="#footer">Contact Us</a>
                     <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Conditions</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
                     <a class="btn btn-link" href="">FAQs & Help</a>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 University Ave, Berekuso</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
                     <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>hello@creativeshowcase.com</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-instagram"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-pinterest"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -514,23 +530,14 @@
                         <div class="col-4">
                             <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
                         </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Get inspiration and updates delivered to your inbox.</p>
+                    <p>Sign Up For News.</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
                     </div>
                 </div>
             </div>
@@ -539,11 +546,11 @@
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Showcase</a>, All Rights Reserved.
+                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
                     </div>
                     <div class="col-md-6 text-center text-md-end">
                         <div class="footer-menu">
-                            <a href="">Home</a>
+                            <a href="#home">Home</a>
                             <a href="">Cookies</a>
                             <a href="">Help</a>
                             <a href="">FQAs</a>
@@ -554,245 +561,304 @@
         </div>
     </div>
     <!-- Footer End -->
-    
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
-
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-    <!-- Upload Artwork Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const dragDropArea = document.getElementById('drag-drop-area');
-            const fileInput = document.getElementById('media');
-            const previewImage = document.getElementById('preview-image');
-            const previewAudio = document.getElementById('preview-audio');
-            const previewVideo = document.getElementById('preview-video');
-            const previewContainer = document.getElementById('preview-container');
-            const fileInfo = document.getElementById('file-info');
-            const feedbackDiv = document.getElementById('upload-feedback');
-            const removeFileBtn = document.getElementById('remove-file');
-            const artworkTypeBtns = document.querySelectorAll('.artwork-type-btn');
-            const form = document.getElementById('uploadForm');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalSubmitText = submitBtn.innerHTML;
-            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-            const tagInput = document.getElementById('tags');
-            const tagSuggestions = document.querySelectorAll('.tag-suggestion');
-
-            // Current file type filter
-            let currentFilter = 'all';
-            
-            // Click to open file dialog
-            dragDropArea.addEventListener('click', () => {
-                fileInput.click();
-            });
-
-            // Handle drag and drop
-            dragDropArea.addEventListener('dragover', (event) => {
-                event.preventDefault();
-                dragDropArea.classList.add('active');
-            });
-
-            dragDropArea.addEventListener('dragleave', () => {
-                dragDropArea.classList.remove('active');
-            });
-
-            dragDropArea.addEventListener('drop', (event) => {
-                event.preventDefault();
-                dragDropArea.classList.remove('active');
-                const files = event.dataTransfer.files;
-                if (files.length > 0) {
-                    fileInput.files = files;
-                    handleFileSelection(files[0]);
-                }
-            });
-
-            // Preview uploaded file
-            fileInput.addEventListener('change', (event) => {
-                const files = event.target.files;
-                if (files.length > 0) {
-                    handleFileSelection(files[0]);
-                }
-            });
-
-            // Remove file
-            removeFileBtn.addEventListener('click', (event) => {
-                event.preventDefault();
-                fileInput.value = '';
-                previewImage.style.display = 'none';
-                previewAudio.classList.add('d-none');
-                previewVideo.classList.add('d-none');
-                previewContainer.classList.remove('show');
-                fileInfo.textContent = '';
-            });
-
-            // Artwork type filter buttons
-            artworkTypeBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    artworkTypeBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.type;
-                    
-                    // Update file input accept attribute based on selection
-                    if (currentFilter === 'image') {
-                        fileInput.setAttribute('accept', 'image/*');
-                    } else if (currentFilter === 'audio') {
-                        fileInput.setAttribute('accept', 'audio/*');
-                    } else if (currentFilter === 'video') {
-                        fileInput.setAttribute('accept', 'video/*');
-                    } else {
-                        fileInput.setAttribute('accept', 'image/*,audio/*,video/*');
+    
+        <!-- Upload Artwork Script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const dragDropArea = document.getElementById('drag-drop-area');
+                const fileInput = document.getElementById('media');
+                const previewImage = document.getElementById('preview-image');
+                const previewAudio = document.getElementById('preview-audio');
+                const previewVideo = document.getElementById('preview-video');
+                const previewContainer = document.getElementById('preview-container');
+                const fileInfo = document.getElementById('file-info');
+                const feedbackDiv = document.getElementById('upload-feedback');
+                const removeFileBtn = document.getElementById('remove-file');
+                const form = document.getElementById('uploadForm');
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalSubmitText = submitBtn.innerHTML;
+                const duplicateModal = new bootstrap.Modal(document.getElementById('duplicateModal'));
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+                const duplicateMessage = document.getElementById('duplicate-message');
+                const forceUploadBtn = document.getElementById('force-upload');
+                const tagInput = document.getElementById('tags');
+                const tagSuggestions = document.querySelectorAll('.tag-suggestion');
+    
+                // Click to open file dialog
+                dragDropArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+    
+                // Handle drag and drop
+                dragDropArea.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+                    dragDropArea.classList.add('active');
+                });
+    
+                dragDropArea.addEventListener('dragleave', () => {
+                    dragDropArea.classList.remove('active');
+                });
+    
+                dragDropArea.addEventListener('drop', (event) => {
+                    event.preventDefault();
+                    dragDropArea.classList.remove('active');
+                    const files = event.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        handleFileSelection(files[0]);
                     }
                 });
-            });
-
-            // Tag suggestions
-            tagSuggestions.forEach(suggestion => {
-                suggestion.addEventListener('click', () => {
-                    const currentTags = tagInput.value;
-                    const newTag = suggestion.textContent;
-                    
-                    if (currentTags === '') {
-                        tagInput.value = newTag;
-                    } else if (!currentTags.includes(newTag)) {
-                        tagInput.value = currentTags + ', ' + newTag;
+    
+                // Preview uploaded file
+                fileInput.addEventListener('change', (event) => {
+                    const files = event.target.files;
+                    if (files.length > 0) {
+                        handleFileSelection(files[0]);
                     }
                 });
-            });
-
-            function handleFileSelection(file) {
-                // Check file type
-                const fileType = file.type.split('/')[0];
-                const isValidType = 
-                    (fileType === 'image' && (currentFilter === 'all' || currentFilter === 'image')) ||
-                    (fileType === 'audio' && (currentFilter === 'all' || currentFilter === 'audio')) ||
-                    (fileType === 'video' && (currentFilter === 'all' || currentFilter === 'video'));
-                
-                if (!isValidType) {
-                    showFeedback(`Please select a ${currentFilter === 'all' ? 'image, audio or video' : currentFilter} file`, 'danger');
-                    return;
-                }
-                
-                // Check file size (max 20MB)
-                if (file.size > 20 * 1024 * 1024) {
-                    showFeedback('File size exceeds 20MB limit', 'danger');
-                    return;
-                }
-                
-                // Display file info
-                fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
-                
-                // Preview based on file type
-                previewImage.style.display = 'none';
-                previewAudio.classList.add('d-none');
-                previewVideo.classList.add('d-none');
-                
-                if (fileType === 'image') {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        previewImage.style.display = "block";
-                        previewContainer.classList.add('show');
-                    };
-                    reader.readAsDataURL(file);
-                } else if (fileType === 'audio') {
-                    previewAudio.src = URL.createObjectURL(file);
-                    previewAudio.classList.remove('d-none');
-                    previewContainer.classList.add('show');
-                } else if (fileType === 'video') {
-                    previewVideo.src = URL.createObjectURL(file);
-                    previewVideo.classList.remove('d-none');
-                    previewContainer.classList.add('show');
-                }
-            }
-            
-            function formatFileSize(bytes) {
-                if (bytes < 1024) return bytes + ' bytes';
-                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-                else return (bytes / 1048576).toFixed(1) + ' MB';
-            }
-            
-            // Show feedback message
-            function showFeedback(message, type) {
-                feedbackDiv.className = `alert alert-${type} show`;
-                feedbackDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i> ${message}`;
-                
-                // Auto-hide after 5 seconds
-                setTimeout(() => {
-                    feedbackDiv.classList.remove('show');
-                }, 5000);
-            }
-            
-            // Handle form submission
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                const file = fileInput.files[0];
-                const title = document.getElementById('title').value;
-                const description = document.getElementById('description').value;
-                
-                if (!file) {
-                    showFeedback('Please select a file first', 'warning');
-                    return;
-                }
-                
-                if (description.length < 10) {
-                    showFeedback('Description should be at least 10 characters', 'warning');
-                    return;
-                }
-                
-                // Show uploading status
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
-                
-                // Create FormData object
-                const formData = new FormData(form);
-                
-                try {
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
+    
+                // Remove file
+                removeFileBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    fileInput.value = '';
+                    previewImage.style.display = 'none';
+                    previewAudio.classList.add('d-none');
+                    previewVideo.classList.add('d-none');
+                    previewContainer.classList.remove('show');
+                    fileInfo.textContent = '';
+                    submitBtn.classList.remove('pulse-animation');
+                });
+    
+                // Tag suggestions
+                tagSuggestions.forEach(suggestion => {
+                    suggestion.addEventListener('click', () => {
+                        const currentTags = tagInput.value;
+                        const newTag = suggestion.textContent;
+                        
+                        if (currentTags === '') {
+                            tagInput.value = newTag;
+                        } else if (!currentTags.includes(newTag)) {
+                            tagInput.value = currentTags + ', ' + newTag;
+                        }
                     });
+                });
+    
+                function handleFileSelection(file) {
+                    // Check file size (max 20MB)
+                    if (file.size > 20 * 1024 * 1024) {
+                        showFeedback('File size exceeds 20MB limit', 'danger');
+                        fileInput.value = '';
+                        return;
+                    }
                     
-                    const data = await response.json();
+                    // Check file type
+                    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg', 'audio/mp3', 'video/mp4'];
+                    if (!validTypes.includes(file.type)) {
+                        showFeedback('Invalid file type. Please upload JPG, PNG, GIF, MP3, or MP4 files.', 'danger');
+                        fileInput.value = '';
+                        return;
+                    }
                     
-                    // Handle server response
-                    if (data.success) {
-                        successModal.show();
+                    // Display file info
+                    fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;
+                    
+                    // Preview based on file type
+                    previewImage.style.display = 'none';
+                    previewAudio.classList.add('d-none');
+                    previewVideo.classList.add('d-none');
+                    
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = "block";
+                            previewContainer.classList.add('show');
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (file.type.startsWith('audio/')) {
+                        previewAudio.src = URL.createObjectURL(file);
+                        previewAudio.classList.remove('d-none');
+                        previewContainer.classList.add('show');
+                    } else if (file.type.startsWith('video/')) {
+                        previewVideo.src = URL.createObjectURL(file);
+                        previewVideo.classList.remove('d-none');
+                        previewContainer.classList.add('show');
+                    }
+                    
+                    submitBtn.classList.add('pulse-animation');
+                }
+                
+                function formatFileSize(bytes) {
+                    if (bytes < 1024) return bytes + ' bytes';
+                    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                    else return (bytes / 1048576).toFixed(1) + ' MB';
+                }
+                
+                function showFeedback(message, type) {
+                    feedbackDiv.className = `alert alert-${type} show`;
+                    feedbackDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i> ${message}`;
+                    
+                    setTimeout(() => {
+                        feedbackDiv.classList.remove('show');
+                    }, 5000);
+                }
+                
+                // Handle form submission
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const file = fileInput.files[0];
+                    const title = document.getElementById('title').value.trim();
+                    const description = document.getElementById('description').value.trim();
+                    const category = document.getElementById('category').value;
+                    const price = document.getElementById('price').value;
+                    const tags = document.getElementById('tags').value.trim();
+                    
+                    // Validation
+                    if (!file) {
+                        showFeedback('Please select a file first', 'warning');
+                        return;
+                    }
+                    
+                    if (!title || title.length < 3) {
+                        showFeedback('Title must be at least 3 characters', 'warning');
+                        return;
+                    }
+                    
+                    if (!description || description.length < 10) {
+                        showFeedback('Description must be at least 10 characters', 'warning');
+                        return;
+                    }
+                    
+                    if (!price || isNaN(price) || parseFloat(price) < 0) {
+                        showFeedback('Please enter a valid price', 'warning');
+                        return;
+                    }
+                    
+                    if (!category) {
+                        showFeedback('Please select a category', 'warning');
+                        return;
+                    }
+                    
+                    if (!tags) {
+                        showFeedback('Please add at least one tag', 'warning');
+                        return;
+                    }
+                    
+                    // Show uploading status
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
+                    
+                    // Create FormData object
+                    const formData = new FormData(form);
+                    
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        
+                        // Check if response is JSON
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Invalid server response');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            // Handle HTTP error status codes
+                            if (data.is_duplicate) {
+                                duplicateMessage.innerHTML = `
+                                    <p>This artwork was already uploaded by <strong>${data.original_owner}</strong> as <strong>"${data.original_title}"</strong>.</p>
+                                    <p>It has been detected ${data.duplicate_count} time(s) in our system.</p>
+                                `;
+                                duplicateModal.show();
+                                return;
+                            }
+                            throw new Error(data.message || 'Upload failed');
+                        }
+                        
+                        // Handle success
+                        if (data.needs_review) {
+                            reviewModal.show();
+                        } else {
+                            document.getElementById('success-message').textContent = data.message || 'Your artwork has been published to the marketplace. Share it with the world!';
+                            successModal.show();
+                        }
                         form.reset();
                         previewContainer.classList.remove('show');
                         fileInfo.textContent = '';
-                    } else {
-                        showFeedback(data.message || 'Upload failed. Please try again.', 'danger');
+                        submitBtn.classList.remove('pulse-animation');
+                        
+                    } catch (error) {
+                        console.error('Upload failed:', error);
+                        showFeedback(error.message || 'Error during upload. Please try again.', 'danger');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalSubmitText;
                     }
-                } catch (error) {
-                    console.error('Upload failed:', error);
-                    showFeedback('Error during upload. Please try again.', 'danger');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalSubmitText;
-                }
+                });
+                
+                // Force upload handler
+                forceUploadBtn.addEventListener('click', async function() {
+                    duplicateModal.hide();
+                    
+                    const formData = new FormData(form);
+                    formData.append('force_upload', 'true');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
+                    
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                        });
+                        
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Invalid server response');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Upload failed');
+                        }
+                        
+                        if (data.needs_review) {
+                            reviewModal.show();
+                        } else {
+                            document.getElementById('success-message').textContent = data.message || 'Your artwork has been published to the marketplace. Share it with the world!';
+                            successModal.show();
+                        }
+                        form.reset();
+                        previewContainer.classList.remove('show');
+                        fileInfo.textContent = '';
+                        submitBtn.classList.remove('pulse-animation');
+                        
+                    } catch (error) {
+                        console.error('Upload failed:', error);
+                        showFeedback(error.message || 'Error during upload. Please try again.', 'danger');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalSubmitText;
+                    }
+                });
             });
-            
-            // Add pulse animation to upload button when file is selected
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length > 0) {
-                    submitBtn.classList.add('pulse-animation');
-                } else {
-                    submitBtn.classList.remove('pulse-animation');
-                }
+    
+            // Hide spinner when page loads
+            window.addEventListener('load', function() {
+                document.getElementById('spinner').classList.remove('show');
             });
-        });
-    </script>
+        </script>
 </body>
 </html>

@@ -79,7 +79,7 @@
                                 <td>{{ artwork.title }}</td>
                                 <td>{{ artwork.description }}</td>
                                 <td>
-                                    <button class="btn btn-success btn-sm" onclick="markAsReviewed(this)">Review</button>
+                                    <a href="{{ url_for('admin_review') }}" class="btn btn-success btn-sm">Review</a>
                                     <button class="btn btn-danger btn-sm" onclick="deleteArtwork(this)">Delete</button>
                                 </td>
                             </tr>
