@@ -53,15 +53,11 @@ app.config['PROFILE_PICS_FOLDER'] = "main/static/profile_pics"
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB limit
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
-<<<<<<< HEAD
 TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
-
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
-=======
->>>>>>> 03c13a58d4a09ad510ce925052bfee594fb79099
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['PROFILE_PICS_FOLDER'], exist_ok=True)
@@ -71,7 +67,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'test_db'
+    'database': 'art_showcase'
 }
 
 # Third-party service configurations
@@ -188,18 +184,6 @@ def backup_database(filename):
             cursor.close()
         if 'conn' in locals():
             conn.close()
-@app.route('/artwork/<int:artwork_id>/report')
-def report_artwork(artwork_id):
-    # Get the artwork or return 404 if not found
-    artwork = artwork.query.get_or_404(artwork_id)
-    
-    # Pass the current user if authenticated
-    return render_template(
-        'report_artwork.html',
-        artwork=artwork,
-        current_user=current_user
-    )
-
 
 def backup_files(filename):
     """Backup system files to a zip archive."""
@@ -352,7 +336,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="test_db"
+        database="art_showcase"
     )
 
 def get_user_data(username):
@@ -674,10 +658,9 @@ def home():
     return render_template('index.html', user_data=user_data)
 
 @app.route('/virtual_gallery')
-def virtual_gallery():
+def gallery():
     """Display all media in a gallery"""
     try:
-        # Get artworks
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         
@@ -694,32 +677,12 @@ def virtual_gallery():
             artwork['media_url'] = get_media_url(artwork['media'])
             artwork['media_type'] = get_media_type(artwork['media'])
         
-        # Get user data if logged in
-        user_data = None
-        username = session.get('username')
-        
-        if username:
-            # Get complete user data in a single query
-            cursor.execute("""
-                SELECT username, role, email, profile_pic 
-                FROM users 
-                WHERE username = %s
-            """, (username,))
-            user_data = cursor.fetchone()
-        
         cursor.close()
         conn.close()
         
-        return render_template('gallery.html', 
-                             artworks=artworks,
-                             username=username,
-                             user_data=user_data,
-                             current_year=datetime.now().year)
+        return render_template('gallery.html', artworks=artworks)
     
     except Exception as e:
-        # Ensure connections are closed even if error occurs
-        if 'cursor' in locals(): cursor.close()
-        if 'conn' in locals(): conn.close()
         return f"Error fetching artworks: {str(e)}", 500
 
 @app.route('/media/<path:filename>')
@@ -729,68 +692,33 @@ def serve_media(filename):
 
 @app.route('/artwork/<int:artwork_id>')
 def view_artwork(artwork_id):
-    """View detailed artwork with proper media player and related artworks"""
+    """View detailed artwork with proper media player"""
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         
-        # Get main artwork details
         cursor.execute("""
             SELECT a.*, u.username as artist_name
             FROM artwork a
             JOIN users u ON a.user_id = u.id
             WHERE a.id = %s
         """, (artwork_id,))
+        
         artwork = cursor.fetchone()
         
-        if not artwork:
-            cursor.close()
-            conn.close()
-            return "Artwork not found", 404
-            
-        # Determine media type and URL
-        artwork['media_url'] = get_media_url(artwork['media'])
-        artwork['media_type'] = get_media_type(artwork['media'])
-        
-        # Get 4 related artworks from the same artist (excluding current artwork)
-        cursor.execute("""
-            SELECT a.id, a.title, a.media, a.price
-            FROM artwork a
-            WHERE a.user_id = %s AND a.id != %s
-            ORDER BY a.created_at DESC
-            LIMIT 4
-        """, (artwork['user_id'], artwork_id))
-        
-        related_artworks = []
-        for row in cursor.fetchall():
-            row['media_url'] = get_media_url(row['media'])
-            row['media_type'] = get_media_type(row['media'])
-            related_artworks.append(row)
+        if artwork:
+            artwork['media_url'] = get_media_url(artwork['media'])
+            artwork['media_type'] = get_media_type(artwork['media'])
         
         cursor.close()
         conn.close()
         
-        # Get user data if logged in
-        user_data = None
-        if 'username' in session:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM users WHERE username = %s", (session['username'],))
-            user_data = cursor.fetchone()
-            cursor.close()
-            conn.close()
-        
-        return render_template(
-            'artwork_detail.html',
-            artwork=artwork,
-            related_artworks=related_artworks,
-            user_data=user_data,
-            username=session.get('username')
-        )
+        if not artwork:
+            return "Artwork not found", 404
+            
+        return render_template('artwork_detail.html', artwork=artwork)
     
     except Exception as e:
-        if 'conn' in locals():
-            conn.close()
         return f"Error fetching artwork: {str(e)}", 500
 
 @app.route('/dashboard')
@@ -1452,13 +1380,6 @@ def delete_artwork():
         cursor.close()
         conn.close()
 
-@app.route('/admin/reports')
-@login_required
-def admin_reports():
-    # Get all reports from the database
-    return render_template('admin_reports.html')
-
-
 # =============================================
 # ROUTES - USER PROFILE
 # =============================================
@@ -1766,6 +1687,69 @@ def payment_cancel():
 # ROUTES - ADMINISTRATION
 # =============================================
 
+@app.route('/settings')
+@login_required
+def settings():
+    """System settings dashboard."""
+    try:
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        settings_data = {
+            'general': {},
+            'users': {},
+            'content': {},
+            'security': {},
+            'email': {},
+            'system': {}
+        }
+        
+        cursor.execute("SELECT * FROM system_settings")
+        for setting in cursor.fetchall():
+            settings_data[setting['category']][setting['setting_name']] = setting['setting_value']
+        
+        cursor.execute("SELECT role, GROUP_CONCAT(permission) as permissions FROM role_permissions GROUP BY role")
+        role_permissions = {row['role']: row['permissions'].split(',') for row in cursor.fetchall()}
+        
+        cursor.execute("SELECT file_type FROM allowed_file_types")
+        allowed_file_types = [row['file_type'] for row in cursor.fetchall()]
+        
+        cursor.execute("SELECT * FROM system_info LIMIT 1")
+        system_info = cursor.fetchone() or {}
+        
+        cursor.execute("""
+            SELECT * FROM system_logs 
+            WHERE log_type IN ('SETTINGS_CHANGE', 'SYSTEM_ACTION')
+            ORDER BY created_at DESC 
+            LIMIT 10
+        """)
+        recent_activities = cursor.fetchall()
+        
+        cursor.execute("SELECT * FROM backups ORDER BY created_at DESC LIMIT 5")
+        backup_history = cursor.fetchall()
+        
+        return render_template('settings.html',
+                           user_data={
+                               'username': current_user.username,
+                               'role': current_user.role
+                           },
+                           settings=settings_data,
+                           role_permissions=role_permissions,
+                           allowed_file_types=allowed_file_types,
+                           system_info=system_info,
+                           recent_activities=recent_activities,
+                           backup_history=backup_history)
+    
+    except Exception as e:
+        logging.error(f"Error loading settings: {e}")
+        flash('Failed to load system settings', 'danger')
+        return redirect(url_for('admindashboard'))
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
 def get_leaderboard():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
@@ -1780,6 +1764,313 @@ def get_leaderboard():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/api/settings/update', methods=['POST'])
+@login_required
+def update_settings():
+    """Update system settings."""
+    data = request.get_json()
+    if not data or 'category' not in data or 'settings' not in data:
+        return jsonify({'error': 'Invalid request format'}), 400
+    
+    category = data['category']
+    settings = data['settings']
+    
+    if category not in ['general', 'users', 'content', 'security', 'email']:
+        return jsonify({'error': 'Invalid settings category'}), 400
+    
+    conn = None
+    cursor = None
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        conn.start_transaction()
+        
+        for key, value in settings.items():
+            if isinstance(value, bool):
+                value = '1' if value else '0'
+            
+            cursor.execute("""
+                INSERT INTO system_settings (setting_name, setting_value, category)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+            """, (key, str(value), category))
+        
+        log_system_activity(
+            user_id=current_user.id,
+            activity_type='SETTINGS_UPDATE',
+            description=f'Updated {category} settings',
+            ip_address=request.remote_addr
+        )
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Settings updated successfully'})
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logging.error(f"Error updating settings: {e}")
+        return jsonify({'error': 'Failed to update settings'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/api/settings/roles', methods=['POST'])
+@login_required
+def update_role_permissions():
+    """Update role permissions."""
+    data = request.get_json()
+    if not data or 'roles' not in data:
+        return jsonify({'error': 'Invalid request format'}), 400
+    
+    conn = None
+    cursor = None
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        conn.start_transaction()
+        
+        cursor.execute("DELETE FROM role_permissions")
+        
+        for role, permissions in data['roles'].items():
+            for permission in permissions:
+                cursor.execute("""
+                    INSERT INTO role_permissions (role, permission)
+                    VALUES (%s, %s)
+                """, (role, permission))
+        
+        log_system_activity(
+            user_id=current_user.id,
+            activity_type='ROLE_UPDATE',
+            description='Updated role permissions',
+            ip_address=request.remote_addr
+        )
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Role permissions updated successfully'})
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logging.error(f"Error updating role permissions: {e}")
+        return jsonify({'error': 'Failed to update role permissions'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/api/settings/filetypes', methods=['POST'])
+@login_required
+def update_file_types():
+    """Update allowed file types."""
+    data = request.get_json()
+    if not data or 'file_types' not in data:
+        return jsonify({'error': 'Invalid request format'}), 400
+    
+    conn = None
+    cursor = None
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        conn.start_transaction()
+        
+        cursor.execute("DELETE FROM allowed_file_types")
+        
+        for file_type in data['file_types']:
+            cursor.execute("""
+                INSERT INTO allowed_file_types (file_type)
+                VALUES (%s)
+            """, (file_type,))
+        
+        log_system_activity(
+            user_id=current_user.id,
+            activity_type='SETTINGS_UPDATE',
+            description='Updated allowed file types',
+            ip_address=request.remote_addr
+        )
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Allowed file types updated successfully'})
+    
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        logging.error(f"Error updating file types: {e}")
+        return jsonify({'error': 'Failed to update file types'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+@app.route('/api/settings/test_email', methods=['POST'])
+@login_required
+def test_email_configuration():
+    """Test email configuration."""
+    data = request.get_json()
+    if not data or 'email' not in data:
+        return jsonify({'error': 'Email address is required'}), 400
+    
+    try:
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM system_settings WHERE category = 'email'")
+        email_settings = {row['setting_name']: row['setting_value'] for row in cursor.fetchall()}
+        
+        subject = "Test Email from System Settings"
+        body = "This is a test email to verify your email configuration is working properly."
+        
+        if send_email(
+            to_email=data['email'],
+            subject=subject,
+            body=body,
+            smtp_host=email_settings.get('smtp_host'),
+            smtp_port=email_settings.get('smtp_port'),
+            smtp_username=email_settings.get('smtp_username'),
+            smtp_password=email_settings.get('smtp_password'),
+            use_ssl=email_settings.get('smtp_ssl') == '1',
+            from_email=email_settings.get('from_email'),
+            from_name=email_settings.get('from_name')
+        ):
+            log_system_activity(
+                user_id=current_user.id,
+                activity_type='EMAIL_TEST',
+                description='Sent test email successfully',
+                ip_address=request.remote_addr
+            )
+            return jsonify({'success': True, 'message': 'Test email sent successfully'})
+        else:
+            return jsonify({'error': 'Failed to send test email'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error testing email configuration: {e}")
+        return jsonify({'error': 'Failed to test email configuration'}), 500
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+@app.route('/api/settings/backup', methods=['POST'])
+@login_required
+def create_system_backup():
+    """Create system backup."""
+    data = request.get_json()
+    backup_type = data.get('type', 'full')
+    
+    try:
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_filename = f"backup_{timestamp}.zip"
+        
+        if backup_type == 'database':
+            success = backup_database(backup_filename)
+        elif backup_type == 'files':
+            success = backup_files(backup_filename)
+        else:
+            success = backup_database(backup_filename) and backup_files(backup_filename)
+        
+        if success:
+            conn = create_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO backups (filename, backup_type, created_by)
+                VALUES (%s, %s, %s)
+            """, (backup_filename, backup_type, current_user.id))
+            conn.commit()
+            
+            cursor.execute("""
+                UPDATE system_info 
+                SET last_backup = NOW()
+                WHERE id = 1
+            """)
+            conn.commit()
+            
+            log_system_activity(
+                user_id=current_user.id,
+                activity_type='BACKUP_CREATED',
+                description=f'Created {backup_type} backup: {backup_filename}',
+                ip_address=request.remote_addr
+            )
+            
+            return jsonify({
+                'success': True,
+                'message': 'Backup created successfully',
+                'filename': backup_filename
+            })
+        else:
+            return jsonify({'error': 'Failed to create backup'}), 500
+            
+    except Exception as e:
+        logging.error(f"Error creating backup: {e}")
+        return jsonify({'error': 'Failed to create backup'}), 500
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+@app.route('/api/settings/maintenance', methods=['POST'])
+@login_required
+def perform_maintenance_action():
+    """Perform system maintenance."""
+    data = request.get_json()
+    action = data.get('action')
+    
+    if not action:
+        return jsonify({'error': 'No action specified'}), 400
+    
+    try:
+        if action == 'clear_cache':
+            clear_application_cache()
+            message = 'Application cache cleared successfully'
+            
+        elif action == 'optimize_db':
+            conn = create_connection()
+            cursor = conn.cursor()
+            cursor.execute("SHOW TABLES")
+            tables = [row[0] for row in cursor.fetchall()]
+            
+            for table in tables:
+                cursor.execute(f"OPTIMIZE TABLE {table}")
+            
+            message = 'Database optimization completed successfully'
+            
+        elif action == 'purge_logs':
+            conn = create_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                DELETE FROM system_logs 
+                WHERE created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
+            """)
+            conn.commit()
+            message = 'Purged logs older than 30 days'
+            
+        else:
+            return jsonify({'error': 'Invalid maintenance action'}), 400
+        
+        log_system_activity(
+            user_id=current_user.id,
+            activity_type='MAINTENANCE',
+            description=f'Performed maintenance: {action}',
+            ip_address=request.remote_addr
+        )
+        
+        return jsonify({'success': True, 'message': message})
+    
+    except Exception as e:
+        logging.error(f"Error performing maintenance: {e}")
+        return jsonify({'error': 'Failed to perform maintenance'}), 500
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 # =============================================
 # ROUTES - ANALYTICS AND REPORTS
@@ -1874,6 +2165,16 @@ def checkout():
                          username=username, 
                          user_data=user_data)
 
+@app.route('/virtual_gallery')
+def virtual_gallery():
+    """Virtual gallery page."""
+    user = get_current_user()
+    username = user.username
+    user_data = {'role': user.role} 
+    return render_template('virtual_gallery.html', 
+                         user=user, 
+                         username=username, 
+                         user_data=user_data)
 
 @app.route('/workshops')
 def workshops():
@@ -1961,4 +2262,4 @@ def predict():
 
 if __name__ == "__main__":
     load_model()  # Load chatbot model
-    socketio.run(app, debug=True, use_reloader=False)
+    socketio.run(app, debug=True)
