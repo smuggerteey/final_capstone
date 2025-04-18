@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Dreams Art Gallery</title>
+    <title>Digital Art Gallery | Immersive Experience</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&display=swap" as="style">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -17,884 +21,801 @@
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
+    
     <style>
-        :root {
-            --primary: #0f0f1a;
-            --secondary: #1a1a2e;
-            --accent: #00f0ff;
-            --accent-dark: #0088ff;
-            --accent-light: #7df9ff;
-            --neon-pink: #ff00ff;
-            --neon-purple: #9d00ff;
-            --text: #e6e6ff;
-            --light-text: #b8b8d8;
-            --dark-text: #6e6e8a;
-            --glass: rgba(15, 15, 26, 0.7);
-            --glass-light: rgba(26, 26, 46, 0.5);
-            --shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-            --glow: 0 0 10px var(--accent), 0 0 20px var(--accent-light);
-        }
-        
-        body {
-            font-family: 'Exo 2', sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text);
-            min-height: 100vh;
-            background-color: var(--primary);
-            background-image: 
-                radial-gradient(circle at 20% 30%, var(--neon-purple) 0%, transparent 25%),
-                radial-gradient(circle at 80% 70%, var(--accent-dark) 0%, transparent 25%),
-                linear-gradient(to bottom, var(--primary) 0%, var(--secondary) 100%);
-            position: relative;
-            overflow-x: hidden;
-            line-height: 1.6;
-            padding-top: 120px;
-        }
-        
-        /* Cyberpunk Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--secondary);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-light);
-        }
-        
-        /* Gallery Layout */
-        .gallery-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr auto;
-            min-height: 100vh;
-        }
-        
-        /* Cyberpunk Header */
-        .main-header {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-bottom: 1px solid var(--accent);
-            border-image: linear-gradient(90deg, transparent, var(--accent), transparent) 1;
-        }
-        
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .header-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            margin: 0;
-            color: transparent;
-            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
-            -webkit-background-clip: text;
-            text-shadow: 0 0 10px rgba(125, 249, 255, 0.3);
-            letter-spacing: 2px;
-            position: relative;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-        
-        .header-title::after {
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
-            box-shadow: var(--shadow);
-        }
-        
-        .gallery-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.5rem;
-            margin: 0.5rem 0 0 0;
-            color: var(--accent-light);
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-        
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        
-        .gallery-controls {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Cyberpunk Footer */
-        .main-footer {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 1.5rem;
-            text-align: center;
-            position: relative;
-            z-index: 100;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            border-top: 1px solid var(--accent);
-            border-image: linear-gradient(90deg, transparent, var(--accent), transparent) 1;
-        }
-        
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .copyright {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-        
-        .social-links a {
-            color: var(--text);
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .social-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--accent);
-            transition: width 0.3s ease;
-        }
-        
-        .social-links a:hover {
-            color: var(--accent);
-            transform: translateY(-3px);
-        }
-        
-        .social-links a:hover::after {
-            width: 100%;
-        }
-        
-        /* Cyberpunk Room */
-        .media-room {
-            position: relative;
-            min-height: calc(100vh - 120px);
-            padding: 40px 20px 120px;
-            overflow: hidden;
-            z-index: 1;
-        }
-        
-        /* Grid Background Effect */
-        .grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-            opacity: 0.5;
-        }
-        
-        /* Cyberpunk Room Content */
-        .room-content {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 2.5rem;
-            position: relative;
-            z-index: 20;
-            background: var(--glass-light);
-            border-radius: 5px;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: all 0.4s ease;
-            border: 1px solid rgba(0, 240, 255, 0.2);
-            overflow: hidden;
-        }
-        
-        .room-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                135deg,
-                rgba(0, 240, 255, 0.1) 0%,
-                rgba(157, 0, 255, 0.1) 100%
-            );
-            z-index: -1;
-        }
-        
-        .room-content:hover {
-            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
-            border-color: rgba(0, 240, 255, 0.4);
-        }
-        
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--accent-light);
-            margin-top: 0;
-            padding-bottom: 0.8rem;
-            position: relative;
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
-            box-shadow: var(--shadow);
-            border-radius: 3px;
-            transition: width 0.4s ease;
-        }
-        
-        .section-title:hover::after {
-            width: 120px;
-        }
-        
-        .section-description {
-            color: var(--light-text);
-            margin-bottom: 2rem;
-            max-width: 700px;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        
-        /* Cyberpunk Artwork Grid */
-        .artwork-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        
-        .artwork-card {
-            background: var(--glass);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            cursor: pointer;
-            position: relative;
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            transform-style: preserve-3d;
-            perspective: 1000px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .artwork-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 1px solid transparent;
-            background: linear-gradient(
-                135deg,
-                rgba(0, 240, 255, 0.3) 0%,
-                rgba(157, 0, 255, 0.3) 100%
-            );
-            border-radius: 8px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .artwork-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.3);
-            border-color: var(--accent);
-        }
-        
-        .artwork-card:hover::before {
-            opacity: 1;
-        }
-        
-        .artwork-card:hover .artwork-title {
-            color: var(--accent-light);
-        }
-        
-        .artwork-card:hover .media-preview {
-            transform: scale(1.05);
-        }
-        
-        .artwork-card:hover .media-type {
-            background: var(--accent);
-            color: var(--primary);
-        }
-        
-        .media-container {
-            width: 100%;
-            height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.3);
-            position: relative;
-            border-bottom: 1px solid rgba(0, 240, 255, 0.2);
-        }
-        
-        .media-preview {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        
-        video.media-preview {
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-        
-        .artwork-details {
-            padding: 1.5rem;
-            transition: all 0.4s ease;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .artwork-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 1.2rem;
-            margin: 0 0 0.8rem 0;
-            color: var(--text);
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        
-        .artwork-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .media-type {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(0, 240, 255, 0.2);
-            border-radius: 20px;
-            font-size: 0.75em;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-light);
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', sans-serif;
-        }
-        
-        .media-date {
-            color: var(--light-text);
-            font-size: 0.85em;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        
-        .audio-icon {
-            font-size: 3.5rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
-            opacity: 0.8;
-            text-shadow: 0 0 10px var(--accent);
-        }
-        
-        /* Cyberpunk Button Styles */
-        .dashboard-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: var(--primary);
-            text-decoration: none;
-            border-radius: 4px;
-            transition: all 0.4s ease;
-            border: none;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 600;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-        
-        .dashboard-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: all 0.6s ease;
-        }
-        
-        .dashboard-btn:hover {
-            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-            color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
-        }
-        
-        .dashboard-btn:hover::before {
-            left: 100%;
-        }
-        
-        .dashboard-btn i {
-            transition: transform 0.3s ease;
-        }
-        
-        .dashboard-btn:hover i {
-            transform: translateX(3px);
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--accent);
-            color: var(--accent);
-            box-shadow: none;
-        }
-        
-        .btn-outline:hover {
-            background: var(--accent);
-            color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-        }
-        
-        .filter-btn {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text);
-            letter-spacing: 1px;
-        }
-        
-        .filter-btn i {
-            transition: transform 0.3s ease;
-        }
-        
-        .filter-btn:hover {
-            background: var(--accent);
-            color: var(--primary);
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-        }
-        
-        .filter-btn:hover i {
-            transform: scale(1.2);
-        }
-        
-        .filter-btn.active {
-            background: var(--accent);
-            color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-            border-color: var(--accent);
-        }
-        
-        /* Cyberpunk Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.4s ease;
-            backdrop-filter: blur(10px);
-        }
-        
-        .modal-content {
-            background: var(--glass);
-            border-radius: 8px;
-            max-width: 900px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            border: 1px solid var(--accent);
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
-            transform: scale(0.9);
-            opacity: 0;
-            animation: modalOpen 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.2s;
-            backdrop-filter: blur(10px);
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-            transition: all 0.3s ease;
-            border: 2px solid var(--accent);
-        }
-        
-        .close-modal:hover {
-            background: var(--accent);
-            transform: rotate(90deg) scale(1.1);
-            color: var(--primary);
-        }
-        
-        .modal-media-container {
-            width: 100%;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            position: relative;
-            border-bottom: 1px solid var(--accent);
-        }
-        
-        .modal-media {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
-        
-        .modal-media:hover {
-            transform: scale(1.02);
-        }
-        
-        .modal-details {
-            padding: 2.5rem;
-        }
-        
-        .modal-details h2 {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--accent-light);
-            margin-top: 0;
-            padding-bottom: 0.8rem;
-            position: relative;
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-        
-        .modal-details h2::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--neon-pink));
-            box-shadow: var(--shadow);
-        }
-        
-        .modal-details p {
-            margin: 0.8rem 0;
-            line-height: 1.7;
-            color: var(--light-text);
-            font-family: 'Rajdhani', sans-serif;
-        }
-        
-        .modal-meta {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .modal-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.95rem;
-            font-family: 'Rajdhani', sans-serif;
-        }
-        
-        .modal-meta-item i {
-            color: var(--accent);
-        }
-        
-        .modal-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-            color: var(--primary);
-        }
-        
-        .btn-accent:hover {
-            background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%);
-            color: var(--primary);
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .mt-5 {
-            margin-top: 3rem;
-        }
-        
-        /* Cyberpunk Scanlines Effect */
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                rgba(0, 0, 0, 0) 50%,
-                rgba(0, 0, 0, 0.2) 50%
-            );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.3;
-        }
-        
-        /* Cyberpunk Glitch Effect */
-        .glitch-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 50 -25"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.1"/></svg>');
-            pointer-events: none;
-            z-index: 100;
-            mix-blend-mode: overlay;
-            animation: glitch 0.3s infinite alternate;
-        }
-        
-        /* Cyberpunk Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes modalOpen {
-            from { 
-                transform: scale(0.9);
-                opacity: 0;
-            }
-            to { 
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) translateX(0);
-            }
-            50% {
-                transform: translateY(-20px) translateX(10px);
-            }
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 0.8;
-            }
-            50% {
-                opacity: 1;
-            }
-        }
-        
-        /* Cyberpunk Responsive */
-        @media (max-width: 992px) {
-            .room-content {
-                padding: 1.5rem;
-                margin-top: 3rem;
-            }
-            
-            .artwork-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 1.5rem;
-            }
-            
-            .modal-media-container {
-                height: 400px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .main-header {
-                padding: 1rem;
-            }
-            
-            .header-top {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-            
-            .header-title {
-                font-size: 1.8rem;
-            }
-            
-            .gallery-title {
-                font-size: 1.3rem;
-            }
-            
-            .gallery-controls {
-                flex-wrap: wrap;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .section-title {
-                font-size: 1.8rem;
-            }
-            
-            .modal-details {
-                padding: 1.5rem;
-            }
-            
-            .modal-meta {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            body {
-                padding-top: 160px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .artwork-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                width: 95%;
-            }
-            
-            .modal-media-container {
-                height: 300px;
-            }
-            
-            .header-title {
-                font-size: 1.5rem;
-            }
-            
-            .gallery-title {
-                font-size: 1.1rem;
-            }
-            
-            .filter-btn {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-        }
+/* Modern Dark Theme with Enhanced Contrast */
+:root {
+    --primary: #1a1a2e;
+    --secondary: #16213e;
+    --accent: #4a6fa5;
+    --accent-light: #6d8fc7;
+    --accent-dark: #2e4a76;
+    --text: #f8f9fa;
+    --text-dark: #adb5bd;
+    --card-bg: #2a2a3a;
+    --border: rgba(255, 255, 255, 0.15);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --radius: 12px;
+    --header-gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    background: var(--header-gradient);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    color: var(--text);
+    margin-bottom: 0.5rem;
+}
+
+h2 {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--text);
+    margin-bottom: 1.5rem;
+}
+
+h3 {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    color: var(--text);
+    font-weight: 500;
+}
+
+p {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+}
+
+/* Layout */
+.gallery-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
+    position: relative;
+    flex: 1;
+    width: 100%;
+}
+
+/* Header Styles */
+.main-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 10;
+    padding-top: 1rem;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title {
+    flex-grow: 1;
+    text-align: center;
+    font-size: clamp(2rem, 6vw, 3rem);
+    color: var(--text);
+    letter-spacing: 1px;
+    font-family: 'Playfair Display', serif;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to right, var(--text), var(--accent-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.gallery-title {
+    font-size: clamp(1.1rem, 3vw, 1.5rem);
+    color: var(--text-dark);
+    margin-bottom: 2rem;
+    position: relative;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.gallery-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0.8rem auto;
+}
+
+/* Gallery Controls */
+.gallery-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.8rem 1.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: var(--transition);
+    border-radius: 30px;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: 0.5s;
+}
+
+.filter-btn:hover {
+    background: rgba(74, 111, 165, 0.3);
+    border-color: var(--accent);
+}
+
+.filter-btn:hover::before {
+    left: 100%;
+}
+
+.filter-btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(74, 111, 165, 0.5);
+}
+
+.filter-btn i {
+    margin-right: 0.5rem;
+}
+
+/* Media Room */
+.media-room {
+    position: relative;
+    z-index: 5;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--accent);
+    margin: 1rem auto;
+    border-radius: 3px;
+}
+
+.section-description {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--text-dark);
+    line-height: 1.8;
+    padding: 0 1rem;
+}
+
+/* Artwork Grid */
+.artwork-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.artwork-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    will-change: transform;
+}
+
+.artwork-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(74, 111, 165, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.artwork-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    border-color: rgba(74, 111, 165, 0.7);
+}
+
+.artwork-card:hover::before {
+    opacity: 1;
+}
+
+.media-container {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+    background: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.media-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.artwork-card:hover .media-preview {
+    transform: scale(1.08);
+}
+
+.audio-icon {
+    font-size: 3rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+.artwork-details {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.artwork-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artwork-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+}
+
+.media-type {
+    text-transform: uppercase;
+    color: var(--accent);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.media-date {
+    color: var(--text-dark);
+    font-size: 0.8rem;
+}
+
+/* Buttons */
+.dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem 1.8rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 30px;
+    transition: var(--transition);
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.dashboard-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-outline:hover {
+    color: white;
+}
+
+.btn-outline:hover::before {
+    width: 100%;
+}
+
+.btn-accent {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.btn-accent:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 111, 165, 0.4);
+}
+
+.dashboard-btn i {
+    margin-right: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.dashboard-btn:hover i {
+    transform: translateX(3px);
+}
+
+/* Footer */
+.main-footer {
+    text-align: center;
+    padding: 3rem 0;
+    margin-top: 3rem;
+    position: relative;
+    border-top: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.copyright {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.social-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.social-links a {
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.social-links a:hover {
+    color: var(--accent);
+    transform: translateY(-3px);
+    background: rgba(74, 111, 165, 0.1);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 15, 0.98);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 1100px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border);
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: var(--transition);
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+}
+
+.close-modal:hover {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.7);
+    transform: rotate(90deg);
+}
+
+.modal-media-container {
+    flex: 1;
+    min-height: 500px;
+    background: var(--secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-media {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-details {
+    flex: 0 0 350px;
+    padding: 2.5rem;
+    background: var(--card-bg);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+
+.modal-details::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-details::-webkit-scrollbar-thumb {
+    background-color: var(--accent);
+    border-radius: 3px;
+}
+
+.modal-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    font-family: 'Playfair Display', serif;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.modal-details h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--accent);
+}
+
+.modal-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.modal-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.modal-meta-item i {
+    color: var(--accent);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Loading Animation */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(74, 111, 165, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--accent);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .modal-content {
+        flex-direction: column;
+        max-height: 95vh;
+    }
+    
+    .modal-media-container {
+        min-height: 300px;
+        max-height: 50vh;
+    }
+    
+    .modal-details {
+        flex: 1;
+        max-height: 45vh;
+    }
+    
+    .artwork-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .header-title {
+        order: -1;
+        width: 100%;
+    }
+    
+    .gallery-controls {
+        gap: 0.8rem;
+    }
+    
+    .filter-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.8rem;
+    }
+    
+    .artwork-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .modal-details {
+        padding: 1.5rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .dashboard-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .gallery-container {
+        padding: 1.5rem;
+    }
+    
+    .artwork-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .media-container {
+        height: 200px;
+    }
+    
+    .modal-content {
+        width: 95%;
+    }
+    
+    .modal-details h2 {
+        font-size: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .gallery-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .modal, .modal * {
+        visibility: visible;
+    }
+    
+    .modal {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        background: white;
+    }
+    
+    .modal-content {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        max-width: 100%;
+        max-height: none;
+    }
+    
+    .close-modal, .modal-actions {
+        display: none;
+    }
+}
     </style>
 </head>
 <body>
-    <!-- Cyberpunk Scanlines Effect -->
-    <div class="scanlines"></div>
-    <div class="glitch-effect"></div>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
     
     <div class="gallery-container">
-        <!-- Cyberpunk Header -->
+        <!-- Modern Header -->
         <header class="main-header">
             <div class="header-top">
-                <h1 class="header-title">NEON DREAMS GALLERY</h1>
+                <h1 class="header-title">Digital Art Gallery</h1>
                 <div class="header-controls">
-                    <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('userdashboard' if user_data['role'] == 'Artist' else 'dashboard') }}" 
-                       class="dashboard-btn btn-outline">
-                        <i class="fas fa-arrow-left"></i> Dashboard
-                    </a>
+                    {% if user_data %}
+                        <a href="{% if user_data.role in ['Admin', 'Administrator'] %}
+                                    {{ url_for('admindashboard') }}
+                                 {% elif user_data.role == 'Artist' %}
+                                    {{ url_for('dashboard') }}
+                                 {% else %}
+                                    {{ url_for('userdashboard') }}
+                                 {% endif %}" 
+                           class="dashboard-btn btn-outline">
+                            <i class="fas fa-tachometer-alt"></i> DASHBOARD
+                        </a>
+                    {% endif %}
                 </div>
             </div>
             
-            <h2 class="gallery-title">DIGITAL ART COLLECTION</h2>
+            <h2 class="gallery-title">Digital Art Collection</h2>
             
             <div class="gallery-controls">
                 <button class="filter-btn active" data-filter="all">
@@ -912,16 +833,12 @@
             </div>
         </header>
         
-        <!-- Grid Background -->
-        <div class="grid-bg"></div>
-        
         <!-- Media Room -->
         <div class="media-room">
             <div class="room-content animate__animated animate__fadeIn">
-                <h2 class="section-title">CYBER ART COLLECTION</h2>
+                <h2 class="section-title">Curated Collection</h2>
                 <p class="section-description">
-                    Immerse yourself in our cutting-edge digital art exhibition. 
-                    Each piece is a fusion of technology and creativity, pushing the boundaries of digital expression.
+                    Explore our carefully curated digital art exhibition. Each piece represents a unique fusion of creativity and technology, showcasing the diverse talents of contemporary digital artists.
                 </p>
                 
                 <div class="artwork-grid" id="artworkGrid">
@@ -931,18 +848,18 @@
                          data-type="{{ artwork.media_type }}">
                         <div class="media-container">
                             {% if artwork.media_type == 'image' %}
-                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview">
+                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview" loading="lazy">
                             {% elif artwork.media_type == 'video' %}
-                                <video class="media-preview" muted loop>
+                                <video class="media-preview" muted loop playsinline>
                                     <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
                                 </video>
                             {% elif artwork.media_type == 'audio' %}
                                 <div style="text-align: center;">
                                     <i class="fas fa-music audio-icon"></i>
-                                    <p>DIGITAL SOUNDSCAPE</p>
+                                    <p>Audio Composition</p>
                                 </div>
                             {% else %}
-                                <div>UNSUPPORTED FORMAT</div>
+                                <div>Unsupported Format</div>
                             {% endif %}
                         </div>
                         <div class="artwork-details">
@@ -956,32 +873,31 @@
                     {% endfor %}
                 </div>
 
-                <!-- Load More Button -->
-                <div class="text-center mt-5">
-                    <button class="dashboard-btn btn-accent">
-                        <i class="fas fa-sync-alt"></i> LOAD MORE
-                    </button>
+                <div class="header-controls" style="justify-content: center; margin-top: 2rem;">
+                    <a href="javascript:history.back()" class="dashboard-btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> GO BACK
+                    </a>
                 </div>
             </div>
         </div>
         
-        <!-- Cyberpunk Footer -->
+        <!-- Modern Footer -->
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="copyright">
-                    &copy; {{ current_year }} NEON DREAMS GALLERY. ALL RIGHTS RESERVED.
+                    &copy; {{ current_year }} DIGITAL ART GALLERY. ALL RIGHTS RESERVED.
                 </div>
                 <div class="social-links">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-artstation"></i></a>
-                    <a href="#"><i class="fab fa-deviantart"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="ArtStation"><i class="fab fa-artstation"></i></a>
+                    <a href="#" aria-label="DeviantArt"><i class="fab fa-deviantart"></i></a>
                 </div>
             </div>
         </footer>
     </div>
     
-    <!-- Cyberpunk Modal -->
+    <!-- Modern Modal -->
     <div class="modal" id="mediaModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal()">&times;</span>
@@ -999,13 +915,17 @@
                         <i class="fas fa-calendar-alt"></i>
                         <span id="modalDate"></span>
                     </div>
+                    <div class="modal-meta-item">
+                        <i class="fas fa-user"></i>
+                        <span id="modalArtist">Digital Artist</span>
+                    </div>
                 </div>
                 <p id="modalDescription"></p>
                 <div class="modal-actions">
                     <a href="#" id="downloadLink" class="dashboard-btn btn-accent">
                         <i class="fas fa-download"></i> DOWNLOAD
                     </a>
-                    <button class="dashboard-btn btn-outline">
+                    <button class="dashboard-btn btn-outline" onclick="shareArtwork()">
                         <i class="fas fa-share-alt"></i> SHARE
                     </button>
                 </div>
@@ -1014,128 +934,150 @@
     </div>
     
     <script>
-        // Initialize GSAP animations with cyberpunk style
-        gsap.from(".room-content", {
-            duration: 1,
-            y: 50,
-            opacity: 0,
-            ease: "power3.out",
-            delay: 0.3
+        // Show loading spinner initially
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.style.display = 'flex';
+            
+            // Hide spinner after everything is loaded
+            window.addEventListener('load', function() {
+                setTimeout(() => {
+                    loadingSpinner.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingSpinner.style.display = 'none';
+                    }, 300);
+                }, 500);
+            });
+            
+            // Fallback in case load event doesn't fire
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+            }, 2000);
         });
         
-        gsap.from(".artwork-card", {
-            duration: 0.8,
+        // Initialize GSAP animations
+        gsap.registerEffect({
+            name: "fadeSlideIn",
+            effect: (targets, config) => {
+                return gsap.from(targets, {
+                    duration: config.duration || 0.8,
+                    y: config.y || 50,
+                    opacity: 0,
+                    ease: config.ease || "power3.out",
+                    stagger: config.stagger || 0,
+                    delay: config.delay || 0
+                });
+            },
+            defaults: { duration: 0.8, y: 50 }
+        });
+        
+        gsap.effects.fadeSlideIn(".room-content", { delay: 0.3 });
+        gsap.effects.fadeSlideIn(".artwork-card", { 
             y: 30,
-            opacity: 0,
             stagger: 0.1,
             ease: "back.out(1.7)",
             delay: 0.5
         });
         
-        // Create cyberpunk grid animation
-        function createGridAnimation() {
-            const gridBg = document.querySelector('.grid-bg');
-            gsap.to(gridBg, {
-                duration: 20,
-                backgroundPosition: '100px 100px',
-                repeat: -1,
-                ease: "none"
-            });
-        }
-        
-        // Filter functionality
+        // Filter functionality with improved performance
         function setupFilters() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const artworkCards = document.querySelectorAll('.artwork-card');
             
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Update active button with cyberpunk effect
+                    // Update active button with animation
                     filterBtns.forEach(b => {
-                        gsap.to(b, {
-                            duration: 0.3,
-                            background: 'rgba(0, 240, 255, 0.1)',
-                            color: 'var(--text)',
-                            borderColor: 'rgba(0, 240, 255, 0.3)',
-                            ease: "power2.out"
-                        });
-                        b.classList.remove('active');
-                    });
-                    
-                    gsap.to(btn, {
-                        duration: 0.3,
-                        background: 'var(--accent)',
-                        color: 'var(--primary)',
-                        borderColor: 'var(--accent)',
-                        ease: "power2.out"
-                    });
-                    btn.classList.add('active');
-                    
-                    const filter = btn.dataset.filter;
-                    
-                    // Filter artwork cards with cyberpunk transition
-                    artworkCards.forEach(card => {
-                        if (filter === 'all' || card.dataset.type === filter) {
-                            gsap.to(card, {
-                                duration: 0.5,
-                                opacity: 1,
-                                scale: 1,
-                                display: 'block',
-                                ease: "power2.out"
-                            });
-                        } else {
-                            gsap.to(card, {
-                                duration: 0.5,
-                                opacity: 0,
-                                scale: 0.9,
-                                display: 'none',
+                        if (b !== btn) {
+                            gsap.to(b, {
+                                duration: 0.3,
+                                background: 'rgba(255, 255, 255, 0.08)',
+                                color: 'var(--text)',
+                                borderColor: 'var(--border)',
+                                boxShadow: 'none',
                                 ease: "power2.out"
                             });
                         }
+                        b.classList.remove('active');
+                    });
+                    
+                    btn.classList.add('active');
+                    gsap.to(btn, {
+                        duration: 0.3,
+                        background: 'var(--accent)',
+                        color: 'white',
+                        borderColor: 'var(--accent)',
+                        boxShadow: '0 0 15px rgba(74, 111, 165, 0.5)',
+                        ease: "power2.out"
+                    });
+                    
+                    const filter = btn.dataset.filter;
+                    
+                    // Filter artwork cards with animation
+                    artworkCards.forEach(card => {
+                        const matchesFilter = filter === 'all' || card.dataset.type === filter;
+                        const animationProps = matchesFilter ? {
+                            opacity: 1,
+                            scale: 1,
+                            display: 'block',
+                            delay: Math.random() * 0.2 // Stagger effect
+                        } : {
+                            opacity: 0,
+                            scale: 0.9,
+                            display: 'none'
+                        };
+                        
+                        gsap.to(card, {
+                            duration: 0.5,
+                            ...animationProps,
+                            ease: "power2.out"
+                        });
                     });
                 });
             });
         }
         
-        // Add cyberpunk hover effects to cards
+        // Add hover effects to cards with performance optimization
         function setupCardHoverEffects() {
-            document.querySelectorAll('.artwork-card').forEach(card => {
-                // Create cyberpunk glow effect
-                const glow = document.createElement('div');
-                glow.style.position = 'absolute';
-                glow.style.top = '0';
-                glow.style.left = '0';
-                glow.style.width = '100%';
-                glow.style.height = '100%';
-                glow.style.borderRadius = '8px';
-                glow.style.boxShadow = '0 0 15px var(--accent)';
-                glow.style.opacity = '0';
-                glow.style.transition = 'opacity 0.3s ease';
-                glow.style.pointerEvents = 'none';
-                glow.style.zIndex = '-1';
-                card.appendChild(glow);
+            const artworkCards = document.querySelectorAll('.artwork-card');
+            
+            artworkCards.forEach(card => {
+                // Preload hover state
+                card.style.willChange = 'transform, box-shadow';
                 
                 card.addEventListener('mouseenter', () => {
-                    glow.style.opacity = '0.7';
                     gsap.to(card, {
                         duration: 0.3,
-                        boxShadow: '0 0 30px rgba(0, 240, 255, 0.5)',
+                        y: -8,
+                        boxShadow: '0 15px 30px rgba(0, 0, 0, 0.5)',
                         ease: "power2.out"
                     });
+                    
+                    // Play video on hover if it's a video card
+                    const video = card.querySelector('video');
+                    if (video) {
+                        video.play().catch(e => console.log('Autoplay prevented:', e));
+                    }
                 });
                 
                 card.addEventListener('mouseleave', () => {
-                    glow.style.opacity = '0';
                     gsap.to(card, {
                         duration: 0.3,
-                        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
+                        y: 0,
+                        boxShadow: 'var(--shadow)',
                         ease: "power2.out"
                     });
+                    
+                    // Pause video when not hovering
+                    const video = card.querySelector('video');
+                    if (video) {
+                        video.pause();
+                    }
                 });
             });
         }
         
-        // Modal functions with cyberpunk style
+        // Modal functions with enhanced features
         function openModal(title, type, url, date, description) {
             const modal = document.getElementById('mediaModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -1147,12 +1089,13 @@
             const downloadLink = document.getElementById('downloadLink');
             
             // Set content
-            modalTitle.textContent = title.toUpperCase();
+            modalTitle.textContent = title;
             modalType.textContent = type.toUpperCase();
-            modalDate.textContent = date;
-            modalDescription.textContent = description || "NO DESCRIPTION AVAILABLE FOR THIS ARTWORK.";
+            modalDate.textContent = formatDate(date);
+            modalDescription.textContent = description || "No description available for this artwork.";
             downloadLink.href = url;
-            downloadLink.download = title + '.' + url.split('.').pop();
+            downloadLink.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${url.split('.').pop()}`;
+            downloadLink.setAttribute('aria-label', `Download ${title}`);
             
             // Set icon based on media type
             switch(type) {
@@ -1169,59 +1112,45 @@
                     modalTypeIcon.className = 'fas fa-file';
             }
             
-            // Clear previous media
-            modalMediaContainer.innerHTML = '';
+            // Show loading state
+            modalMediaContainer.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                    <div class="spinner"></div>
+                </div>
+            `;
             
-            // Add appropriate media with cyberpunk style
+            // Show modal
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
+            }, 10);
+            
+            // Load media after modal is shown
+            setTimeout(() => {
+                loadMediaContent(type, url, title, modalMediaContainer);
+            }, 300);
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', handleModalKeyboardNav);
+        }
+        
+        function loadMediaContent(type, url, title, container) {
+            container.innerHTML = '';
+            
             if (type === 'image') {
-                const imgContainer = document.createElement('div');
-                imgContainer.style.width = '100%';
-                imgContainer.style.height = '100%';
-                imgContainer.style.display = 'flex';
-                imgContainer.style.alignItems = 'center';
-                imgContainer.style.justifyContent = 'center';
-                imgContainer.style.overflow = 'hidden';
-                imgContainer.style.position = 'relative';
-                
-                const img = document.createElement('img');
+                const img = new Image();
                 img.src = url;
                 img.alt = title;
                 img.className = 'modal-media';
-                img.style.maxWidth = '90%';
-                img.style.maxHeight = '90%';
-                img.style.objectFit = 'contain';
-                img.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.3)';
-                
-                imgContainer.appendChild(img);
-                modalMediaContainer.appendChild(imgContainer);
-                
-                // Add cyberpunk hover effect
-                img.addEventListener('mousemove', (e) => {
-                    const rect = e.target.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const posX = (centerX - x) / 20;
-                    const posY = (centerY - y) / 20;
-                    
-                    img.style.transform = `scale(1.05) translate(${posX}px, ${posY}px)`;
-                });
-                
-                img.addEventListener('mouseleave', () => {
-                    img.style.transform = 'scale(1)';
-                });
+                img.onload = () => {
+                    container.innerHTML = '';
+                    container.appendChild(img);
+                };
+                img.onerror = () => showMediaError(container, 'Failed to load image');
             } 
             else if (type === 'video') {
-                const videoContainer = document.createElement('div');
-                videoContainer.style.width = '100%';
-                videoContainer.style.height = '100%';
-                videoContainer.style.display = 'flex';
-                videoContainer.style.alignItems = 'center';
-                videoContainer.style.justifyContent = 'center';
-                videoContainer.style.background = 'rgba(0, 0, 0, 0.7)';
-                
                 const video = document.createElement('video');
                 video.src = url;
                 video.controls = true;
@@ -1229,10 +1158,16 @@
                 video.className = 'modal-media';
                 video.style.maxHeight = '90%';
                 video.style.maxWidth = '90%';
-                video.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.3)';
                 
-                videoContainer.appendChild(video);
-                modalMediaContainer.appendChild(videoContainer);
+                // Add event listeners for better UX
+                video.addEventListener('loadeddata', () => {
+                    container.innerHTML = '';
+                    container.appendChild(video);
+                });
+                
+                video.addEventListener('error', () => {
+                    showMediaError(container, 'Failed to load video');
+                });
             } 
             else if (type === 'audio') {
                 const audioContainer = document.createElement('div');
@@ -1248,111 +1183,150 @@
                 
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-music audio-icon';
-                icon.style.fontSize = '6rem';
+                icon.style.fontSize = '4rem';
                 icon.style.color = 'var(--accent)';
                 icon.style.marginBottom = '2rem';
-                icon.style.textShadow = '0 0 20px var(--accent)';
                 
                 const titleElement = document.createElement('h3');
-                titleElement.textContent = title.toUpperCase();
-                titleElement.style.fontFamily = "'Orbitron', sans-serif";
-                titleElement.style.color = 'var(--accent-light)';
+                titleElement.textContent = title;
+                titleElement.style.fontFamily = "'Montserrat', sans-serif";
+                titleElement.style.color = 'var(--text)';
                 titleElement.style.margin = '0 0 1.5rem 0';
-                titleElement.style.fontSize = '1.5rem';
-                titleElement.style.letterSpacing = '1px';
+                titleElement.style.fontSize = '1.3rem';
                 
                 const audio = document.createElement('audio');
                 audio.src = url;
                 audio.controls = true;
                 audio.style.width = '80%';
                 audio.style.marginTop = '1rem';
-                audio.style.filter = 'drop-shadow(0 0 10px var(--accent))';
                 
-                audioContainer.appendChild(icon);
-                audioContainer.appendChild(titleElement);
-                audioContainer.appendChild(audio);
-                modalMediaContainer.appendChild(audioContainer);
+                audio.addEventListener('canplay', () => {
+                    container.innerHTML = '';
+                    audioContainer.appendChild(icon);
+                    audioContainer.appendChild(titleElement);
+                    audioContainer.appendChild(audio);
+                    container.appendChild(audioContainer);
+                });
+                
+                audio.addEventListener('error', () => {
+                    showMediaError(container, 'Failed to load audio');
+                });
             } 
             else {
-                const unsupportedContainer = document.createElement('div');
-                unsupportedContainer.style.width = '100%';
-                unsupportedContainer.style.height = '100%';
-                unsupportedContainer.style.display = 'flex';
-                unsupportedContainer.style.alignItems = 'center';
-                unsupportedContainer.style.justifyContent = 'center';
-                unsupportedContainer.style.color = 'var(--accent)';
-                unsupportedContainer.style.fontFamily = "'Orbitron', sans-serif";
-                unsupportedContainer.style.fontSize = '1.5rem';
-                unsupportedContainer.style.letterSpacing = '1px';
-                unsupportedContainer.textContent = 'UNSUPPORTED MEDIA TYPE';
-                
-                modalMediaContainer.appendChild(unsupportedContainer);
+                showMediaError(container, 'Unsupported Media Type');
             }
-            
-            // Show modal with cyberpunk animation
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            
-            // Animate in with cyberpunk style
-            gsap.from(".modal-content", {
-                duration: 0.5,
-                scale: 0.9,
-                opacity: 0,
-                ease: "back.out(1.7)",
-                onStart: () => {
-                    // Add cyberpunk glitch effect on open
-                    gsap.to(".modal-content", {
-                        duration: 0.1,
-                        x: 10,
-                        repeat: 5,
-                        yoyo: true,
-                        ease: "power1.inOut"
-                    });
-                }
-            });
+        }
+        
+        function showMediaError(container, message) {
+            container.innerHTML = `
+                <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text);font-family:'Montserrat',sans-serif;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;"></i>
+                    <h3>${message}</h3>
+                </div>
+            `;
         }
         
         function closeModal() {
             const modal = document.getElementById('mediaModal');
             
-            // Animate out with cyberpunk style
-            gsap.to(".modal-content", {
-                duration: 0.3,
-                scale: 0.9,
-                opacity: 0,
-                ease: "power2.in",
-                onComplete: () => {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                    
-                    // Pause any playing media
-                    const mediaContainer = document.getElementById('modalMediaContainer');
-                    const mediaElements = mediaContainer.querySelectorAll('video, audio');
-                    mediaElements.forEach(el => el.pause());
-                }
-            });
+            modal.classList.remove('show');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '';
+                
+                // Pause any playing media
+                const mediaContainer = document.getElementById('modalMediaContainer');
+                const mediaElements = mediaContainer.querySelectorAll('video, audio');
+                mediaElements.forEach(el => el.pause());
+                
+                // Remove keyboard listener
+                document.removeEventListener('keydown', handleModalKeyboardNav);
+            }, 300);
         }
         
-        // Close modal when clicking outside
-        window.onclick = function(event) {
+        function handleModalKeyboardNav(e) {
             const modal = document.getElementById('mediaModal');
-            if (event.target == modal) {
+            if (modal.style.display !== 'flex') return;
+            
+            // Close on Escape
+            if (e.key === 'Escape') {
                 closeModal();
             }
+            
+            // Prevent tabbing outside modal
+            if (e.key === 'Tab') {
+                const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                
+                if (e.shiftKey) {
+                    if (document.activeElement === first) {
+                        last.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    if (document.activeElement === last) {
+                        first.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'Unknown date';
+            
+            try {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        function shareArtwork() {
+            const title = document.getElementById('modalTitle').textContent;
+            const url = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `Check out "${title}" on Digital Art Gallery`,
+                    text: `I found this amazing digital artwork: "${title}"`,
+                    url: url
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                    fallbackShare(title, url);
+                });
+            } else {
+                fallbackShare(title, url);
+            }
+        }
+        
+        function fallbackShare(title, url) {
+            // Copy to clipboard as fallback
+            const text = `Check out "${title}" on Digital Art Gallery: ${url}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(err => {
+                console.log('Could not copy text: ', err);
+                prompt('Copy this link to share:', url);
+            });
         }
         
         // Initialize everything when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            createGridAnimation();
             setupFilters();
             setupCardHoverEffects();
             
-            // Add cyberpunk effect to buttons
+            // Add hover effect to buttons
             document.querySelectorAll('.dashboard-btn').forEach(btn => {
                 btn.addEventListener('mouseenter', () => {
                     gsap.to(btn, {
                         duration: 0.2,
-                        boxShadow: '0 0 20px rgba(0, 240, 255, 0.5)',
+                        y: -2,
                         ease: "power2.out"
                     });
                 });
@@ -1360,25 +1334,39 @@
                 btn.addEventListener('mouseleave', () => {
                     gsap.to(btn, {
                         duration: 0.2,
-                        boxShadow: '0 0 15px rgba(0, 240, 255, 0.3)',
+                        y: 0,
                         ease: "power2.out"
                     });
                 });
             });
             
-            // Add random glitch effect to header
-            setInterval(() => {
-                if (Math.random() > 0.9) {
-                    const header = document.querySelector('.header-title');
-                    gsap.to(header, {
-                        duration: 0.1,
-                        x: 5,
-                        repeat: 3,
-                        yoyo: true,
-                        ease: "power1.inOut"
+            // Lazy load images
+            if ('IntersectionObserver' in window) {
+                const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+                
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src || img.src;
+                            observer.unobserve(img);
+                        }
                     });
-                }
-            }, 3000);
+                });
+                
+                lazyImages.forEach(img => imageObserver.observe(img));
+            }
+            
+            // Add service worker for PWA capabilities
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    }).catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                });
+            }
         });
     </script>
 </body>

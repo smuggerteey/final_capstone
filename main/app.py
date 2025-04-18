@@ -57,6 +57,7 @@ TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
+
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -184,6 +185,18 @@ def backup_database(filename):
             cursor.close()
         if 'conn' in locals():
             conn.close()
+@app.route('/artwork/<int:artwork_id>/report')
+def report_artwork(artwork_id):
+    # Get the artwork or return 404 if not found
+    artwork = artwork.query.get_or_404(artwork_id)
+    
+    # Pass the current user if authenticated
+    return render_template(
+        'report_artwork.html',
+        artwork=artwork,
+        current_user=current_user
+    )
+
 
 def backup_files(filename):
     """Backup system files to a zip archive."""
@@ -658,9 +671,10 @@ def home():
     return render_template('index.html', user_data=user_data)
 
 @app.route('/virtual_gallery')
-def gallery():
+def virtual_gallery():
     """Display all media in a gallery"""
     try:
+        # Get artworks
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         
@@ -677,35 +691,32 @@ def gallery():
             artwork['media_url'] = get_media_url(artwork['media'])
             artwork['media_type'] = get_media_type(artwork['media'])
         
+        # Get user data if logged in
+        user_data = None
+        username = session.get('username')
+        
+        if username:
+            # Get complete user data in a single query
+            cursor.execute("""
+                SELECT username, role, email, profile_pic 
+                FROM users 
+                WHERE username = %s
+            """, (username,))
+            user_data = cursor.fetchone()
+        
         cursor.close()
         conn.close()
-        
-        # Get current user data if logged in
-        username = session.get('username')
-        user_role = session.get('role', 'Guest')  # Default to 'Guest' if not logged in
-
-                # Get user data if logged in
-        user_data = None
-        if 'username' in session:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            cursor.execute("SELECT * FROM users WHERE username = %s", (session['username'],))
-            user_data = cursor.fetchone()
-            cursor.close()
-            conn.close()
-
-                # In your route, before render_template:
-            cursor.execute("SELECT role FROM users WHERE username = %s", (session['username'],))
-            user_data = cursor.fetchone()
         
         return render_template('gallery.html', 
                              artworks=artworks,
                              username=username,
-                             user_role=user_role,
                              user_data=user_data,
                              current_year=datetime.now().year)
     
     except Exception as e:
+        # Ensure connections are closed even if error occurs
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
         return f"Error fetching artworks: {str(e)}", 500
 
 @app.route('/media/<path:filename>')
@@ -1860,16 +1871,6 @@ def checkout():
                          username=username, 
                          user_data=user_data)
 
-@app.route('/virtual_gallery')
-def virtual_gallery():
-    """Virtual gallery page."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('virtual_gallery.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
 
 @app.route('/workshops')
 def workshops():
