@@ -60,7 +60,10 @@ TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
+<<<<<<< HEAD
 PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
+=======
+>>>>>>> f4f833f65c19938197557b4ec86f2cf306144c2e
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -2589,4 +2592,8 @@ def create_room():
 
 if __name__ == "__main__":
     load_model()  # Load chatbot model
+<<<<<<< HEAD
     socketio.run(app, debug=True)
+=======
+    socketio.run(app, debug=True)
+>>>>>>> f4f833f65c19938197557b4ec86f2cf306144c2e

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Artists | Art Marketplace</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color:  #06BBCC;
+            --secondary-color: #8a5a44;
+            --accent-color: #f8c537;
+            --light-bg: #f9f5f0;
+            --dark-text: #2d2d2d;
+        }
+        
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #3f7fa4;;
+            color: var(--dark-text);
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            color: #100a5a;
+        }
+        
+        .artist-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 25px;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(106, 76, 147, 0.15);
+        }
+        
+        .artist-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: block;
+            border: 5px solid white;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+        }
+        
+        .artist-card:hover .profile-picture {
+            transform: scale(1.05);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        
+        .category-badge {
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            border-radius: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .category-badge:hover {
+            transform: translateY(-2px);
+            background-color: var(--secondary-color);
+        }
+        
+        .rating-stars {
+            color: var(--accent-color);
+            font-size: 1.1rem;
+        }
+        
+        .stats-icon {
+            margin-right: 5px;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        
+        .leaderboard-score {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .view-profile-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 50px;
+            padding: 8px 0;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .view-profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(106, 76, 147, 0.3);
+        }
+        
+        .view-profile-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .view-profile-btn:hover::after {
+            left: 100%;
+        }
+        
+        .search-container {
+            margin-bottom: 40px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .sort-options {
+            margin-bottom: 20px;
+        }
+        
+        .sort-btn {
+            border-radius: 50px !important;
+            padding: 8px 20px;
+            margin: 0 5px;
+            border: 2px solid var(--primary-color) !important;
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-btn:hover, .sort-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6c757d;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        #searchInput {
+            border-radius: 50px;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        #searchInput:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(106, 76, 147, 0.25);
+        }
+        
+        #searchButton {
+            border-radius: 0 50px 50px 0;
+            padding: 0 25px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        
+        .input-group {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-radius: 50px;
+        }
+        
+        .artist-social {
+            margin-top: 15px;
+        }
+        
+        .artist-social a {
+            color: var(--dark-text);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .artist-social a:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .floating-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--accent-color);
+            color: var(--dark-text);
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            z-index: 1;
+        }
+        
+        /* Back button styles */
+        .back-btn-container {
+            margin-bottom: 20px;
+        }
+        
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-back-btn:hover {
+            transform: translateX(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .sort-options {
+                margin-top: 20px;
+                text-align: center;
+            }
+            
+            .sort-options .btn-group {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .sort-btn {
+                margin: 5px;
+            }
+            
+            .profile-picture {
+                width: 120px;
+                height: 120px;
+            }
+            
+            /* Hide the regular back button on mobile */
+            .back-btn-container {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            /* Hide the floating button on desktop */
+            .floating-back-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<!-- Floating Back Button (Horizontally Ovular) -->
+<a href="javascript:void(0);" 
+   onclick="window.history.back();"
+   class="floating-back-btn" 
+   style="position: absolute; 
+          top: 15px; 
+          left: 35px; 
+          background-color: #d9e3e4; 
+          color: rgb(67, 210, 210); 
+          border-radius: 50px;
+          padding: 8px 20px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+          text-decoration: none; 
+          font-size: 16px; 
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: auto;
+          min-width: 40px;
+          height: 40px;
+          cursor: pointer;">
+    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+    <span style="white-space: nowrap;"></span>
+</a>
+<body>
+    <!-- Floating back button (mobile only) -->
+    <button onclick="window.history.back()" class="btn btn-primary floating-back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    
+    <div class="container py-5">
+        
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">Discover Talented Artists</h1>
+            <p class="lead">Explore and connect with creative minds from around the world</p>
+        </div>
+        
+        <div class="row search-container">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search by name, category, or style...">
+                    <button class="btn btn-primary" id="searchButton">
+                        <i class="fas fa-search me-2"></i> Search
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="sort-options float-md-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-secondary sort-btn" data-sort="artwork">
+                            <i class="fas fa-paint-brush me-1"></i> Most Artworks
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary sort-btn" data-sort="score">
+                            <i class="fas fa-trophy me-1"></i> Highest Score
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary sort-btn" data-sort="rating">
+                            <i class="fas fa-star me-1"></i> Top Rated
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row" id="artistsContainer">
+            {% if artists %}
+                {% for artist in artists %}
+                <div class="col-md-4 col-lg-3 mb-4 artist-item" 
+                     data-artwork="{{ artist.artwork_count }}" 
+                     data-score="{{ artist.leaderboard_score }}" 
+                     data-rating="{{ artist.average_rating or 0 }}"
+                     data-name="{{ artist.username|lower }} {{ artist.first_name|lower }} {{ artist.last_name|lower }}"
+                     data-categories="{{ artist.categories|join(' ')|lower if artist.categories else '' }}"
+                     data-location="{{ artist.location|lower if artist.location else '' }}">
+                    <div class="card artist-card">
+                        {% if loop.index <= 3 %}
+                        <div class="floating-badge">
+                            {% if loop.index == 1 %}<i class="fas fa-crown me-1"></i>{% endif %}
+                            Top {{ loop.index }}
+                        </div>
+                        {% endif %}
+                        <div class="card-body text-center">
+                            <img src="{{ artist.profile_picture or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80' }}" 
+                                 alt="{{ artist.username }}" 
+                                 class="profile-picture mb-3">
+                            <h5 class="card-title mb-1">{{ artist.first_name }} {{ artist.last_name }}</h5>
+                            <p class="text-muted mb-2">@{{ artist.username }}</p>
+                            {% if artist.location %}
+                            <p class="text-muted small mb-3">
+                                <i class="fas fa-map-marker-alt"></i> {{ artist.location }}
+                            </p>
+                            {% endif %}
+                            
+                            {% if artist.average_rating %}
+                            <div class="mb-2">
+                                <span class="rating-stars">
+                                    {% for i in range(1, 6) %}
+                                        {% if i <= artist.average_rating|round(0, 'floor')|int %}
+                                            <i class="fas fa-star"></i>
+                                        {% elif (i - 0.5) <= artist.average_rating %}
+                                            <i class="fas fa-star-half-alt"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <small class="text-muted">({{ artist.rating_count }} reviews)</small>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="mb-3">
+                                {% if artist.categories %}
+                                    {% for category in artist.categories[:3] %}
+                                        <span class="badge category-badge">{{ category }}</span>
+                                    {% endfor %}
+                                    {% if artist.categories|length > 3 %}
+                                        <span class="badge bg-light text-dark category-badge">+{{ artist.categories|length - 3 }}</span>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-around mb-3 text-muted">
+                                <div class="px-2">
+                                    <i class="fas fa-paint-brush stats-icon"></i>
+                                    <span>{{ artist.artwork_count }} works</span>
+                                </div>
+                                <div class="px-2">
+                                    <i class="fas fa-trophy stats-icon"></i>
+                                    <span class="leaderboard-score">{{ artist.leaderboard_score }} pts</span>
+                                </div>
+                                <div class="px-2">
+                                    <i class="fas fa-heart stats-icon"></i>
+                                    <span>{{ artist.follower_count }} fans</span>
+                                </div>
+                            </div>
+                            
+                            <div class="artist-social">
+                                {% if artist.twitter %}
+                                <a href="{{ artist.twitter }}" target="_blank"><i class="fab fa-twitter"></i></a>
+                                {% endif %}
+                                {% if artist.instagram %}
+                                <a href="{{ artist.instagram }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                                {% endif %}
+                                {% if artist.website %}
+                                <a href="{{ artist.website }}" target="_blank"><i class="fas fa-globe"></i></a>
+                                {% endif %}
+                            </div>
+                            
+                            <a href="/artist/{{ artist.id }}" class="btn btn-primary view-profile-btn mt-3">
+                                View Portfolio <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-palette"></i>
+                        <h3>No Artists Found</h3>
+                        <p class="mb-4">There are currently no artists registered on the platform.</p>
+                        <button class="btn btn-primary">Invite Artists</button>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if artists and artists|length > 12 %}
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-primary" id="loadMore">
+                Load More Artists <i class="fas fa-chevron-down ms-2"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+
+<div class="back-btn-container" style="text-align: center; margin: 20px 0;">
+    <button onclick="window.history.back()" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Go Back
+    </button>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Search functionality
+            const searchButton = document.getElementById('searchButton');
+            const searchInput = document.getElementById('searchInput');
+            
+            searchButton.addEventListener('click', filterArtists);
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    filterArtists();
+                }
+            });
+            
+            // Sort functionality
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const sortBy = this.dataset.sort;
+                    sortArtists(sortBy);
+                    
+                    // Update active button state
+                    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Animate the sort
+                    const container = document.getElementById('artistsContainer');
+                    container.style.opacity = '0.5';
+                    setTimeout(() => {
+                        container.style.opacity = '1';
+                    }, 300);
+                });
+            });
+            
+            // Load more functionality
+            const loadMoreBtn = document.getElementById('loadMore');
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    // Simulate loading more artists
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Loading...';
+                    setTimeout(() => {
+                        // In a real app, you would fetch more data from the server
+                        this.style.display = 'none';
+                        alert('More artists would be loaded in a real application');
+                    }, 1500);
+                });
+            }
+            
+            function filterArtists() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const artistItems = document.querySelectorAll('.artist-item');
+                let visibleCount = 0;
+                
+                artistItems.forEach(item => {
+                    const artistName = item.dataset.name;
+                    const artistCategories = item.dataset.categories || '';
+                    const artistLocation = item.dataset.location || '';
+                    
+                    if (artistName.includes(searchTerm) || 
+                        artistCategories.includes(searchTerm) || 
+                        artistLocation.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                        
+                        // Add animation
+                        item.style.animation = 'fadeIn 0.5s ease';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show empty state if no results
+                const emptyState = document.querySelector('.empty-state');
+                if (emptyState) {
+                    if (visibleCount === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                    }
+                }
+            }
+            
+            function sortArtists(sortBy) {
+                const container = document.getElementById('artistsContainer');
+                const artistItems = Array.from(document.querySelectorAll('.artist-item'));
+                
+                artistItems.sort((a, b) => {
+                    const aValue = parseFloat(a.dataset[sortBy]) || 0;
+                    const bValue = parseFloat(b.dataset[sortBy]) || 0;
+                    return bValue - aValue; // Descending order
+                });
+                
+                // Re-append sorted items
+                artistItems.forEach(item => container.appendChild(item));
+            }
+            
+            // Initialize with artwork sort
+            document.querySelector('.sort-btn[data-sort="artwork"]').classList.add('active');
+            
+            // Add hover effect to cards
+            const cards = document.querySelectorAll('.artist-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-8px)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Add animation styles dynamically
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+        
+        // Function to load artist details
+        function loadArtistDetails(artistId) {
+            fetch(`/api/artist/${artistId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Here you can implement a modal or redirect to a detail page
+                    console.log('Artist details:', data);
+                    window.location.href = `/artist/${artistId}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching artist details:', error);
+                    alert('Failed to load artist details');
+                });
+        }
+    </script>
+</body>
+</html>
