@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Art Gallery | Immersive Experience</title>
-    
-    <!-- Preload critical resources -->
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&display=swap" as="style">
+    <title>Digital Art Gallery</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,25 +17,20 @@
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
-    
     <style>
-/* Modern Dark Theme with Enhanced Contrast */
+/* Modern Dark Theme */
 :root {
-    --primary: #1a1a2e;
-    --secondary: #16213e;
-    --accent: #4a6fa5;
-    --accent-light: #6d8fc7;
-    --accent-dark: #2e4a76;
-    --text: #f8f9fa;
-    --text-dark: #adb5bd;
-    --card-bg: #2a2a3a;
-    --border: rgba(255, 255, 255, 0.15);
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --primary: #06BBCC;
+    --secondary: #1e1e1e;
+    --accent: #06BBCC;
+    --accent-light: #06BBCC;
+    --accent-dark: #06BBCC;
+    --text: #063358;
+    --text-dark: #1c074d;
+    --card-bg: #252525;
+    --border: rgba(255, 255, 255, 0.1);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    --radius: 12px;
-    --header-gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
 }
 
 * {
@@ -50,41 +41,31 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif;
-    background: var(--header-gradient);
+    background-color:#3f7fa4;
     color: var(--text);
     overflow-x: hidden;
     line-height: 1.6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    line-height: 1.2;
 }
 
 h1 {
-    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-size: 2.5rem;
     color: var(--text);
-    margin-bottom: 0.5rem;
 }
 
 h2 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: 1.8rem;
     color: var(--text);
     margin-bottom: 1.5rem;
 }
 
 h3 {
-    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-size: 1.3rem;
     color: var(--text);
     font-weight: 500;
 }
@@ -94,17 +75,14 @@ p {
     font-weight: 300;
     margin-bottom: 1rem;
     color: var(--text-dark);
-    font-size: clamp(0.9rem, 2vw, 1.1rem);
 }
 
 /* Layout */
 .gallery-container {
-    max-width: 1600px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
     position: relative;
-    flex: 1;
-    width: 100%;
 }
 
 /* Header Styles */
@@ -113,7 +91,6 @@ p {
     margin-bottom: 3rem;
     position: relative;
     z-index: 10;
-    padding-top: 1rem;
 }
 
 .header-top {
@@ -121,27 +98,20 @@ p {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    gap: 1rem;
 }
 
 .header-title {
     flex-grow: 1;
     text-align: center;
-    font-size: clamp(2rem, 6vw, 3rem);
-    color: var(--text);
+    font-size: 2.8rem;
+    color: #0d1679;
     letter-spacing: 1px;
     font-family: 'Playfair Display', serif;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(to right, var(--text), var(--accent-light));
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
 }
 
 .gallery-title {
-    font-size: clamp(1.1rem, 3vw, 1.5rem);
-    color: var(--text-dark);
+    font-size: 1.8rem;
+    color: var(--text);
     margin-bottom: 2rem;
     position: relative;
     font-weight: 400;
@@ -154,7 +124,7 @@ p {
     display: block;
     width: 80px;
     height: 2px;
-    background: var(--accent);
+    background: #06BBCC;
     margin: 0.8rem auto;
 }
 
@@ -168,7 +138,7 @@ p {
 }
 
 .filter-btn {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border);
     color: var(--text);
     padding: 0.8rem 1.5rem;
@@ -180,35 +150,17 @@ p {
     transition: var(--transition);
     border-radius: 30px;
     font-size: 0.85rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.filter-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: 0.5s;
 }
 
 .filter-btn:hover {
-    background: rgba(74, 111, 165, 0.3);
+    background: rgba(74, 111, 165, 0.2);
     border-color: var(--accent);
-}
-
-.filter-btn:hover::before {
-    left: 100%;
 }
 
 .filter-btn.active {
     background: var(--accent);
     color: white;
     border-color: var(--accent);
-    box-shadow: 0 0 15px rgba(74, 111, 165, 0.5);
 }
 
 .filter-btn i {
@@ -223,100 +175,68 @@ p {
 }
 
 .section-title {
-    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-size: 2rem;
     text-align: center;
     margin-bottom: 1.5rem;
     color: var(--text);
     font-family: 'Playfair Display', serif;
     font-weight: 500;
-    position: relative;
-    display: inline-block;
-    width: 100%;
-}
-
-.section-title::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background: var(--accent);
-    margin: 1rem auto;
-    border-radius: 3px;
 }
 
 .section-description {
     text-align: center;
     max-width: 800px;
     margin: 0 auto 3rem;
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    font-size: 1.1rem;
     color: var(--text-dark);
     line-height: 1.8;
-    padding: 0 1rem;
 }
 
 /* Artwork Grid */
 .artwork-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
 }
 
 .artwork-card {
     background: var(--card-bg);
-    border-radius: var(--radius);
+    border-radius: 8px;
     overflow: hidden;
     transition: var(--transition);
     position: relative;
     border: 1px solid var(--border);
     box-shadow: var(--shadow);
     cursor: pointer;
-    will-change: transform;
-}
-
-.artwork-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(74, 111, 165, 0.1) 0%, transparent 100%);
-    opacity: 0;
-    transition: var(--transition);
-    z-index: 1;
 }
 
 .artwork-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-    border-color: rgba(74, 111, 165, 0.7);
-}
-
-.artwork-card:hover::before {
-    opacity: 1;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(74, 111, 165, 0.5);
 }
 
 .media-container {
     width: 100%;
-    height: 250px;
+    height: 200px;
     overflow: hidden;
     position: relative;
-    background: var(--secondary);
+    background: #3f7fa4;;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .media-preview {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
 
 .artwork-card:hover .media-preview {
-    transform: scale(1.08);
+    transform: scale(1.05);
 }
 
 .audio-icon {
@@ -327,40 +247,33 @@ p {
 
 .artwork-details {
     padding: 1.5rem;
-    position: relative;
-    z-index: 2;
 }
 
 .artwork-title {
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: var(--text);
-    font-size: 1.1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #06BBCC;
 }
 
 .artwork-meta {
     display: flex;
     justify-content: space-between;
     font-size: 0.9rem;
-    color: var(--text-dark);
+    color: #06BBCC;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
 }
 
 .media-type {
     text-transform: uppercase;
-    color: var(--accent);
+    color: #06BBCC;
     font-size: 0.8rem;
     letter-spacing: 1px;
-    font-weight: 600;
 }
 
 .media-date {
-    color: var(--text-dark);
+    color: #06BBCC;
     font-size: 0.8rem;
 }
 
@@ -380,21 +293,6 @@ p {
     cursor: pointer;
     border: 1px solid;
     font-size: 0.9rem;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.dashboard-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 100%;
-    background: var(--accent);
-    transition: width 0.3s ease;
-    z-index: -1;
 }
 
 .btn-outline {
@@ -404,11 +302,7 @@ p {
 }
 
 .btn-outline:hover {
-    color: white;
-}
-
-.btn-outline:hover::before {
-    width: 100%;
+    background: rgba(74, 111, 165, 0.1);
 }
 
 .btn-accent {
@@ -420,16 +314,10 @@ p {
 .btn-accent:hover {
     background: var(--accent-light);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(74, 111, 165, 0.4);
 }
 
 .dashboard-btn i {
     margin-right: 0.5rem;
-    transition: transform 0.3s ease;
-}
-
-.dashboard-btn:hover i {
-    transform: translateX(3px);
 }
 
 /* Footer */
@@ -439,7 +327,6 @@ p {
     margin-top: 3rem;
     position: relative;
     border-top: 1px solid var(--border);
-    background: rgba(0, 0, 0, 0.1);
 }
 
 .footer-content {
@@ -452,7 +339,7 @@ p {
 .copyright {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
-    color: var(--text-dark);
+    color: #06BBCC;
     font-size: 0.9rem;
 }
 
@@ -462,22 +349,14 @@ p {
 }
 
 .social-links a {
-    color: var(--text-dark);
+    color: #06BBCC;
     font-size: 1.2rem;
     transition: var(--transition);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .social-links a:hover {
     color: var(--accent);
     transform: translateY(-3px);
-    background: rgba(74, 111, 165, 0.1);
 }
 
 /* Modal Styles */
@@ -488,37 +367,24 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(10, 10, 15, 0.98);
+    background: #3f7fa4;
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal.show {
-    opacity: 1;
+    backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--radius);
+    background: #d5dbe1;
+    border-radius: 8px;
     width: 90%;
-    max-width: 1100px;
+    max-width: 1000px;
     max-height: 90vh;
     overflow: hidden;
     display: flex;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border: 1px solid var(--border);
     position: relative;
-    transform: scale(0.95);
-    transition: transform 0.3s ease;
-}
-
-.modal.show .modal-content {
-    transform: scale(1);
 }
 
 .close-modal {
@@ -530,25 +396,23 @@ p {
     cursor: pointer;
     transition: var(--transition);
     z-index: 10;
-    background: rgba(0, 0, 0, 0.5);
+    background: #1b6594;
     width: 40px;
     height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border);
 }
 
 .close-modal:hover {
     color: var(--text);
     background: rgba(0, 0, 0, 0.7);
-    transform: rotate(90deg);
 }
 
 .modal-media-container {
     flex: 1;
-    min-height: 500px;
+    min-height: 400px;
     background: var(--secondary);
     display: flex;
     align-items: center;
@@ -561,44 +425,20 @@ p {
     max-width: 90%;
     max-height: 90%;
     object-fit: contain;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .modal-details {
     flex: 0 0 350px;
-    padding: 2.5rem;
-    background: var(--card-bg);
+    padding: 2rem;
+    background: #d5e1e2;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
-}
-
-.modal-details::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modal-details::-webkit-scrollbar-thumb {
-    background-color: var(--accent);
-    border-radius: 3px;
 }
 
 .modal-details h2 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin-bottom: 1.5rem;
-    color: var(--text);
+    color: #06BBCC;
     font-family: 'Playfair Display', serif;
-    position: relative;
-    padding-bottom: 0.5rem;
-}
-
-.modal-details h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 50px;
-    height: 2px;
-    background: var(--accent);
 }
 
 .modal-meta {
@@ -607,7 +447,6 @@ p {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
 }
 
 .modal-meta-item {
@@ -621,41 +460,13 @@ p {
 }
 
 .modal-meta-item i {
-    color: var(--accent);
+    color: #06BBCC;
 }
 
 .modal-actions {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
-    flex-wrap: wrap;
-}
-
-/* Loading Animation */
-.loading-spinner {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(74, 111, 165, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--accent);
-    animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
 }
 
 /* Animations */
@@ -665,136 +476,99 @@ p {
 }
 
 /* Responsive Adjustments */
-@media (max-width: 1200px) {
+@media (max-width: 992px) {
     .modal-content {
         flex-direction: column;
-        max-height: 95vh;
+        width: 95%;
     }
     
     .modal-media-container {
         min-height: 300px;
-        max-height: 50vh;
     }
     
     .modal-details {
         flex: 1;
-        max-height: 45vh;
     }
     
     .artwork-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
 }
 
 @media (max-width: 768px) {
     .header-top {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
     }
     
     .header-title {
-        order: -1;
-        width: 100%;
+        font-size: 2rem;
     }
     
     .gallery-controls {
-        gap: 0.8rem;
-    }
-    
-    .filter-btn {
-        padding: 0.6rem 1.2rem;
-        font-size: 0.8rem;
+        flex-wrap: wrap;
     }
     
     .artwork-grid {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 1.5rem;
-    }
-    
-    .modal-details {
-        padding: 1.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
     
     .modal-actions {
         flex-direction: column;
     }
-    
-    .dashboard-btn {
-        width: 100%;
-        justify-content: center;
-    }
 }
 
 @media (max-width: 576px) {
     .gallery-container {
-        padding: 1.5rem;
+        padding: 1rem;
     }
     
     .artwork-grid {
         grid-template-columns: 1fr;
     }
     
-    .media-container {
-        height: 200px;
-    }
-    
-    .modal-content {
-        width: 95%;
-    }
-    
-    .modal-details h2 {
-        font-size: 1.5rem;
+    .modal-details {
+        padding: 1.5rem;
     }
     
     .section-title {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
     }
     
     .gallery-title {
-        font-size: 1.2rem;
-    }
-}
-
-/* Print Styles */
-@media print {
-    body * {
-        visibility: hidden;
-    }
-    
-    .modal, .modal * {
-        visibility: visible;
-    }
-    
-    .modal {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: auto;
-        background: white;
-    }
-    
-    .modal-content {
-        box-shadow: none;
-        border: none;
-        width: 100%;
-        max-width: 100%;
-        max-height: none;
-    }
-    
-    .close-modal, .modal-actions {
-        display: none;
+        font-size: 1.3rem;
     }
 }
     </style>
 </head>
 <body>
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
-    </div>
-    
+    <!-- Floating Back Button (Horizontally Ovular) -->
+<a href="javascript:void(0);" 
+onclick="window.history.back();"
+class="floating-back-btn" 
+style="position: absolute; 
+       top: 15px; 
+       left: 35px; 
+       background-color: #d9e3e4; 
+       color: rgb(67, 210, 210); 
+       border-radius: 50px;
+       padding: 8px 20px;
+       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+       text-decoration: none; 
+       font-size: 16px; 
+       transition: all 0.3s;
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       width: auto;
+       min-width: 40px;
+       height: 40px;
+       cursor: pointer;">
+ <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+ <span style="white-space: nowrap;"></span>
+</a>
     <div class="gallery-container">
+        
         <!-- Modern Header -->
         <header class="main-header">
             <div class="header-top">
@@ -848,9 +622,9 @@ p {
                          data-type="{{ artwork.media_type }}">
                         <div class="media-container">
                             {% if artwork.media_type == 'image' %}
-                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview" loading="lazy">
+                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview">
                             {% elif artwork.media_type == 'video' %}
-                                <video class="media-preview" muted loop playsinline>
+                                <video class="media-preview" muted loop>
                                     <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
                                 </video>
                             {% elif artwork.media_type == 'audio' %}
@@ -873,7 +647,7 @@ p {
                     {% endfor %}
                 </div>
 
-                <div class="header-controls" style="justify-content: center; margin-top: 2rem;">
+                <div class="header-controls" style="text-align: center; margin: 20px 0;">
                     <a href="javascript:history.back()" class="dashboard-btn btn-outline">
                         <i class="fas fa-arrow-left"></i> GO BACK
                     </a>
@@ -888,10 +662,10 @@ p {
                     &copy; {{ current_year }} DIGITAL ART GALLERY. ALL RIGHTS RESERVED.
                 </div>
                 <div class="social-links">
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="ArtStation"><i class="fab fa-artstation"></i></a>
-                    <a href="#" aria-label="DeviantArt"><i class="fab fa-deviantart"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-artstation"></i></a>
+                    <a href="#"><i class="fab fa-deviantart"></i></a>
                 </div>
             </div>
         </footer>
@@ -915,17 +689,13 @@ p {
                         <i class="fas fa-calendar-alt"></i>
                         <span id="modalDate"></span>
                     </div>
-                    <div class="modal-meta-item">
-                        <i class="fas fa-user"></i>
-                        <span id="modalArtist">Digital Artist</span>
-                    </div>
                 </div>
                 <p id="modalDescription"></p>
                 <div class="modal-actions">
                     <a href="#" id="downloadLink" class="dashboard-btn btn-accent">
                         <i class="fas fa-download"></i> DOWNLOAD
                     </a>
-                    <button class="dashboard-btn btn-outline" onclick="shareArtwork()">
+                    <button class="dashboard-btn btn-outline">
                         <i class="fas fa-share-alt"></i> SHARE
                     </button>
                 </div>
@@ -934,71 +704,41 @@ p {
     </div>
     
     <script>
-        // Show loading spinner initially
-        document.addEventListener('DOMContentLoaded', function() {
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            loadingSpinner.style.display = 'flex';
-            
-            // Hide spinner after everything is loaded
-            window.addEventListener('load', function() {
-                setTimeout(() => {
-                    loadingSpinner.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingSpinner.style.display = 'none';
-                    }, 300);
-                }, 500);
-            });
-            
-            // Fallback in case load event doesn't fire
-            setTimeout(() => {
-                loadingSpinner.style.display = 'none';
-            }, 2000);
-        });
-        
         // Initialize GSAP animations
-        gsap.registerEffect({
-            name: "fadeSlideIn",
-            effect: (targets, config) => {
-                return gsap.from(targets, {
-                    duration: config.duration || 0.8,
-                    y: config.y || 50,
-                    opacity: 0,
-                    ease: config.ease || "power3.out",
-                    stagger: config.stagger || 0,
-                    delay: config.delay || 0
-                });
-            },
-            defaults: { duration: 0.8, y: 50 }
+        gsap.from(".room-content", {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out",
+            delay: 0.3
         });
         
-        gsap.effects.fadeSlideIn(".room-content", { delay: 0.3 });
-        gsap.effects.fadeSlideIn(".artwork-card", { 
+        gsap.from(".artwork-card", {
+            duration: 0.8,
             y: 30,
+            opacity: 0,
             stagger: 0.1,
             ease: "back.out(1.7)",
             delay: 0.5
         });
         
-        // Filter functionality with improved performance
+        // Filter functionality
         function setupFilters() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const artworkCards = document.querySelectorAll('.artwork-card');
             
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    // Update active button with animation
+                    // Update active button
                     filterBtns.forEach(b => {
-                        if (b !== btn) {
-                            gsap.to(b, {
-                                duration: 0.3,
-                                background: 'rgba(255, 255, 255, 0.08)',
-                                color: 'var(--text)',
-                                borderColor: 'var(--border)',
-                                boxShadow: 'none',
-                                ease: "power2.out"
-                            });
-                        }
                         b.classList.remove('active');
+                        gsap.to(b, {
+                            duration: 0.3,
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            color: 'var(--text)',
+                            borderColor: 'var(--border)',
+                            ease: "power2.out"
+                        });
                     });
                     
                     btn.classList.add('active');
@@ -1007,77 +747,57 @@ p {
                         background: 'var(--accent)',
                         color: 'white',
                         borderColor: 'var(--accent)',
-                        boxShadow: '0 0 15px rgba(74, 111, 165, 0.5)',
                         ease: "power2.out"
                     });
                     
                     const filter = btn.dataset.filter;
                     
-                    // Filter artwork cards with animation
+                    // Filter artwork cards
                     artworkCards.forEach(card => {
-                        const matchesFilter = filter === 'all' || card.dataset.type === filter;
-                        const animationProps = matchesFilter ? {
-                            opacity: 1,
-                            scale: 1,
-                            display: 'block',
-                            delay: Math.random() * 0.2 // Stagger effect
-                        } : {
-                            opacity: 0,
-                            scale: 0.9,
-                            display: 'none'
-                        };
-                        
-                        gsap.to(card, {
-                            duration: 0.5,
-                            ...animationProps,
-                            ease: "power2.out"
-                        });
+                        if (filter === 'all' || card.dataset.type === filter) {
+                            gsap.to(card, {
+                                duration: 0.5,
+                                opacity: 1,
+                                scale: 1,
+                                display: 'block',
+                                ease: "power2.out"
+                            });
+                        } else {
+                            gsap.to(card, {
+                                duration: 0.5,
+                                opacity: 0,
+                                scale: 0.9,
+                                display: 'none',
+                                ease: "power2.out"
+                            });
+                        }
                     });
                 });
             });
         }
         
-        // Add hover effects to cards with performance optimization
+        // Add hover effects to cards
         function setupCardHoverEffects() {
-            const artworkCards = document.querySelectorAll('.artwork-card');
-            
-            artworkCards.forEach(card => {
-                // Preload hover state
-                card.style.willChange = 'transform, box-shadow';
-                
+            document.querySelectorAll('.artwork-card').forEach(card => {
                 card.addEventListener('mouseenter', () => {
                     gsap.to(card, {
                         duration: 0.3,
-                        y: -8,
                         boxShadow: '0 15px 30px rgba(0, 0, 0, 0.5)',
                         ease: "power2.out"
                     });
-                    
-                    // Play video on hover if it's a video card
-                    const video = card.querySelector('video');
-                    if (video) {
-                        video.play().catch(e => console.log('Autoplay prevented:', e));
-                    }
                 });
                 
                 card.addEventListener('mouseleave', () => {
                     gsap.to(card, {
                         duration: 0.3,
-                        y: 0,
                         boxShadow: 'var(--shadow)',
                         ease: "power2.out"
                     });
-                    
-                    // Pause video when not hovering
-                    const video = card.querySelector('video');
-                    if (video) {
-                        video.pause();
-                    }
                 });
             });
         }
         
-        // Modal functions with enhanced features
+        // Modal functions
         function openModal(title, type, url, date, description) {
             const modal = document.getElementById('mediaModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -1091,11 +811,10 @@ p {
             // Set content
             modalTitle.textContent = title;
             modalType.textContent = type.toUpperCase();
-            modalDate.textContent = formatDate(date);
+            modalDate.textContent = date;
             modalDescription.textContent = description || "No description available for this artwork.";
             downloadLink.href = url;
-            downloadLink.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${url.split('.').pop()}`;
-            downloadLink.setAttribute('aria-label', `Download ${title}`);
+            downloadLink.download = title + '.' + url.split('.').pop();
             
             // Set icon based on media type
             switch(type) {
@@ -1112,45 +831,39 @@ p {
                     modalTypeIcon.className = 'fas fa-file';
             }
             
-            // Show loading state
-            modalMediaContainer.innerHTML = `
-                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-                    <div class="spinner"></div>
-                </div>
-            `;
+            // Clear previous media
+            modalMediaContainer.innerHTML = '';
             
-            // Show modal
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.add('show');
-                document.body.style.overflow = 'hidden';
-                document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
-            }, 10);
-            
-            // Load media after modal is shown
-            setTimeout(() => {
-                loadMediaContent(type, url, title, modalMediaContainer);
-            }, 300);
-            
-            // Add keyboard navigation
-            document.addEventListener('keydown', handleModalKeyboardNav);
-        }
-        
-        function loadMediaContent(type, url, title, container) {
-            container.innerHTML = '';
-            
+            // Add appropriate media
             if (type === 'image') {
-                const img = new Image();
+                const imgContainer = document.createElement('div');
+                imgContainer.style.width = '100%';
+                imgContainer.style.height = '100%';
+                imgContainer.style.display = 'flex';
+                imgContainer.style.alignItems = 'center';
+                imgContainer.style.justifyContent = 'center';
+                imgContainer.style.overflow = 'hidden';
+                
+                const img = document.createElement('img');
                 img.src = url;
                 img.alt = title;
                 img.className = 'modal-media';
-                img.onload = () => {
-                    container.innerHTML = '';
-                    container.appendChild(img);
-                };
-                img.onerror = () => showMediaError(container, 'Failed to load image');
+                img.style.maxWidth = '90%';
+                img.style.maxHeight = '90%';
+                img.style.objectFit = 'contain';
+                
+                imgContainer.appendChild(img);
+                modalMediaContainer.appendChild(imgContainer);
             } 
             else if (type === 'video') {
+                const videoContainer = document.createElement('div');
+                videoContainer.style.width = '100%';
+                videoContainer.style.height = '100%';
+                videoContainer.style.display = 'flex';
+                videoContainer.style.alignItems = 'center';
+                videoContainer.style.justifyContent = 'center';
+                videoContainer.style.background = 'rgba(0, 0, 0, 0.7)';
+                
                 const video = document.createElement('video');
                 video.src = url;
                 video.controls = true;
@@ -1159,15 +872,8 @@ p {
                 video.style.maxHeight = '90%';
                 video.style.maxWidth = '90%';
                 
-                // Add event listeners for better UX
-                video.addEventListener('loadeddata', () => {
-                    container.innerHTML = '';
-                    container.appendChild(video);
-                });
-                
-                video.addEventListener('error', () => {
-                    showMediaError(container, 'Failed to load video');
-                });
+                videoContainer.appendChild(video);
+                modalMediaContainer.appendChild(videoContainer);
             } 
             else if (type === 'audio') {
                 const audioContainer = document.createElement('div');
@@ -1200,120 +906,64 @@ p {
                 audio.style.width = '80%';
                 audio.style.marginTop = '1rem';
                 
-                audio.addEventListener('canplay', () => {
-                    container.innerHTML = '';
-                    audioContainer.appendChild(icon);
-                    audioContainer.appendChild(titleElement);
-                    audioContainer.appendChild(audio);
-                    container.appendChild(audioContainer);
-                });
-                
-                audio.addEventListener('error', () => {
-                    showMediaError(container, 'Failed to load audio');
-                });
+                audioContainer.appendChild(icon);
+                audioContainer.appendChild(titleElement);
+                audioContainer.appendChild(audio);
+                modalMediaContainer.appendChild(audioContainer);
             } 
             else {
-                showMediaError(container, 'Unsupported Media Type');
+                const unsupportedContainer = document.createElement('div');
+                unsupportedContainer.style.width = '100%';
+                unsupportedContainer.style.height = '100%';
+                unsupportedContainer.style.display = 'flex';
+                unsupportedContainer.style.alignItems = 'center';
+                unsupportedContainer.style.justifyContent = 'center';
+                unsupportedContainer.style.color = 'var(--text)';
+                unsupportedContainer.style.fontFamily = "'Montserrat', sans-serif";
+                unsupportedContainer.style.fontSize = '1.2rem';
+                unsupportedContainer.textContent = 'Unsupported Media Type';
+                
+                modalMediaContainer.appendChild(unsupportedContainer);
             }
-        }
-        
-        function showMediaError(container, message) {
-            container.innerHTML = `
-                <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text);font-family:'Montserrat',sans-serif;">
-                    <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:var(--accent);margin-bottom:1rem;"></i>
-                    <h3>${message}</h3>
-                </div>
-            `;
+            
+            // Show modal with animation
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            gsap.from(".modal-content", {
+                duration: 0.5,
+                scale: 0.95,
+                opacity: 0,
+                ease: "back.out(1.7)"
+            });
         }
         
         function closeModal() {
             const modal = document.getElementById('mediaModal');
             
-            modal.classList.remove('show');
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-                document.body.style.paddingRight = '';
-                
-                // Pause any playing media
-                const mediaContainer = document.getElementById('modalMediaContainer');
-                const mediaElements = mediaContainer.querySelectorAll('video, audio');
-                mediaElements.forEach(el => el.pause());
-                
-                // Remove keyboard listener
-                document.removeEventListener('keydown', handleModalKeyboardNav);
-            }, 300);
+            gsap.to(".modal-content", {
+                duration: 0.3,
+                scale: 0.95,
+                opacity: 0,
+                ease: "power2.in",
+                onComplete: () => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    
+                    // Pause any playing media
+                    const mediaContainer = document.getElementById('modalMediaContainer');
+                    const mediaElements = mediaContainer.querySelectorAll('video, audio');
+                    mediaElements.forEach(el => el.pause());
+                }
+            });
         }
         
-        function handleModalKeyboardNav(e) {
+        // Close modal when clicking outside
+        window.onclick = function(event) {
             const modal = document.getElementById('mediaModal');
-            if (modal.style.display !== 'flex') return;
-            
-            // Close on Escape
-            if (e.key === 'Escape') {
+            if (event.target == modal) {
                 closeModal();
             }
-            
-            // Prevent tabbing outside modal
-            if (e.key === 'Tab') {
-                const focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-                
-                if (e.shiftKey) {
-                    if (document.activeElement === first) {
-                        last.focus();
-                        e.preventDefault();
-                    }
-                } else {
-                    if (document.activeElement === last) {
-                        first.focus();
-                        e.preventDefault();
-                    }
-                }
-            }
-        }
-        
-        function formatDate(dateString) {
-            if (!dateString) return 'Unknown date';
-            
-            try {
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            } catch (e) {
-                return dateString;
-            }
-        }
-        
-        function shareArtwork() {
-            const title = document.getElementById('modalTitle').textContent;
-            const url = window.location.href;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: `Check out "${title}" on Digital Art Gallery`,
-                    text: `I found this amazing digital artwork: "${title}"`,
-                    url: url
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                    fallbackShare(title, url);
-                });
-            } else {
-                fallbackShare(title, url);
-            }
-        }
-        
-        function fallbackShare(title, url) {
-            // Copy to clipboard as fallback
-            const text = `Check out "${title}" on Digital Art Gallery: ${url}`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Link copied to clipboard!');
-            }).catch(err => {
-                console.log('Could not copy text: ', err);
-                prompt('Copy this link to share:', url);
-            });
         }
         
         // Initialize everything when DOM is loaded
@@ -1339,34 +989,6 @@ p {
                     });
                 });
             });
-            
-            // Lazy load images
-            if ('IntersectionObserver' in window) {
-                const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-                
-                const imageObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.dataset.src || img.src;
-                            observer.unobserve(img);
-                        }
-                    });
-                });
-                
-                lazyImages.forEach(img => imageObserver.observe(img));
-            }
-            
-            // Add service worker for PWA capabilities
-            if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js').then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    }).catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-                });
-            }
         });
     </script>
 </body>
