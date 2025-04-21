@@ -530,23 +530,24 @@
         </div>
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ url_for('dashboard') }}" class="active" aria-current="page">
-                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                </a>
-            </li>
-            <li>
-                <a href="{{ url_for('art_challenges') }}">
-                    <i class="fas fa-trophy"></i> Challenges
-                </a>
-            </li>
-            <li>
                 <a href="{{ url_for('marketplace') }}">
                     <i class="fas fa-store"></i> Marketplace
                 </a>
             </li>
             <li>
+                <a href="{{ url_for('sketchboard') }}">
+                    <i class="fas fa-trophy"></i> Challenges
+                </a>
+            </li>
+            <li>
                 <a href="{{ url_for('virtual_gallery') }}">
                     <i class="fas fa-images"></i> Gallery
+                </a>
+            </li>
+            <li>
+                <a href="{{ url_for('collaboration_hub') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Collaboration</span>
                 </a>
             </li>
             <li>
@@ -670,7 +671,7 @@
                 <div class="col-lg-4">
                     <div class="dashboard-card h-100">
                         <h5 class="card-title">Quick Actions</h5>
-                        <a href="{{ url_for('art_challenges') }}" class="btn btn-outline-primary btn-block mb-3">
+                        <a href="{{ url_for('sketchboard') }}" class="btn btn-outline-primary btn-block mb-3">
                             <i class="fas fa-trophy me-2"></i> Join Challenge
                         </a>
                         <a href="{{ url_for('marketplace') }}" class="btn btn-outline-primary btn-block mb-3">
@@ -730,7 +731,7 @@
                             <a href="#" class="btn btn-sm btn-primary">View Challenge</a>
                         </div>
                         <div class="text-center mt-3">
-                            <a href="{{ url_for('art_challenges') }}" class="btn btn-outline-primary">View All Challenges</a>
+                            <a href="{{ url_for('sketchboard') }}" class="btn btn-outline-primary">View All Challenges</a>
                         </div>
                     </div>
                 </div>
