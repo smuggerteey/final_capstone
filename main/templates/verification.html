@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Verification</title>
+    <title>Artist Verification | Creative Showcase</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -12,379 +12,792 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
-    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
 
-    <!-- Template Stylesheet -->
+    <!-- Main Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 
     <!-- Custom CSS for Artist Verification -->
     <style>
-        .verification-section {
-            background-color: #f9f9f9;
-            padding: 50px 0;
+        :root {
+            --primary-color:  #06BBCC;
+            --secondary-color:  #06BBCC;
+            --accent-color: #fd79a8;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --success-color: #00b894;
+            --warning-color: #fdcb6e;
+            --danger-color: #d63031;
         }
-        .terms-section {
-            background-color: #fff;
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+        
+        .verification-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.2);
+        }
+        
+        .verification-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .verification-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .verification-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .verification-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .verification-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+        }
+        
+        .btn-verify {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .btn-verify:hover {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .file-upload {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-btn {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
             padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9f9f9;
+            width: 100%;
+        }
+        
+        .file-upload-btn:hover {
+            border-color: var(--primary-color);
+            background: rgba(108, 92, 231, 0.05);
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .terms-section {
+            background: #f8f9fa;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
         }
-        .security-features {
-            margin-top: 30px;
-        }
-        .security-features ul {
-            list-style-type: disc;
+        
+        .terms-section ul {
             padding-left: 20px;
         }
-        .progress-bar {
-            height: 20px;
-            background-color: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
+        
+        .terms-section ul li {
+            margin-bottom: 10px;
         }
-        .progress-bar div {
-            height: 100%;
-            background-color: #007bff;
-            width: 0;
-            transition: width 0.5s ease;
+        
+        .verification-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
         }
+        
+        .verification-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            color: #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-number {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .step.completed .step-number {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 500;
+        }
+        
+        .step.active .step-label, .step.completed .step-label {
+            color: var(--dark-color);
+        }
+        
+        .security-features {
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .security-features h4 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .security-features ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .security-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .security-features i {
+            color: var(--primary-color);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: var(--primary-color);
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            border: none;
+        }
+        
+        .floating-back-btn:hover {
+            transform: translateX(-5px);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .floating-back-btn i {
+            margin-right: 8px;
+        }
+        
+        .verification-badge {
+            display: inline-block;
+            background: var(--success-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
+        }
+        
+        /* Dark mode styles */
         .dark-mode {
             background-color: #121212;
-            color: #ffffff;
+            color: #e0e0e0;
         }
-        .dark-mode .terms-section {
+        
+        .dark-mode .verification-card {
             background-color: #1e1e1e;
-            color: #ffffff;
+            color: #e0e0e0;
         }
-        .dark-mode .form-control {
+        
+        .dark-mode .form-control, 
+        .dark-mode .form-select,
+        .dark-mode .accordion-button {
             background-color: #2d2d2d;
-            color: #ffffff;
+            color: #e0e0e0;
             border-color: #444;
         }
-        .dark-mode .form-control:focus {
+        
+        .dark-mode .form-control:focus, 
+        .dark-mode .form-select:focus {
             background-color: #2d2d2d;
-            color: #ffffff;
-            border-color: #666;
+            color: #e0e0e0;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
         }
-        .dark-mode .alert {
-            background-color: #333;
-            color: #ffffff;
+        
+        .dark-mode .terms-section {
+            background-color: #252525;
+            color: #e0e0e0;
+        }
+        
+        .dark-mode .file-upload-btn {
+            background-color: #252525;
             border-color: #444;
+        }
+        
+        .dark-mode .security-features {
+            background-color: rgba(108, 92, 231, 0.1);
+        }
+        
+        .dark-mode .step-label {
+            color: #aaa;
+        }
+        
+        .dark-mode .step.active .step-label, 
+        .dark-mode .step.completed .step-label {
+            color: #e0e0e0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .verification-header {
+                padding: 2.5rem 0;
+            }
+            
+            .verification-header h2 {
+                font-size: 2rem;
+            }
+            
+            .verification-card {
+                padding: 1.5rem;
+            }
+            
+            .verification-steps {
+                flex-wrap: wrap;
+            }
+            
+            .step {
+                width: 50%;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .step {
+                width: 100%;
+            }
+            
+            .verification-header {
+                border-radius: 0;
+            }
         }
     </style>
 </head>
 
 <body>
-    <!-- Spinner Start -->
+    <!-- Spinner -->
     <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="sr-only">Loading...</span>
         </div>
     </div>
-    <!-- Spinner End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active"></a>
-                <a href="" class="nav-item nav-link"></a>
-                <div class="">
-                    <a href="#" class="" data-bs-toggle=""></a>
-                    <div class="">
-                        <a href="" class="dropdown-item"></a>
-                        <a href="" class="dropdown-item"></a>
-                    </div>
-                </div>
-                <a href="" class="nav-item nav-link"></a>
-            </div>
-        </div>
-    </nav>
+    <!-- Floating Back Button -->
+    <button onclick="window.history.back();" class="floating-back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </button>
 
-    <!-- Artist Verification Section Start -->
-    <div class="container-xxl py-5 verification-section">
+    <!-- Verification Header -->
+    <div class="verification-header text-center animate__animated animate__fadeIn">
         <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h2 class="mb-4">Artist Verification</h2>
-                <p class="mb-5">Complete the form below to verify your identity and authenticate your artwork.</p>
+            <h2><i class="fas fa-certificate me-2"></i> Artist Verification</h2>
+            <p>Complete your verification to authenticate your artwork and gain access to exclusive artist features on Creative Showcase.</p>
+        </div>
+    </div>
+
+    <!-- Verification Steps -->
+    <div class="container verification-container">
+        <div class="verification-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <div class="step-label">Basic Info</div>
             </div>
-
-            <div class="row justify-content-center wow fadeInUp" data-wow-delay="0.3s">
-                <div class="col-lg-8">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }}">{{ message }}</div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
-
-                    <form action="{{ url_for('artist_verification', username=username) }}" method="POST" enctype="multipart/form-data">
-                        <!-- Artist Information -->
-                        <div class="form-group mb-4">
-                            <label for="artistType" class="form-label">Artist Type:</label>
-                            <select id="artistType" name="artistType" class="form-control" required>
-                                <option value="">Select Artist Type</option>
-                                <option value="Painter">Painter</option>
-                                <option value="Photographer">Photographer</option>
-                                <option value="Sculptor">Sculptor</option>
-                                <option value="Digital Artist">Digital Artist</option>
-                                <option value="Musician">Musician</option>
-                                <option value="Writer">Writer</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label for="artworkDescription" class="form-label">Artwork Type Description:</label>
-                            <textarea id="artworkDescription" name="artworkDescription" class="form-control" rows="4" placeholder="Describe your artwork in detail" required></textarea>
-                        </div>
-
-                        <!-- Artwork Provenance -->
-                        <div class="form-group mb-4">
-                            <label for="artworkProvenance" class="form-label">Artwork Provenance:</label>
-                            <textarea id="artworkProvenance" name="artworkProvenance" class="form-control" rows="4" placeholder="Provide the history and origin of your artwork" required></textarea>
-                        </div>
-
-                        <!-- Upload Artwork Images -->
-                        <div class="form-group mb-4">
-                            <label for="artworkImages" class="form-label">Upload Artwork Sample Images:</label>
-                            <input type="file" id="artworkImages" name="artworkImages" class="form-control" accept="image/*" multiple required>
-                            <small class="form-text text-muted">Upload high-quality images of your artwork (max 5 images).</small>
-                        </div>
-
-                        <!-- Certificate of Authenticity -->
-                        <div class="form-group mb-4">
-                            <label for="certificateOfAuthenticity" class="form-label">Certificate of Authenticity (COA):</label>
-                            <input type="file" id="certificateOfAuthenticity" name="certificateOfAuthenticity" class="form-control" accept=".pdf,.doc,.docx" required>
-                            <small class="form-text text-muted">Upload a PDF or Word document.</small>
-                        </div>
-
-                        <!-- Social Media Links -->
-                        <div class="form-group mb-4">
-                            <label for="socialMediaLinks" class="form-label">Social Media Links:</label>
-                            <input type="text" id="socialMediaLinks" name="socialMediaLinks" class="form-control" placeholder="Enter links to your social media profiles (e.g., Instagram, Twitter)">
-                        </div>
-
-                        <!-- Artwork Tags -->
-                        <div class="form-group mb-4">
-                            <label for="artworkTags" class="form-label">Artwork Tags:</label>
-                            <input type="text" id="artworkTags" name="artworkTags" class="form-control" placeholder="Enter tags or keywords related to your artwork (e.g., abstract, modern, portrait)">
-                        </div>
-
-                        <!-- Security Questions -->
-                        <div class="form-group mb-4">
-                            <label class="form-label">Security Question 1: What is the name of your first school?</label>
-                            <input type="text" name="securityAnswer1" class="form-control" placeholder="Enter your answer" required>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label class="form-label">Security Question 2: What is your favorite artist or artwork?</label>
-                            <input type="text" name="securityAnswer2" class="form-control" placeholder="Enter your answer" required>
-                        </div>
-
-                        <!-- Terms and Conditions -->
-                        <div class="terms-section mb-4">
-                            <h4 class="mb-3">Terms and Conditions</h4>
-                            <p>By submitting this form, you agree to the following terms:</p>
-                            <ul>
-                                <li>You certify that all information provided is accurate and truthful.</li>
-                                <li>You grant Creative Showcase the right to verify your identity and artwork authenticity.</li>
-                                <li>You agree to comply with all platform rules and guidelines.</li>
-                                <li>Any false information may result in account suspension or legal action.</li>
-                            </ul>
-                            <div class="form-check">
-                                <input type="checkbox" id="agreeTerms" name="agreeTerms" class="form-check-input" required>
-                                <label for="agreeTerms" class="form-check-label">I agree to the terms and conditions.</label>
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="form-group text-center">
-                            <button type="submit" class="btn btn-primary py-3 px-5">Submit Verification</button>
-                        </div>
-                    </form>
-                </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-label">Artwork Details</div>
             </div>
-
-            <!-- Verification Status -->
-            <div class="verification-status mt-5 wow fadeInUp" data-wow-delay="0.4s">
-                <h4 class="mb-4">Verification Status</h4>
-                <div class="alert alert-info">
-                    Your verification is currently <strong>pending</strong>. We will notify you once it is complete.
-                </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-label">Documents</div>
             </div>
-
-            <!-- FAQ Section -->
-            <div class="faq-section mt-5 wow fadeInUp" data-wow-delay="0.5s">
-                <h4 class="mb-4">Frequently Asked Questions</h4>
-                <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingOne">
-                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                How long does verification take?
-                            </button>
-                        </h2>
-                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                Verification typically takes 3-5 business days. We will notify you via email once it is complete.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingTwo">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                What documents are required for verification?
-                            </button>
-                        </h2>
-                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                You need to provide high-quality images of your artwork and a Certificate of Authenticity (COA).
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Security Features Section -->
-            <div class="security-features mt-5 wow fadeInUp" data-wow-delay="0.6s">
-                <h4 class="mb-4">Security Features</h4>
-                <p>We take your security seriously. Here are the measures we use to protect your information:</p>
-                <ul>
-                    <li><strong>Encryption:</strong> All data is encrypted during transmission and storage.</li>
-                    <li><strong>Two-Factor Authentication (2FA):</strong> Optional 2FA for added account security.</li>
-                    <li><strong>Secure File Uploads:</strong> Artwork images are stored securely and cannot be accessed by unauthorized users.</li>
-                    <li><strong>Regular Audits:</strong> Our systems undergo regular security audits to ensure compliance with industry standards.</li>
-                </ul>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-label">Review</div>
             </div>
         </div>
     </div>
-    <!-- Artist Verification Section End -->
 
+    <!-- Main Verification Form -->
+    <div class="container verification-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Gallery</h4>
-                    <div class="row g-2 pt-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="copyright">
+        <form action="{{ url_for('artist_verification', username=username) }}" method="POST" enctype="multipart/form-data" class="animate__animated animate__fadeInUp">
+            <div class="verification-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-user-circle me-2"></i>Artist Information</h4>
+                
                 <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
+                    <div class="col-md-6 mb-3">
+                        <label for="artistType" class="form-label">Artist Type</label>
+                        <select id="artistType" name="artistType" class="form-select" required>
+                            <option value="">Select your primary medium</option>
+                            <option value="Painter">Painter</option>
+                            <option value="Photographer">Photographer</option>
+                            <option value="Sculptor">Sculptor</option>
+                            <option value="Digital Artist">Digital Artist</option>
+                            <option value="Musician">Musician</option>
+                            <option value="Writer">Writer</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FQAs</a>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label for="yearsActive" class="form-label">Years Active</label>
+                        <input type="number" id="yearsActive" name="yearsActive" class="form-control" placeholder="How many years have you been creating?" min="0">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="artworkDescription" class="form-label">Artwork Style Description</label>
+                    <textarea id="artworkDescription" name="artworkDescription" class="form-control" rows="4" placeholder="Describe your artistic style, techniques, and themes you explore..." required></textarea>
+                    <small class="text-muted">This helps us understand and categorize your work better.</small>
+                </div>
+            </div>
+
+            <div class="verification-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-palette me-2"></i>Artwork Details</h4>
+                
+                <div class="mb-3">
+                    <label for="artworkProvenance" class="form-label">Artwork Provenance</label>
+                    <textarea id="artworkProvenance" name="artworkProvenance" class="form-control" rows="4" placeholder="Provide the history and origin of your artwork, including any exhibitions or publications..." required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="artworkTags" class="form-label">Artwork Tags</label>
+                    <input type="text" id="artworkTags" name="artworkTags" class="form-control" placeholder="Enter tags or keywords related to your artwork (e.g., abstract, modern, portrait)">
+                    <small class="text-muted">Separate tags with commas. These help collectors discover your work.</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Social Media Links</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                        <input type="text" class="form-control" placeholder="Instagram profile" name="instagram">
+                    </div>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text"><i class="fab fa-twitter"></i></span>
+                        <input type="text" class="form-control" placeholder="Twitter profile" name="twitter">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                        <input type="text" class="form-control" placeholder="Website or portfolio" name="website">
+                    </div>
+                </div>
+            </div>
+
+            <div class="verification-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-file-upload me-2"></i>Document Upload</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Artwork Sample Images</label>
+                        <div class="file-upload">
+                            <div class="file-upload-btn">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2" style="color: var(--primary-color);"></i>
+                                <p>Click to upload artwork images</p>
+                                <p class="small text-muted">JPEG or PNG (Max 5MB each)</p>
+                                <div id="file-count" class="small text-primary" style="display: none;"></div>
+                            </div>
+                            <input type="file" id="artworkImages" name="artworkImages" class="file-upload-input" accept="image/*" multiple required>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Certificate of Authenticity</label>
+                        <div class="file-upload">
+                            <div class="file-upload-btn">
+                                <i class="fas fa-file-pdf fa-2x mb-2" style="color: var(--primary-color);"></i>
+                                <p>Click to upload COA</p>
+                                <p class="small text-muted">PDF or DOCX (Max 10MB)</p>
+                            </div>
+                            <input type="file" id="certificateOfAuthenticity" name="certificateOfAuthenticity" class="file-upload-input" accept=".pdf,.doc,.docx" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Additional Supporting Documents (Optional)</label>
+                    <div class="file-upload">
+                        <div class="file-upload-btn">
+                            <i class="fas fa-file-alt fa-2x mb-2" style="color: var(--primary-color);"></i>
+                            <p>Click to upload additional files</p>
+                            <p class="small text-muted">PDF, DOCX, or images (Max 10MB each)</p>
+                        </div>
+                        <input type="file" id="additionalDocs" name="additionalDocs" class="file-upload-input" multiple>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verification-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-shield-alt me-2"></i>Security Verification</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Security Question 1</label>
+                        <select class="form-select mb-2" name="securityQuestion1">
+                            <option value="firstSchool">What is the name of your first school?</option>
+                            <option value="favoriteArtist">Who is your favorite artist?</option>
+                            <option value="birthCity">In what city were you born?</option>
+                            <option value="firstPet">What was your first pet's name?</option>
+                        </select>
+                        <input type="text" name="securityAnswer1" class="form-control" placeholder="Your answer" required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Security Question 2</label>
+                        <select class="form-select mb-2" name="securityQuestion2">
+                            <option value="favoriteArtwork">What is your favorite artwork you've created?</option>
+                            <option value="motherMaiden">What is your mother's maiden name?</option>
+                            <option value="childhoodFriend">What was your childhood friend's name?</option>
+                            <option value="firstExhibition">Where was your first exhibition?</option>
+                        </select>
+                        <input type="text" name="securityAnswer2" class="form-control" placeholder="Your answer" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verification-card mb-4">
+                <h4 class="mb-4"><i class="fas fa-file-contract me-2"></i>Terms & Conditions</h4>
+                
+                <div class="terms-section mb-4">
+                    <p>By submitting this verification request, you agree to the following terms:</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>You certify that all information provided is accurate and truthful.</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>You grant Creative Showcase the right to verify your identity and artwork authenticity.</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>You agree to comply with all platform rules and community guidelines.</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Any false information may result in account suspension or legal action.</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>You understand that verification does not guarantee sales or representation.</li>
+                    </ul>
+                    
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                            I have read and agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                        </label>
+                    </div>
+                    
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="agreeMarketing" name="agreeMarketing">
+                        <label class="form-check-label" for="agreeMarketing">
+                            I agree to receive occasional emails about platform updates and opportunities
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-verify">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Verification Request
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Verification Benefits -->
+        <div class="verification-card mb-4">
+            <h4 class="mb-4"><i class="fas fa-star me-2"></i>Benefits of Verification</h4>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Verified Badge</h5>
+                            <p class="mb-0">Receive a verification badge on your profile to establish credibility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-chart-line fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Increased Visibility</h5>
+                            <p class="mb-0">Your work will be prioritized in search results and recommendations.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 text-primary">
+                            <i class="fas fa-gem fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5>Exclusive Features</h5>
+                            <p class="mb-0">Access to premium tools and early features before general release.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Footer End -->
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <!-- FAQ Section -->
+        <div class="verification-card mb-4">
+            <h4 class="mb-4"><i class="fas fa-question-circle me-2"></i>Frequently Asked Questions</h4>
+            
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item border-0 mb-2">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                            How long does verification take?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Verification typically takes 3-5 business days. During peak times, it may take up to 7 days. We'll notify you via email once your verification is complete.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item border-0 mb-2">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            What documents are required?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            You'll need to provide high-quality images of your artwork and a Certificate of Authenticity (COA) if available. Additional documentation like exhibition records or publications can strengthen your application.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Can I edit my information after verification?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Yes, you can update most information after verification. However, significant changes to your artist identity may require re-verification to maintain your verified status.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Features -->
+        <div class="security-features">
+            <h4><i class="fas fa-lock me-2"></i>Your Security is Our Priority</h4>
+            <p>We use industry-standard measures to protect your information:</p>
+            <ul>
+                <li><i class="fas fa-key"></i> <strong>End-to-End Encryption:</strong> All your data is encrypted both in transit and at rest.</li>
+                <li><i class="fas fa-shield-alt"></i> <strong>Secure Storage:</strong> Uploaded documents are stored securely with limited access.</li>
+                <li><i class="fas fa-user-shield"></i> <strong>Privacy Protection:</strong> We never share your personal information without your consent.</li>
+                <li><i class="fas fa-clock"></i> <strong>Automatic Deletion:</strong> Verification documents are automatically deleted after 90 days.</li>
+            </ul>
+        </div>
+    </div>
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
     <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
 
     <!-- Template Javascript -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Dark Mode Toggle Script -->
+    <!-- Custom Scripts -->
     <script>
-        // Dark Mode Toggle Functionality
+        // File upload display
+        document.getElementById('artworkImages').addEventListener('change', function(e) {
+            const fileCount = this.files.length;
+            const fileCountDisplay = document.getElementById('file-count');
+            
+            if (fileCount > 0) {
+                fileCountDisplay.textContent = fileCount + ' file(s) selected';
+                fileCountDisplay.style.display = 'block';
+            } else {
+                fileCountDisplay.style.display = 'none';
+            }
+        });
+        
+        // Dark mode toggle
         const darkModeToggle = document.createElement('button');
         darkModeToggle.id = 'darkModeToggle';
-        darkModeToggle.className = 'btn btn-secondary position-fixed bottom-0 end-0 m-3';
-        darkModeToggle.textContent = '🌙';
+        darkModeToggle.className = 'btn btn-primary position-fixed bottom-0 end-0 m-3 rounded-circle';
+        darkModeToggle.style.width = '50px';
+        darkModeToggle.style.height = '50px';
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         document.body.appendChild(darkModeToggle);
-
+        
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
-            darkModeToggle.textContent = '☀️';
+            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         }
-
+        
         darkModeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             if (document.body.classList.contains('dark-mode')) {
                 localStorage.setItem('darkMode', 'true');
-                darkModeToggle.textContent = '☀️';
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             } else {
                 localStorage.setItem('darkMode', 'false');
-                darkModeToggle.textContent = '🌙';
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
+        });
+        
+        // Spinner removal
+        window.addEventListener('load', function() {
+            const spinner = document.getElementById('spinner');
+            spinner.style.transition = 'opacity 0.5s';
+            spinner.style.opacity = '0';
+            setTimeout(() => {
+                spinner.style.display = 'none';
+            }, 500);
+        });
+        
+        // Form step animation
+        const formSections = document.querySelectorAll('.verification-card');
+        formSections.forEach((section, index) => {
+            section.style.animationDelay = `${index * 0.1}s`;
         });
     </script>
 </body>
-
 </html>
