@@ -476,7 +476,7 @@ CREATE TABLE `system_settings` (
 --
 
 INSERT INTO `system_settings` (`id`, `setting_name`, `setting_value`, `category`) VALUES
-(1, 'site_name', 'Creative Showcase', 'general'),
+(1, 'site_name', 'Africcase', 'general'),
 (2, 'site_url', 'http://localhost:5000', 'general'),
 (3, 'timezone', 'UTC', 'general'),
 (4, 'date_format', 'YYYY-MM-DD', 'general'),
@@ -500,7 +500,7 @@ INSERT INTO `system_settings` (`id`, `setting_name`, `setting_value`, `category`
 (22, 'smtp_port', '587', 'email'),
 (23, 'smtp_ssl', '1', 'email'),
 (24, 'from_email', 'noreply@creativeshowcase.com', 'email'),
-(25, 'from_name', 'Creative Showcase', 'email');
+(25, 'from_name', 'Africcase', 'email');
 
 -- --------------------------------------------------------
 

@@ -60,10 +60,7 @@ TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
-<<<<<<< HEAD
 PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
-=======
->>>>>>> f4f833f65c19938197557b4ec86f2cf306144c2e
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -715,6 +712,7 @@ def virtual_gallery():
         
         return render_template('gallery.html', 
                              artworks=artworks,
+                             user =current_user,
                              username=username,
                              user_data=user_data,
                              current_year=datetime.now().year)
@@ -847,7 +845,8 @@ def sketchboard():
         conn.close()
         
         return render_template('sketchboard.html', 
-                             user_data=user_data, 
+                             user_data=user_data,
+                             user = current_user, 
                              leaderboard_data=leaderboard_data, 
                              challenges=challenges)
     except mysql.connector.Error as e:
@@ -1271,12 +1270,12 @@ def upload_artwork():
             cursor.close()
             conn.close()
 
-    return render_template("upload_artwork.html")
+    return render_template("upload_artwork.html", user=current_user)
 
 @app.route('/admin/review')
 @login_required
 def admin_review():
-    return render_template("admin_review.html")
+    return render_template("admin_review.html",user=current_user)
 
 @app.route('/api/artworks_needing_review')
 @login_required
@@ -1794,7 +1793,7 @@ def generate_receipt_image(receipt):
         text_font = ImageFont.load_default()
     
     # Draw header
-    draw.text((width//2, 50), "CREATIVE SHOWCASE", fill=(6, 187, 204), font=title_font, anchor="mm")
+    draw.text((width//2, 50), "Africcase", fill=(6, 187, 204), font=title_font, anchor="mm")
     draw.text((width//2, 90), "RECEIPT", fill=(0, 0, 0), font=header_font, anchor="mm")
     draw.text((width//2, 130), f"#{receipt['receipt_number']}", fill=(0, 0, 0), font=header_font, anchor="mm")
     
@@ -2290,7 +2289,7 @@ def artist_profiles():
         cursor.close()
         conn.close()
         
-        return render_template('artist_profiles.html', artists=artists)
+        return render_template('artist_profiles.html', artists=artists,user=current_user)
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -2592,8 +2591,4 @@ def create_room():
 
 if __name__ == "__main__":
     load_model()  # Load chatbot model
-<<<<<<< HEAD
     socketio.run(app, debug=True)
-=======
-    socketio.run(app, debug=True)
->>>>>>> f4f833f65c19938197557b4ec86f2cf306144c2e

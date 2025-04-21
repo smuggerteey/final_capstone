@@ -1,7 +1,7 @@
-# Creative Showcase Platform
+# Africcase Platform
 
 ## Overview
-The **Creative Showcase Platform** is a web application designed to empower student artists by providing a digital space to exhibit, collaborate, and sell their artistic works. Built using Flask, this platform integrates key functionalities such as secure user authentication, an interactive marketplace, real-time collaboration, and blockchain-based artwork verification.
+The **Africcase Platform** is a web application designed to empower student artists by providing a digital space to exhibit, collaborate, and sell their artistic works. Built using Flask, this platform integrates key functionalities such as secure user authentication, an interactive marketplace, real-time collaboration, and blockchain-based artwork verification.
 
 ## Features
 - **User Authentication**: Secure registration and login using Flask-Login.

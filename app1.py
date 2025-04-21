@@ -679,7 +679,7 @@ def gallery():
         cursor.close()
         conn.close()
         
-        return render_template('gallery.html', artworks=artworks)
+        return render_template('gallery.html', artworks=artworks, user=current_user)
     
     except Exception as e:
         return f"Error fetching artworks: {str(e)}", 500
