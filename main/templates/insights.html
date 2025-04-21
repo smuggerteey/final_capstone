@@ -37,7 +37,7 @@
 
     <style>
         :root {
-            --primary-color: #4361ee;
+            --primary-color: #06BBCC;
             --secondary-color: #3f37c9;
             --accent-color: #4cc9f0;
             --light-color: #f8f9fa;
@@ -46,7 +46,7 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7ff;
+            background-color: #3f7fa4;
             color: var(--dark-color);
         }
         
@@ -87,7 +87,7 @@
         
         h1 {
             font-weight: 700;
-            color: var(--primary-color);
+            color: #02131d;
             position: relative;
             display: inline-block;
         }
@@ -269,23 +269,38 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fas fa-palette me-3"></i>Creative Showcase</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </nav>
+<!-- Floating Back Button (Horizontally Ovular) -->
+<a href="javascript:void(0);" 
+   onclick="window.history.back();"
+   class="floating-back-btn" 
+   style="position: absolute; 
+          top: 15px; 
+          left: 35px; 
+          background-color: #d9e3e4; 
+          color: rgb(67, 210, 210); 
+          border-radius: 50px;
+          padding: 8px 20px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+          text-decoration: none; 
+          font-size: 16px; 
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: auto;
+          min-width: 40px;
+          height: 40px;
+          cursor: pointer;">
+    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+    <span style="white-space: nowrap;"></span>
+</a>
 
     <!-- Insights & Analytics Section -->
     <div class="container-xxl py-5 position-relative">
         <div class="container position-relative">
             <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                 <h1 class="mb-4 animate__animated animate__fadeInDown">Insights & Analytics <span class="d-inline-block">📊</span></h1>
-                <p class="mb-5 lead text-muted">Discover how your artworks are performing with these beautiful visualizations</p>
+                <p class="mb-5 lead" style="color: rgb(0, 12, 12);">Discover how your artworks are performing with these beautiful visualizations</p>
             </div>
             
             <!-- Stats Section -->
@@ -405,7 +420,7 @@
                             </div>
                         </div>
                         <div class="card-footer bg-transparent text-center">
-                            <a href="{{ url_for('marketplace') }}" class="btn btn-sm btn-outline-primary">View All Submissions</a>
+                            <a href="{{ url_for('artwork_management') }}" class="btn btn-sm btn-outline-primary">View All Submissions</a>
                         </div>
                     </div>
                 </div>
@@ -509,9 +524,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Back to Top Button -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top animate__animated animate__fadeInUp"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
