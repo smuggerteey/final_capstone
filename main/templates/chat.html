@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,29 +33,32 @@
     <link href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.12.0/dist/index.min.css" rel="stylesheet">
 
     <!-- Highlight.js for code syntax highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/github.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 
     <style>
         :root {
             --primary-color: #06BBCC;
-            --secondary-color: #06BBCC;
-            --dark-color: #2c3e50;
+            --secondary-color: #86b3ea;
+            --dark-color: #1a1a2e;
             --light-color: #f8f9fa;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
+            --success-color: #00c897;
+            --danger-color: #ff5d5d;
             --warning-color: #ffc107;
             --info-color: #17a2b8;
             --user-message-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             --bot-message-bg: #ffffff;
             --chat-bg: #f5f7fb;
-            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
+            --chat-pattern: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.03) 1px, transparent 0);
             --text-color: #333333;
             --timestamp-color: #999999;
+            --glass-effect: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--chat-bg);
+            font-family: 'Space Grotesk', 'Poppins', sans-serif;
+            background-color:  #3f7fa4;
             color: var(--text-color);
         }
 
@@ -62,14 +66,15 @@
         .chat-container {
             max-width: 900px;
             margin: 0 auto;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(110, 91, 255, 0.15);
             overflow: hidden;
             background: white;
             height: 85vh;
             display: flex;
             flex-direction: column;
             position: relative;
+            border: 1px solid rgba(110, 91, 255, 0.1);
         }
 
         /* Chat header */
@@ -82,21 +87,26 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .chat-header h1 {
             margin: 0;
             font-size: 1.8rem;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
+            letter-spacing: -0.5px;
         }
 
         .chat-header p {
-            margin: 5px 0 0;
+            margin: 8px 0 0;
             opacity: 0.9;
             font-size: 0.95rem;
+            font-weight: 300;
         }
 
         .status-indicator {
@@ -104,21 +114,26 @@
             align-items: center;
             gap: 5px;
             font-size: 0.8rem;
-            margin-top: 5px;
+            margin-top: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #4caf50;
+            background-color: #4cff8f;
             animation: pulse 2s infinite;
+            box-shadow: 0 0 8px #4cff8f;
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Chatbox */
@@ -135,17 +150,18 @@
         /* Messages */
         .message {
             max-width: 80%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             border-radius: 18px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             position: relative;
             clear: both;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             animation: fadeIn 0.3s ease-out;
             opacity: 0;
             transform: translateY(10px);
             animation-fill-mode: forwards;
+            line-height: 1.6;
         }
 
         @keyframes fadeIn {
@@ -153,8 +169,8 @@
         }
 
         .message:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .user-message {
@@ -163,6 +179,7 @@
             float: right;
             margin-right: 10px;
             border-bottom-right-radius: 5px;
+            box-shadow: 0 4px 15px rgba(110, 91, 255, 0.3);
         }
 
         .bot-message {
@@ -171,18 +188,20 @@
             float: left;
             margin-left: 10px;
             border-bottom-left-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
         .message-username {
             font-weight: 600;
             font-size: 0.85rem;
-            margin-bottom: 3px;
+            margin-bottom: 6px;
             display: block;
+            letter-spacing: -0.2px;
         }
 
         .user-message .message-username {
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .bot-message .message-username {
@@ -191,32 +210,37 @@
 
         .message-content {
             word-wrap: break-word;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .message-content pre {
-            background-color: rgba(0, 0, 0, 0.05);
-            padding: 12px;
-            border-radius: 6px;
+            background-color: #1e1e2e;
+            padding: 14px;
+            border-radius: 8px;
             overflow-x: auto;
             font-size: 0.9rem;
-            margin: 10px 0;
+            margin: 12px 0;
+            color: #f8f8f2;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+            font-family: 'Fira Code', monospace;
         }
 
         .message-content code {
-            font-family: 'Courier New', monospace;
-            background-color: rgba(0, 0, 0, 0.05);
-            padding: 2px 4px;
-            border-radius: 3px;
+            font-family: 'Fira Code', monospace;
+            background-color: rgba(110, 91, 255, 0.1);
+            padding: 3px 6px;
+            border-radius: 4px;
             font-size: 0.9rem;
+            color: var(--primary-color);
         }
 
         .timestamp {
             font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.7);
             display: block;
-            margin-top: 5px;
+            margin-top: 8px;
             text-align: right;
+            font-weight: 300;
         }
 
         .bot-message .timestamp {
@@ -226,12 +250,13 @@
         /* Typing indicator */
         .typing-indicator {
             display: inline-block;
-            padding: 10px 15px;
+            padding: 12px 18px;
             background-color: var(--bot-message-bg);
             border-radius: 18px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             margin-left: 10px;
             margin-bottom: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
         .typing-dots {
@@ -243,11 +268,12 @@
 
         .typing-dots span {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: var(--timestamp-color);
+            width: 10px;
+            height: 10px;
+            background: var(--primary-color);
             border-radius: 50%;
             animation: typing 1.4s infinite ease-in-out;
+            box-shadow: 0 0 8px rgba(110, 91, 255, 0.3);
         }
 
         .typing-dots span:nth-child(1) {
@@ -256,50 +282,54 @@
         }
 
         .typing-dots span:nth-child(2) {
-            left: 15px;
+            left: 20px;
             animation-delay: 0.2s;
         }
 
         .typing-dots span:nth-child(3) {
-            left: 30px;
+            left: 40px;
             animation-delay: 0.4s;
         }
 
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
+            30% { transform: translateY(-8px); }
         }
 
         /* Message input area */
         .message-area {
             padding: 15px;
             background-color: white;
-            border-top: 1px solid #eee;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             position: relative;
+            backdrop-filter: blur(5px);
         }
 
         .message-input {
             flex: 1;
-            border: 1px solid #ddd;
+            border: 1px solid rgba(110, 91, 255, 0.2);
             border-radius: 25px;
-            padding: 12px 20px;
+            padding: 14px 20px;
             outline: none;
             transition: all 0.3s ease;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
             resize: none;
             max-height: 120px;
             overflow-y: auto;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            box-shadow: 0 2px 10px rgba(110, 91, 255, 0.05);
         }
 
         .message-input:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+            box-shadow: 0 0 0 3px rgba(110, 91, 255, 0.15);
         }
 
         .send-button {
-            margin-left: 10px;
+            margin-left: 12px;
             border: none;
             width: 50px;
             height: 50px;
@@ -312,11 +342,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
             flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(110, 91, 255, 0.3);
         }
 
         .send-button:hover {
             transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+            box-shadow: 0 8px 20px rgba(110, 91, 255, 0.4);
         }
 
         .send-button:active {
@@ -328,64 +359,69 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            background: #ccc;
         }
 
         /* Chat controls */
         .chat-controls {
             display: flex;
-            padding: 10px 15px;
+            padding: 12px 15px;
             background-color: white;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             gap: 10px;
+            backdrop-filter: blur(5px);
         }
 
         .chat-control-btn {
-            background: none;
+            background: rgba(110, 91, 255, 0.05);
             border: none;
             color: #666;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
 
         .chat-control-btn:hover {
             color: var(--primary-color);
             transform: scale(1.1);
-            background-color: rgba(110, 142, 251, 0.1);
+            background-color: rgba(110, 91, 255, 0.1);
         }
 
         .chat-control-btn.active {
             color: var(--primary-color);
-            background-color: rgba(110, 142, 251, 0.2);
+            background-color: rgba(110, 91, 255, 0.2);
         }
 
         /* Emoji picker */
         .emoji-picker-container {
             position: absolute;
-            bottom: 70px;
+            bottom: 80px;
             right: 20px;
             z-index: 1000;
             display: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
             overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         /* Loading spinner */
         #spinner {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 9999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 15px;
+            backdrop-filter: blur(5px);
         }
 
         .spinner-text {
@@ -396,13 +432,21 @@
             max-width: 80%;
         }
 
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.25em;
+            border-color: var(--primary-color);
+            border-right-color: transparent;
+        }
+
         /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: rgba(110, 91, 255, 0.05);
             border-radius: 10px;
         }
 
@@ -415,73 +459,70 @@
             background: var(--secondary-color);
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .chat-container {
-                height: 90vh;
-                border-radius: 0;
-            }
-            
-            .message {
-                max-width: 90%;
-            }
-            
-            .chat-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .emoji-picker-container {
-                width: 90%;
-                right: 5%;
-                bottom: 80px;
-            }
-        }
-
         /* Welcome message */
         .welcome-message {
             text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background-color: rgba(110, 142, 251, 0.1);
-            border-radius: 10px;
+            margin: 20px 0 30px;
+            padding: 20px;
+            background-color: rgba(110, 91, 255, 0.05);
+            border-radius: 12px;
             border-left: 4px solid var(--primary-color);
             animation: fadeIn 0.5s ease-out forwards;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(110, 91, 255, 0.1);
         }
 
         .welcome-message h4 {
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .welcome-message p {
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .welcome-message ul {
+            text-align: left;
+            display: inline-block;
+            margin: 0 auto 15px;
+            padding-left: 20px;
         }
 
         /* Suggested questions */
         .suggested-questions {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             margin: 15px 0;
             justify-content: center;
         }
 
         .suggested-question {
-            background-color: rgba(110, 142, 251, 0.1);
-            border: 1px solid rgba(110, 142, 251, 0.3);
+            background-color: rgba(110, 91, 255, 0.1);
+            border: 1px solid rgba(110, 91, 255, 0.2);
             border-radius: 20px;
-            padding: 8px 15px;
+            padding: 10px 18px;
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            color: var(--text-color);
+            color: var(--primary-color);
+            font-weight: 500;
+            backdrop-filter: blur(5px);
         }
 
         .suggested-question:hover {
-            background-color: rgba(110, 142, 251, 0.2);
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(110, 142, 251, 0.2);
+            background-color: rgba(110, 91, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(110, 91, 255, 0.2);
         }
 
         /* Markdown styling */
         .message-content strong {
-            font-weight: 600;
+            font-weight: 700;
+            color: inherit;
         }
 
         .message-content em {
@@ -490,78 +531,96 @@
 
         .message-content ul, 
         .message-content ol {
-            padding-left: 20px;
-            margin: 10px 0;
+            padding-left: 22px;
+            margin: 12px 0;
         }
 
         .message-content li {
-            margin-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .message-content blockquote {
             border-left: 3px solid var(--primary-color);
-            padding-left: 15px;
-            margin: 10px 0;
+            padding-left: 16px;
+            margin: 12px 0;
             color: var(--timestamp-color);
             font-style: italic;
+            background: rgba(110, 91, 255, 0.03);
+            padding: 10px 16px;
+            border-radius: 0 8px 8px 0;
         }
 
         .message-content a {
             color: var(--primary-color);
             text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted var(--primary-color);
         }
 
         .message-content a:hover {
-            text-decoration: underline;
+            text-decoration: none;
+            border-bottom: 1px solid var(--primary-color);
         }
 
         .message-content table {
             border-collapse: collapse;
             width: 100%;
-            margin: 10px 0;
+            margin: 12px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .message-content th, 
         .message-content td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
         }
 
         .message-content th {
-            background-color: rgba(110, 142, 251, 0.1);
+            background-color: rgba(110, 91, 255, 0.1);
+            font-weight: 600;
         }
 
         /* Image styling */
         .message-content img {
             max-width: 100%;
-            border-radius: 8px;
-            margin: 10px 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 12px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         /* Message actions */
         .message-actions {
             display: flex;
-            gap: 5px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 10px;
             justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
         }
 
         .message-action {
-            background: none;
+            background: rgba(0, 0, 0, 0.05);
             border: none;
             color: var(--timestamp-color);
             font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            padding: 2px 5px;
-            border-radius: 3px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .message-action:hover {
             color: var(--primary-color);
-            background-color: rgba(110, 142, 251, 0.1);
+            background-color: rgba(110, 91, 255, 0.1);
         }
 
         /* Tooltip */
@@ -573,7 +632,7 @@
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 120px;
-            background-color: #555;
+            background-color: var(--dark-color);
             color: #fff;
             text-align: center;
             border-radius: 6px;
@@ -586,6 +645,10 @@
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 0.8rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+            backdrop-filter: blur(5px);
+            background: rgba(26, 26, 46, 0.9);
         }
 
         .tooltip:hover .tooltiptext {
@@ -608,6 +671,7 @@
             justify-content: center;
             font-size: 0.6rem;
             font-weight: bold;
+            box-shadow: 0 0 8px var(--danger-color);
         }
 
         /* Loading dots for bot response */
@@ -620,11 +684,12 @@
 
         .loading-dots span {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: var(--primary-color);
             border-radius: 50%;
             animation: loading 1.4s infinite ease-in-out;
+            box-shadow: 0 0 8px rgba(110, 91, 255, 0.3);
         }
 
         .loading-dots span:nth-child(1) {
@@ -644,29 +709,38 @@
 
         @keyframes loading {
             0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
-            30% { transform: translateY(-5px); opacity: 1; }
+            30% { transform: translateY(-8px); opacity: 1; }
         }
 
         /* Feedback buttons */
         .feedback-buttons {
             display: flex;
-            gap: 5px;
-            margin-top: 10px;
+            gap: 8px;
+            margin-top: 12px;
             justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .message:hover .feedback-buttons {
+            opacity: 1;
         }
 
         .feedback-btn {
             background: none;
             border: 1px solid #ddd;
             border-radius: 15px;
-            padding: 3px 8px;
-            font-size: 0.7rem;
+            padding: 6px 12px;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .feedback-btn:hover {
-            background-color: rgba(110, 142, 251, 0.1);
+            transform: translateY(-2px);
         }
 
         .feedback-btn.like {
@@ -674,16 +748,31 @@
             border-color: var(--success-color);
         }
 
+        .feedback-btn.like:hover {
+            background-color: rgba(0, 200, 151, 0.05);
+        }
+
         .feedback-btn.dislike {
             color: var(--danger-color);
             border-color: var(--danger-color);
         }
 
+        .feedback-btn.dislike:hover {
+            background-color: rgba(255, 93, 93, 0.05);
+        }
+
         /* Character counter */
         .character-counter {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: var(--timestamp-color);
-            margin-right: 10px;
+            margin-right: 12px;
+            font-weight: 400;
+            position: absolute;
+            left: 30px;
+            bottom: 28px;
+            background: white;
+            padding: 2px 8px;
+            border-radius: 10px;
         }
 
         .character-counter.warning {
@@ -693,49 +782,249 @@
         .character-counter.error {
             color: var(--danger-color);
         }
+
+        /* Gradient border effect */
+        .gradient-border {
+            position: relative;
+            border-radius: 20px;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+            border-radius: 22px;
+            opacity: 0.5;
+        }
+
+        /* Floating action button */
+        .floating-action-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(110, 91, 255, 0.3);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .floating-action-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(110, 91, 255, 0.4);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 90vh;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .chat-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .emoji-picker-container {
+                width: 90%;
+                right: 5%;
+                bottom: 80px;
+            }
+            
+            .floating-action-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        /* Floating back button */
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .floating-back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            color: var(--secondary-color);
+        }
+
+        /* Animated background elements */
+        .bg-circle {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(110, 91, 255, 0.05);
+            z-index: -1;
+        }
+
+        .bg-circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            left: -100px;
+        }
+
+        .bg-circle-2 {
+            width: 200px;
+            height: 200px;
+            bottom: -50px;
+            right: -50px;
+        }
+
+        /* Pulse animation for important elements */
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(110, 91, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(110, 91, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(110, 91, 255, 0); }
+        }
+
+        .pulse {
+            animation: pulse-glow 2s infinite;
+        }
+
+        /* Modern navbar */
+        .navbar {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+
+        /* Footer styling */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 50px;
+        }
+
+        .footer a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 
 <body>
+    <!-- Background elements -->
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+
     <!-- Spinner Start -->
-    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+    <div id="spinner" class="show position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border" role="status">
             <span class="sr-only">Loading...</span>
         </div>
         <div class="spinner-text">Loading your AI Assistant...</div>
     </div>
     <!-- Spinner End -->
 
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fas fa-robot me-3"></i>Creative AI Assistant</h2>
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="" class="nav-item nav-link active"></a>
-                <a href="" class="nav-item nav-link"></a>
-                </div>
-                <a href="" class="nav-item nav-link"></a>
-            </div>
-        </div>
-    </nav>
-    <!-- Navbar End -->
+<!-- Floating Back Button (Horizontally Ovular) -->
+<a href="javascript:void(0);" 
+   onclick="window.history.back();"
+   class="floating-back-btn" 
+   style="position: absolute; 
+          top: 15px; 
+          left: 35px; 
+          background-color: #d9e3e4; 
+          color: rgb(67, 210, 210); 
+          border-radius: 50px;
+          padding: 8px 20px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+          text-decoration: none; 
+          font-size: 16px; 
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: auto;
+          min-width: 40px;
+          height: 40px;
+          cursor: pointer;">
+    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+    <span style="white-space: nowrap;"></span>
+</a>
 
     <!-- Chat Container -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="chat-container">
+            <div class="chat-container gradient-border">
                 <!-- Header -->
                 <header class="chat-header">
-                    <h1><i class="fas fa-robot"></i> AI Assistant</h1>
-                    <p>Your smart assistant is here to help you with creative projects!</p>
+                    <h1><i class="fas fa-robot"></i> Creative AI Assistant</h1>
+                    <p>Your smart assistant for creative projects and beyond</p>
                     <div class="status-indicator">
                         <span class="status-dot"></span>
-                        <span>Online</span>
+                        <span>Online & Ready</span>
                     </div>
                 </header>
 
@@ -763,9 +1052,9 @@
                 <div class="message-area">
                     <span id="charCounter" class="character-counter">0/1000</span>
                     <textarea id="inputMessage" class="form-control message-input" 
-                           placeholder="Type your message..." aria-label="Chat input"
+                           placeholder="Ask me anything about creative projects..." aria-label="Chat input"
                            rows="1" oninput="adjustTextareaHeight(this); updateCharCounter(this)"></textarea>
-                    <button id="sendBtn" class="send-button" onclick="sendMessage()">
+                    <button id="sendBtn" class="send-button pulse" onclick="sendMessage()">
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
@@ -774,89 +1063,13 @@
                 <div class="emoji-picker-container" id="emoji-picker">
                     <emoji-picker></emoji-picker>
                 </div>
-
-                <!-- Back Button -->
-                <div class="text-center mt-4">
-                    <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
-                       class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-                    </a>
-                </div>
             </div>
         </div>
     </div>
     <!-- Chat Container End -->
 
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Gallery</h4>
-                    <div class="row g-2 pt-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="copyright">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FQAs</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-
     <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    <a href="#" class="back-to-top"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -953,11 +1166,13 @@
                     <span class="timestamp">${timestamp}</span>
                     <div class="message-actions">
                         <button class="message-action" onclick="copyToClipboard('${messageId}')" title="Copy">
-                            <i class="far fa-copy"></i>
+                            <i class="far fa-copy"></i> Copy
                         </button>
+                        ${className === 'user-message' ? `
                         <button class="message-action" onclick="editMessage('${messageId}')" title="Edit">
-                            <i class="far fa-edit"></i>
+                            <i class="far fa-edit"></i> Edit
                         </button>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -1017,12 +1232,24 @@
                             <span class="timestamp">${timestamp}</span>
                             <div class="message-actions">
                                 <button class="message-action" onclick="copyToClipboard('${msg.id}')" title="Copy">
-                                    <i class="far fa-copy"></i>
+                                    <i class="far fa-copy"></i> Copy
                                 </button>
+                                ${msg.type === 'user-message' ? `
                                 <button class="message-action" onclick="editMessage('${msg.id}')" title="Edit">
-                                    <i class="far fa-edit"></i>
+                                    <i class="far fa-edit"></i> Edit
+                                </button>
+                                ` : ''}
+                            </div>
+                            ${msg.type === 'bot-message' ? `
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn like" onclick="rateResponse(this, '${msg.id}', 'like')">
+                                    <i class="fas fa-thumbs-up"></i> Helpful
+                                </button>
+                                <button class="feedback-btn dislike" onclick="rateResponse(this, '${msg.id}', 'dislike')">
+                                    <i class="fas fa-thumbs-down"></i> Not Helpful
                                 </button>
                             </div>
+                            ` : ''}
                         `;
                         
                         chatbox.appendChild(messageDiv);
@@ -1044,20 +1271,20 @@
             // Show welcome message
             function showWelcomeMessage() {
                 const welcomeHtml = `
-                    <h4>Welcome to your AI Assistant!</h4>
-                    <p>I can help with:</p>
+                    <h4>Welcome to your Creative AI Assistant! ✨</h4>
+                    <p>I'm here to help you with all your creative projects, whether you're working on:</p>
                     <ul>
-                        <li>Art & design ideas 💡</li>
-                        <li>Writing suggestions ✍️</li>
-                        <li>Technical questions 💻</li>
-                        <li>And much more!</li>
+                        <li>Art & design concepts 🎨</li>
+                        <li>Writing projects ✍️</li>
+                        <li>Coding challenges 💻</li>
+                        <li>Creative block solutions 💡</li>
                     </ul>
-                    <p>Try asking:</p>
+                    <p>Try asking me something like:</p>
                     <div class="suggested-questions">
-                        <div class="suggested-question" onclick="insertQuestion(this)">How can I improve my artwork?</div>
+                        <div class="suggested-question" onclick="insertQuestion(this)">How can I improve my artwork composition?</div>
                         <div class="suggested-question" onclick="insertQuestion(this)">Suggest creative writing prompts</div>
                         <div class="suggested-question" onclick="insertQuestion(this)">Explain color theory basics</div>
-                        <div class="suggested-question" onclick="insertQuestion(this)">Help me with coding a website</div>
+                        <div class="suggested-question" onclick="insertQuestion(this)">Help me debug this Python code</div>
                     </div>
                 `;
                 
@@ -1068,8 +1295,8 @@
                 
                 // Also add a bot message
                 appendMessage(
-                    "AI Assistant", 
-                    "Hello! I'm your creative AI assistant. What would you like to explore today?",
+                    "Creative AI", 
+                    "Hello there! 👋 I'm your creative AI assistant, ready to help with art, writing, coding, and more. What creative project are you working on today?",
                     "bot-message"
                 );
             }
@@ -1082,9 +1309,9 @@
                 navigator.clipboard.writeText(messageContent).then(() => {
                     // Show temporary feedback
                     const copyBtn = messageDiv.querySelector('.fa-copy').parentNode;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                     setTimeout(() => {
-                        copyBtn.innerHTML = '<i class="far fa-copy"></i>';
+                        copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy';
                     }, 2000);
                 });
             };
@@ -1169,7 +1396,7 @@
                     
                     // Add AI bot's response to the chatbox
                     if (data.response) {
-                        appendMessage("AI Assistant", data.response, "bot-message");
+                        appendMessage("Creative AI", data.response, "bot-message");
                         
                         // Add feedback buttons
                         const lastMessage = chatbox.lastChild;
@@ -1185,12 +1412,12 @@
                         `;
                         lastMessage.appendChild(feedbackDiv);
                     } else {
-                        appendMessage("AI Assistant", "Sorry, I couldn't process your request. Please try again.", "bot-message");
+                        appendMessage("Creative AI", "Hmm, I'm having trouble with that request. Could you try rephrasing?", "bot-message");
                     }
                 } catch (error) {
                     console.error("Error:", error);
                     hideTypingIndicator();
-                    appendMessage("AI Assistant", "Error processing your message. Please try again.", "bot-message");
+                    appendMessage("Creative AI", "Oops! Something went wrong. Please try again in a moment.", "bot-message");
                 } finally {
                     isWaitingForResponse = false;
                     sendBtn.disabled = false;
@@ -1202,10 +1429,10 @@
                 // Visual feedback
                 if (rating === 'like') {
                     button.innerHTML = '<i class="fas fa-thumbs-up"></i> Thank you!';
-                    button.style.backgroundColor = 'rgba(40, 167, 69, 0.1)';
+                    button.style.backgroundColor = 'rgba(0, 200, 151, 0.1)';
                 } else {
                     button.innerHTML = '<i class="fas fa-thumbs-down"></i> Thanks for feedback';
-                    button.style.backgroundColor = 'rgba(220, 53, 69, 0.1)';
+                    button.style.backgroundColor = 'rgba(255, 93, 93, 0.1)';
                 }
                 
                 // Disable both buttons
@@ -1274,7 +1501,7 @@
                     // In a real app, you would send this to your backend
                     // For now, we'll just show a message that we received it
                     setTimeout(() => {
-                        appendMessage("AI Assistant", `I've received your ${file.type.startsWith('image/') ? 'image' : 'file'}! How can I help you with it?`, "bot-message");
+                        appendMessage("Creative AI", `I've received your ${file.type.startsWith('image/') ? 'image' : 'file'}! How can I help you with it?`, "bot-message");
                     }, 1000);
                 };
                 reader.readAsDataURL(file);

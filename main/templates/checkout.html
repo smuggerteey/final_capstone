@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
+    <title>Checkout | Creative Showcase</title>
 
     <!-- Favicon -->
     <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
@@ -11,179 +11,777 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Icon Font Stylesheet -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- Libraries Stylesheet -->
-    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
-    <!-- Customized Bootstrap Stylesheet -->
+    <!-- Custom Styles -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #24b6af;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #3f7fa4;
+        }
+        
+        .navbar {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            background: rgb(180, 185, 202) !important;
+        }
+        
+        .checkout-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            padding: 2.5rem;
+        }
+        
+        .artwork-card {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-checkout {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-checkout:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .btn-checkout:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .payment-method {
+            width: 60px;
+            height: 40px;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .payment-method img {
+            max-width: 80%;
+            max-height: 80%;
+        }
+        
+        .secure-checkout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .progress-steps:before {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e9ecef;
+            z-index: 1;
+        }
+        
+        .progress-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 30%;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: #6c757d;
+            font-weight: 600;
+        }
+        
+        .step-text {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .progress-step.active .step-number {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .progress-step.active .step-text {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .receipt-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .receipt-total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+        }
+        
+        .footer {
+            background: var(--dark-color) !important;
+            margin-top: 50px;
+        }
+        
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+        }
+
+        /* Currency Conversion Styles */
+        .currency-converter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .currency-flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .converted-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .exchange-rate {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .currency-display {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Floating Back Button */
+        .floating-back-btn {
+            position: absolute;
+            top: 15px;
+            left: 35px;
+            background-color: #d9e3e4;
+            color: rgb(67, 210, 210);
+            border-radius: 50px;
+            padding: 8px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            min-width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        .floating-back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Error message styling */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        /* Success message styling */
+        .success-message {
+            color: #28a745;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-        <a href="#" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
-            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Creative Showcase</h2>
-        </a>
-    </nav>
 
-    <!-- Checkout Section Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <h1 class="text-center mb-5">Checkout</h1>
-            <form id="checkout-form">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
-                    <input type="text" id="name" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email:</label>
-                    <input type="email" id="email" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label for="amount" class="form-label">Amount (NGN):</label>
-                    <input type="number" id="amount" class="form-control" required>
-                </div>
+    <!-- Floating Back Button -->
+    <a href="javascript:void(0);" onclick="window.history.back();" class="floating-back-btn">
+        <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
+        <span style="white-space: nowrap;"></span>
+    </a>
 
-                <div class="text-center">
-                    <button type="button" class="btn btn-primary btn-checkout">Checkout with Paystack</button>
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="checkout-container animate__animated animate__fadeIn">
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Order Details</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Payment</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Confirmation</div>
+                </div>
+            </div>
+            
+            <h2 class="text-center mb-4 fw-bold">Complete Your Purchase</h2>
+            
+            <!-- Artwork Card -->
+            <div class="card artwork-card mb-4 border-0">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-4"><i class="fas fa-paint-brush me-2"></i>Artwork Details</h5>
+                    <div class="d-flex align-items-center">
+                        {% if artwork.media.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')) %}
+                            <div class="position-relative">
+                                <img src="{{ artwork.media }}" alt="{{ artwork.title }}" class="img-thumbnail rounded-3 me-4" style="width: 120px; height: 120px; object-fit: cover;">
+                                <span class="badge bg-primary position-absolute top-0 start-100 translate-middle">New</span>
+                            </div>
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center me-4 rounded-3" style="width: 120px; height: 120px;">
+                                <i class="fas fa-file-alt fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="fw-bold mb-1">{{ artwork.title }}</h5>
+                            <p class="text-muted mb-2">by <span class="text-primary">{{ artwork.artist }}</span></p>
+                            <div class="d-flex align-items-center">
+                                <div class="currency-display">
+                                    <span class="fs-4 fw-bold text-primary">${{ "%.2f"|format(artwork.price) }}</span>
+                                    <span class="mx-2">≈</span>
+                                    <span class="converted-price">₵{{ "%.2f"|format(artwork.price * 15) }}</span>
+                                </div>
+                                {% if artwork.discount %}
+                                    <span class="text-danger ms-2"><del>${{ "%.2f"|format(artwork.price * 1.5) }}</del> <span class="badge bg-danger ms-1">20% OFF</span></span>
+                                {% endif %}
+                            </div>
+                            <div class="exchange-rate mt-1">Exchange rate: $1 = ₵15.00</div>
+                            <div class="mt-2">
+                                <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Digital Download</span>
+                                <span class="badge bg-info ms-2"><i class="fas fa-shield-alt me-1"></i> Authentic</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checkout Form -->
+            <form id="checkout-form" class="needs-validation" novalidate>
+                <h5 class="fw-bold mb-3"><i class="fas fa-user-circle me-2"></i>Your Information</h5>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">Full Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="name" value="{{ user.name if user else '' }}" required>
+                            <div class="invalid-feedback">
+                                Please provide your name.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" value="{{ user.email if user else '' }}" required>
+                            <div class="invalid-feedback">
+                                Please provide a valid email.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Currency Converter Section -->
+                <div class="mb-4">
+                    <label class="form-label">Amount</label>
+                    <div class="currency-converter">
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" id="amount-usd" value="{{ "%.2f"|format(artwork.price) }}" readonly>
+                        </div>
+                        <i class="fas fa-exchange-alt"></i>
+                        <div class="input-group">
+                            <span class="input-group-text">₵</span>
+                            <input type="text" class="form-control" id="amount-ghs" value="{{ "%.2f"|format(artwork.price * 15) }}" readonly>
+                        </div>
+                    </div>
+                    <small class="text-muted">Total amount to be charged in Ghana Cedis (₵)</small>
+                </div>
+                
+                <!-- Payment Methods -->
+                <div class="payment-methods">
+                    <div class="payment-method" title="Paystack">
+                        <img src="https://assets.paystack.com/assets/img/logos/paystack-2.png" alt="Paystack">
+                    </div>
+                    <div class="payment-method" title="Visa">
+                        <i class="fab fa-cc-visa fa-2x text-primary"></i>
+                    </div>
+                    <div class="payment-method" title="Mastercard">
+                        <i class="fab fa-cc-mastercard fa-2x text-dark"></i>
+                    </div>
+                    <div class="payment-method" title="Mobile Money">
+                        <i class="fas fa-mobile-alt fa-2x text-info"></i>
+                    </div>
+                </div>
+                
+                <div class="secure-checkout">
+                    <i class="fas fa-lock fa-lg"></i>
+                    <span>Secure SSL Encrypted Checkout</span>
+                </div>
+                
+                <!-- Error and success messages -->
+                <div id="error-message" class="error-message text-center mb-3"></div>
+                <div id="success-message" class="success-message text-center mb-3"></div>
+                
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary btn-lg btn-checkout py-3" id="pay-button">
+                        <i class="fas fa-lock me-2"></i> Complete Secure Payment (₵{{ "%.2f"|format(artwork.price * 15) }})
+                    </button>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">By completing your purchase you agree to our <a href="#">Terms of Service</a></small>
                 </div>
             </form>
-        </div>
-    </div>
-    <!-- Checkout Section End -->
-
-                <!-- Back to Dashboard -->
-                <div class="text-center mt-5">
-                    <a href="{{ url_for('marketplace') if username in ['smuggerteey', 'cicada403'] else ('marketplace' if user_data['role'] == 'Artist' else 'marketplace') }}" 
-                       class="btn btn-secondary dashboard-btn">
-                        Back
+            
+            <!-- Loading Spinner -->
+            <div class="text-center loading-spinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <p class="mt-2">Processing your payment...</p>
+            </div>
+            
+            <!-- Receipt Preview (hidden initially) -->
+            <div id="receipt-section" class="receipt-preview">
+                <h5 class="fw-bold mb-4 text-center"><i class="fas fa-receipt me-2"></i>Transaction Overview</h5>
+                
+                <div class="receipt-item">
+                    <span>Item:</span>
+                    <span>{{ artwork.title }}</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Artist:</span>
+                    <span>{{ artwork.artist }}</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Price (USD):</span>
+                    <span>${{ "%.2f"|format(artwork.price) }} ≈ ₵{{ "%.2f"|format(artwork.price * 15) }}</span>
+                </div>
+                <div class="receipt-item">
+                    <span>Tax:</span>
+                    <span>₵0.00</span>
+                </div>
+                <div class="receipt-item receipt-total">
+                    <span>Total (GHS):</span>
+                    <span>₵{{ "%.2f"|format(artwork.price * 15) }}</span>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <a href="{{ url_for('purchase_history') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-history me-2"></i> View Purchase History
                     </a>
-                </div>
-
-       <!-- Footer Start -->
-       <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-5">
-            <div class="row g-5">
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Quick Link</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Privacy Policy</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">FAQs & Help</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Contact</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>1 Avenue, Brekuso, ER, Ghana</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+233203419613</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>infor@creativeshowcase.com</p>
-                    <div class="d-flex pt-2">
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                        <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Gallery</h4>
-                    <div class="row g-2 pt-2">
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-1.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-2.jpg') }}" alt="">
-                        </div>
-                        <div class="col-4">
-                            <img class="img-fluid bg-light p-1" src="{{ url_for('static', filename='img/course-3.jpg') }}" alt="">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-white mb-3">Newsletter</h4>
-                    <p>Sign Up For News.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
+                    <form action="{{ url_for('process_purchase', artwork_id=artwork.id) }}" method="POST" id="download-form">
+                        <input type="hidden" name="payment_method" value="credit_card">
+                        <input type="hidden" name="amount_usd" value="{{ artwork.price }}">
+                        <input type="hidden" name="amount_ghs" value="{{ artwork.price * 15 }}">
+                        <input type="hidden" name="exchange_rate" value="15">
+                        <input type="hidden" name="transaction_id" id="transaction-id" value="">
+                        <button type="submit" class="btn btn-primary w-100 purchase-btn" 
+                                data-artist-id="{{ artwork.artist_id }}"
+                                data-user-id="{{ user.id if user else '' }}"
+                                data-artwork-title="{{ artwork.title }}">
+                            <i class="fas fa-download me-2"></i>Download Artwork
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="container">
-            <div class="copyright">
-                <div class="row">
-                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Creative Hub</a>, All Right Reserved.
-                    </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <div class="footer-menu">
-                            <a href="">Home</a>
-                            <a href="">Cookies</a>
-                            <a href="">Help</a>
-                            <a href="">FQAs</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        
+        <!-- Back to Dashboard -->
+        <div class="text-center mt-5">
+            <a href="{% if user and user.username in ['smuggerteey', 'cicada403'] %}
+                        {{ url_for('marketplace') }}
+                     {% elif user and user.role == 'Artist' %}
+                        {{ url_for('marketplace') }}
+                     {% else %}
+                        {{ url_for('marketplace') }}
+                     {% endif %}" class="btn" style="background-color: #28a745; color: black; border: none;">
+                <i class=""></i> Back to Marketplace
+            </a>
         </div>
     </div>
-    <!-- Footer End -->
 
-    
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold mb-3">Creative Showcase</h5>
+                    <p>Discover and purchase unique digital artworks from talented artists around the world.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#" class="text-white me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">About Us</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Artists</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Collections</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Blog</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold mb-3">Support</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Help Center</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Privacy Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Shipping Policy</a></li>
+                        <li><a href="#" class="text-white text-decoration-none">Refund Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h5 class="fw-bold mb-3">Newsletter</h5>
+                    <p>Subscribe to get updates on new artworks and special offers.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" placeholder="Your email" aria-label="Your email">
+                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; 2023 Creative Showcase. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <img src="https://via.placeholder.com/120x40?text=Payment+Methods" alt="Payment Methods" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </footer>
 
-
-    <!-- Paystack JavaScript -->
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
     
-    <!-- Custom JavaScript for Paystack Checkout -->
+    <!-- Custom Script -->
     <script>
-        document.querySelector(".btn-checkout").addEventListener("click", function(event) {
+        // Standardized exchange rate (update this as needed)
+        const EXCHANGE_RATE = 15;
+        let transactionInProgress = false; // Flag to prevent duplicate transactions
+        
+        // Form validation
+        (function () {
+            'use strict'
+            
+            var forms = document.querySelectorAll('.needs-validation')
+            
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+        
+        // Paystack payment handler with currency conversion and duplicate prevention
+        document.getElementById("pay-button").addEventListener("click", function(event) {
             event.preventDefault();
+            
+            // Prevent multiple clicks
+            if (transactionInProgress) {
+                showError("Please wait while we process your current transaction");
+                return;
+            }
             
             let name = document.getElementById("name").value;
             let email = document.getElementById("email").value;
-            let amount = document.getElementById("amount").value;
+            let amountUsd = parseFloat(document.getElementById("amount-usd").value);
+            let amountGhs = amountUsd * EXCHANGE_RATE;
             
-            if (!name || !email || !amount) {
-                alert("Please fill in all details.");
+            if (!name || !email || !amountUsd) {
+                showError("Please fill in all required fields.");
                 return;
             }
+            
+            // Validate email format
+            if (!validateEmail(email)) {
+                showError("Please provide a valid email address.");
+                return;
+            }
+            
+            // Set transaction in progress flag
+            transactionInProgress = true;
+            document.getElementById("pay-button").disabled = true;
+            
+            // Show loading spinner
+            document.querySelector('.loading-spinner').style.display = 'block';
+            hideError();
+            hideSuccess();
+            
+            // Generate a unique reference for this transaction
+            let transactionRef = 'TX-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+            
+            // In a real implementation, you would call your backend to initialize the payment
+            // This example simulates the backend call with a timeout
+            setTimeout(function() {
+                // Hide loading spinner
+                document.querySelector('.loading-spinner').style.display = 'none';
+                
+                // Initialize Paystack payment
+                let handler = PaystackPop.setup({
+                    key: "pk_test_8da0bc57ac43d1f6d30d4284c009c5a6c5610f28", // Replace with your public key
+                    email: email,
+                    amount: amountGhs * 100, // Paystack expects amount in kobo/pesewas
+                    currency: "GHS", // Ghana Cedis
+                    ref: transactionRef,
+                    metadata: {
+                        custom_fields: [
+                            {
+                                display_name: "Artwork",
+                                variable_name: "artwork",
+                                value: "{{ artwork.title }}"
+                            },
+                            {
+                                display_name: "Artist",
+                                variable_name: "artist",
+                                value: "{{ artwork.artist }}"
+                            }
+                        ]
+                    },
+                    callback: function(response) {
+                        // Payment was successful
+                        showSuccess("Payment successful! Processing your order...");
+                        
+                        // Set the transaction ID in the download form
+                        document.getElementById("transaction-id").value = response.reference;
+                        
+                        // Show receipt section with animation
+                        document.getElementById('receipt-section').style.display = 'block';
+                        
+                        // Update progress steps
+                        document.querySelectorAll('.progress-step')[1].classList.add('active');
+                        document.querySelectorAll('.progress-step')[2].classList.add('active');
+                        
+                        // Scroll to receipt
+                        document.getElementById('receipt-section').scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Reset transaction flag
+                        transactionInProgress = false;
+                    },
+                    onClose: function() {
+                        // User closed the payment modal
+                        showError("Transaction was not completed. You can try again.");
+                        
+                        // Reset transaction flag and enable button
+                        transactionInProgress = false;
+                        document.getElementById("pay-button").disabled = false;
+                    }
+                });
+                
+                handler.openIframe();
+            }, 1500);
+        });
+        
+        // Helper function to validate email
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+        
+        // Helper function to show error messages
+        function showError(message) {
+            const errorElement = document.getElementById("error-message");
+            errorElement.textContent = message;
+            errorElement.style.display = "block";
+            setTimeout(hideError, 5000);
+        }
+        
+        function hideError() {
+            document.getElementById("error-message").style.display = "none";
+        }
+        
+        // Helper function to show success messages
+        function showSuccess(message) {
+            const successElement = document.getElementById("success-message");
+            successElement.textContent = message;
+            successElement.style.display = "block";
+            setTimeout(hideSuccess, 5000);
+        }
+        
+        function hideSuccess() {
+            document.getElementById("success-message").style.display = "none";
+        }
+        
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                let x = e.clientX - e.target.getBoundingClientRect().left;
+                let y = e.clientY - e.target.getBoundingClientRect().top;
+                
+                let ripples = document.createElement('span');
+                ripples.style.left = x + 'px';
+                ripples.style.top = y + 'px';
+                this.appendChild(ripples);
+                
+                setTimeout(() => {
+                    ripples.remove();
+                }, 1000);
+            });
+        });
 
-            fetch("/pay", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: email, amount: amount })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    let handler = PaystackPop.setup({
-                        key: "pk_test_8da0bc57ac43d1f6d30d4284c009c5a6c5610f28", // Replace with your Paystack Public Key
-                        email: email,
-                        amount: amount * 100, // Convert to kobo
-                        currency: "GHS",
-                        ref: data.data.reference,
-                        callback: function(response) {
-                            window.location.href = `/pay/verify/${response.reference}`;
-                        },
-                        onClose: function() {
-                            alert("Transaction was not completed.");
-                        }
-                    });
-                    handler.openIframe();
-                } else {
-                    alert("Payment initialization failed.");
-                }
-            })
-            .catch(error => console.error("Error:", error));
+        // Update receipt display when purchase button is clicked
+        document.querySelectorAll('.purchase-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const usdAmount = parseFloat(document.getElementById('amount-usd').value);
+                const ghsAmount = usdAmount * EXCHANGE_RATE;
+                
+                // Update receipt items to show both currencies
+                document.querySelectorAll('.receipt-item')[2].innerHTML = `
+                    <span>Price (USD):</span>
+                    <span>$${usdAmount.toFixed(2)} ≈ ₵${ghsAmount.toFixed(2)}</span>
+                `;
+                
+                document.querySelector('.receipt-total').innerHTML = `
+                    <span>Total (GHS):</span>
+                    <span>₵${ghsAmount.toFixed(2)}</span>
+                `;
+            });
         });
     </script>
 </body>

@@ -1,5 +1,7 @@
+import random
 import re
 import os
+import string
 import time
 import logging
 import base64
@@ -8,8 +10,9 @@ import csv
 from functools import wraps
 from datetime import datetime
 from io import BytesIO
+import uuid
 
-from flask import (Flask, request, jsonify, render_template, redirect, send_from_directory, 
+from flask import (Flask, current_app, request, jsonify, render_template, redirect, send_file, send_from_directory, 
                   session, url_for, flash, make_response)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user, logout_user, 
@@ -50,18 +53,15 @@ app = Flask(__name__)
 app.secret_key = 'tinotenda'
 app.config['UPLOAD_FOLDER'] = "main/static/uploads"
 app.config['PROFILE_PICS_FOLDER'] = "main/static/profile_pics"
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB limit
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
-<<<<<<< HEAD
 TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
-
+PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
-=======
->>>>>>> 03c13a58d4a09ad510ce925052bfee594fb79099
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['PROFILE_PICS_FOLDER'], exist_ok=True)
@@ -71,7 +71,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'test_db'
+    'database': 'art_showcase'
 }
 
 # Third-party service configurations
@@ -352,7 +352,7 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="test_db"
+        database="art_showcase"
     )
 
 def get_user_data(username):
@@ -935,11 +935,11 @@ def create_challenges():
             cursor.close()
             conn.close()
 
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('display_challenges'))
 
     return render_template('create_challenges.html')
 
-@app.route('/display_challenges', methods=['POST'])
+@app.route('/edit_challenge', methods=['POST'])
 def edit_challenge():
     challenge_id = request.form['id']
     name = request.form['name']
@@ -955,9 +955,9 @@ def edit_challenge():
     cursor.close()
     conn.close()
 
-    return render_template('display.html')
+    return redirect(url_for('display_challenges'))
 
-@app.route('/display_challenges', methods=['POST'])
+@app.route('/delete_challenge', methods=['POST'])
 def delete_challenge():
     challenge_id = request.form['id']
 
@@ -968,7 +968,7 @@ def delete_challenge():
     cursor.close()
     conn.close()
 
-    return render_template('display.html')
+    return redirect(url_for('display_challenges'))
 
 @app.route('/display_challenges')
 @login_required
@@ -1653,6 +1653,313 @@ def send_email_route():
 # ROUTES - PAYMENTS
 # =============================================
 
+@app.route('/checkout/<int:artwork_id>', methods=['GET'])
+def checkout(artwork_id):
+    user = get_current_user()
+    if not user:
+        flash('Please login to complete your purchase', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Get artwork details
+        cursor.execute("""
+            SELECT a.*, u.id as artist_id 
+            FROM artwork a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.id = %s
+        """, (artwork_id,))
+        artwork = cursor.fetchone()
+
+        if not artwork:
+            flash('Artwork not found', 'error')
+            return redirect(url_for('marketplace'))
+
+        # Prevent self-purchase
+        if user.id == artwork['artist_id']:
+            flash("You cannot purchase your own artwork", 'error')
+            return redirect(url_for('marketplace'))
+
+        return render_template('checkout.html', artwork=artwork, user=user)
+
+    except Exception as e:
+        flash(f'Error: {str(e)}', 'error')
+        return redirect(url_for('marketplace'))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+from decimal import Decimal
+
+@app.route('/receipt/<receipt_number>')
+def view_receipt(receipt_number):
+    user = get_current_user()
+    if not user:
+        flash('Please login to view your receipt', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT r.*, p.*, a.title as artwork_title, a.price, 
+               u1.username as buyer_name, u2.username as artist_name
+        FROM receipts r
+        JOIN purchases p ON r.purchase_id = p.id
+        JOIN artwork a ON p.artwork_id = a.id
+        JOIN users u1 ON p.buyer_id = u1.id
+        JOIN users u2 ON a.user_id = u2.id
+        WHERE r.receipt_number = %s AND p.buyer_id = %s
+    """, (receipt_number, user.id))
+    
+    receipt = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not receipt:
+        flash('Receipt not found', 'error')
+        return redirect(url_for('marketplace'))
+
+    # Convert Decimal to float and calculate values
+    price = float(Decimal(str(receipt['price'])))
+    receipt['subtotal'] = price
+    receipt['fee'] = price * 0.15
+    receipt['total'] = price * 1.15
+
+    return render_template('receipt.html', receipt=receipt)
+
+from PIL import Image, ImageDraw, ImageFont
+import io
+import textwrap
+
+@app.route('/receipt/<receipt_number>.png')
+def download_receipt(receipt_number):
+    user = get_current_user()
+    if not user:
+        flash('Please login to view your receipt', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT r.*, p.*, a.title as artwork_title, a.price, 
+               u1.username as buyer_name, u2.username as artist_name
+        FROM receipts r
+        JOIN purchases p ON r.purchase_id = p.id
+        JOIN artwork a ON p.artwork_id = a.id
+        JOIN users u1 ON p.buyer_id = u1.id
+        JOIN users u2 ON a.user_id = u2.id
+        WHERE r.receipt_number = %s AND p.buyer_id = %s
+    """, (receipt_number, user.id))
+    
+    receipt = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if not receipt:
+        flash('Receipt not found', 'error')
+        return redirect(url_for('marketplace'))
+
+    # Create receipt image
+    img = generate_receipt_image(receipt)
+    
+    # Create response
+    img_io = io.BytesIO()
+    img.save(img_io, 'PNG', quality=100)
+    img_io.seek(0)
+    
+    return send_file(img_io, mimetype='image/png', download_name=f'receipt_{receipt_number}.png')
+
+def generate_receipt_image(receipt):
+    # Create blank image
+    width, height = 800, 1000
+    img = Image.new('RGB', (width, height), color=(255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    
+    # Load fonts
+    try:
+        title_font = ImageFont.truetype("arialbd.ttf", 30)
+        header_font = ImageFont.truetype("arialbd.ttf", 22)
+        text_font = ImageFont.truetype("arial.ttf", 18)
+    except:
+        title_font = ImageFont.load_default()
+        header_font = ImageFont.load_default()
+        text_font = ImageFont.load_default()
+    
+    # Draw header
+    draw.text((width//2, 50), "CREATIVE SHOWCASE", fill=(6, 187, 204), font=title_font, anchor="mm")
+    draw.text((width//2, 90), "RECEIPT", fill=(0, 0, 0), font=header_font, anchor="mm")
+    draw.text((width//2, 130), f"#{receipt['receipt_number']}", fill=(0, 0, 0), font=header_font, anchor="mm")
+    
+    # Draw divider
+    draw.line((50, 170, width-50, 170), fill=(200, 200, 200), width=2)
+    
+    # Draw receipt details
+    y_position = 200
+    details = [
+        ("Date:", receipt['purchase_date'].strftime('%Y-%m-%d %H:%M')),
+        ("Buyer:", receipt['buyer_name']),
+        ("Artist:", receipt['artist_name']),
+        ("Artwork:", receipt['artwork_title']),
+        ("Payment Method:", receipt['payment_method'].title()),
+        ("Transaction ID:", receipt['transaction_id']),
+    ]
+    
+    for label, value in details:
+        draw.text((60, y_position), label, fill=(100, 100, 100), font=text_font)
+        draw.text((250, y_position), value, fill=(0, 0, 0), font=text_font)
+        y_position += 40
+    
+    # Draw price breakdown (fixed decimal handling)
+    y_position += 30
+    draw.text((60, y_position), "PRICE SUMMARY", fill=(6, 187, 204), font=header_font)
+    y_position += 40
+    
+    subtotal = float(Decimal(str(receipt['price'])))
+    fee = subtotal * 0.15
+    total = subtotal + fee
+    
+    prices = [
+        ("Artwork Price:", f"${subtotal:.2f}"),
+        ("Platform Fee (15%):", f"${fee:.2f}"),
+        ("TOTAL:", f"${total:.2f}")
+    ]
+    
+    for label, value in prices:
+        draw.text((60, y_position), label, fill=(100, 100, 100), font=text_font)
+        draw.text((width-60, y_position), value, fill=(0, 0, 0), font=text_font, anchor="rm")
+        y_position += 40
+    
+    # Draw footer
+    y_position += 50
+    footer_text = "Thank you for your purchase!\nFor any questions, please contact support@creativeshowcase.com"
+    for line in textwrap.wrap(footer_text, width=40):
+        draw.text((width//2, y_position), line, fill=(100, 100, 100), font=text_font, anchor="mm")
+        y_position += 30
+    
+    return img
+
+@app.route('/purchase_history')
+def purchase_history():
+    user = get_current_user()
+    if not user:
+        flash('Please login to view your purchase history', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT p.*, a.title as artwork_title, a.media, r.receipt_number
+        FROM purchases p
+        JOIN artwork a ON p.artwork_id = a.id
+        LEFT JOIN receipts r ON r.purchase_id = p.id
+        WHERE p.buyer_id = %s
+        ORDER BY p.purchase_date DESC
+    """, (user.id,))
+    
+    purchases = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('purchase_history.html', purchases=purchases)
+
+@app.route('/recent/<int:artwork_id>')
+def recent(artwork_id):
+    user = get_current_user()
+    if not user:
+        flash('Please login to complete your purchase', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Get artwork details with artist information
+        cursor.execute("""
+            SELECT a.*, u.id as artist_id, u.username as artist_name
+            FROM artwork a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.id = %s
+        """, (artwork_id,))
+        artwork = cursor.fetchone()
+
+        if not artwork:
+            flash('Artwork not found', 'error')
+            return redirect(url_for('marketplace'))
+
+        return render_template('recent.html', 
+                             artwork=artwork,
+                             user=user)
+
+    except Exception as e:
+        flash(f'Error loading checkout page: {str(e)}', 'error')
+        return redirect(url_for('marketplace'))
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/process_purchase/<int:artwork_id>', methods=['POST'])
+def process_purchase(artwork_id):
+    user = get_current_user()
+    if not user:
+        flash('Please login to complete your purchase', 'error')
+        return redirect(url_for('login'))
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Get artwork details
+        cursor.execute("""
+            SELECT a.*, u.id as artist_id 
+            FROM artwork a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.id = %s
+        """, (artwork_id,))
+        artwork = cursor.fetchone()
+
+        if not artwork:
+            flash('Artwork not found', 'error')
+            return redirect(url_for('marketplace'))
+
+        # Record purchase
+        cursor.execute("""
+            INSERT INTO purchases 
+            (buyer_id, artwork_id, price, payment_method, transaction_id)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            user.id,
+            artwork_id,
+            float(Decimal(str(artwork['price']))),
+            request.form.get('payment_method', 'credit_card'),
+            ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+        ))
+        purchase_id = cursor.lastrowid
+
+        # Generate receipt
+        receipt_number = f"RCPT-{datetime.now().strftime('%Y%m%d')}-{purchase_id:06d}"
+        cursor.execute("""
+            INSERT INTO receipts (purchase_id, receipt_number)
+            VALUES (%s, %s)
+        """, (purchase_id, receipt_number))
+
+        conn.commit()
+
+        return redirect(url_for('view_receipt', receipt_number=receipt_number))
+
+    except Exception as e:
+        conn.rollback()
+        flash(f'Purchase error: {str(e)}', 'error')
+        return redirect(url_for('checkout', artwork_id=artwork_id))
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.route('/pay', methods=['POST'])
 def pay():
     """Process payment via Paystack."""
@@ -1841,39 +2148,6 @@ def contact():
     """Contact page."""
     return render_template('contact.html')
 
-@app.route('/art_challenges')
-def art_challenges():
-    """Art challenges page."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('art_challenges.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
-
-@app.route('/collaboration_hub')
-def collaboration_hub():
-    """Collaboration hub page."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('collaboration_hub.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
-
-@app.route('/checkout')
-def checkout():
-    """Checkout page."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('checkout.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
-
 
 @app.route('/workshops')
 def workshops():
@@ -1955,10 +2229,364 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/artist_profiles')
+def artist_profiles():
+    """Display all artists ranked by uploads and leaderboard score."""
+    try:
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get all artists with their artwork count and leaderboard score
+        cursor.execute("""
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, u.profile_picture, u.bio,
+                COUNT(a.id) AS artwork_count,
+                IFNULL(l.score, 0) AS leaderboard_score,
+                (
+                    SELECT AVG(r.rating)
+                    FROM artist_ratings r
+                    WHERE r.artist_id = u.id
+                ) AS average_rating,
+                (
+                    SELECT COUNT(*)
+                    FROM artist_ratings r
+                    WHERE r.artist_id = u.id
+                ) AS rating_count,
+                (
+                    SELECT COUNT(*)
+                    FROM artist_followers f
+                    WHERE f.artist_id = u.id
+                ) AS follower_count
+            FROM 
+                users u
+            LEFT JOIN 
+                artwork a ON u.id = a.user_id
+            LEFT JOIN
+                leaderboard l ON u.username = l.username
+            WHERE 
+                u.role = 'Artist'
+            GROUP BY 
+                u.id
+            ORDER BY 
+                artwork_count DESC, 
+                leaderboard_score DESC,
+                average_rating DESC
+        """)
+        artists = cursor.fetchall()
+        
+        # Get categories for each artist
+        for artist in artists:
+            cursor.execute("""
+                SELECT DISTINCT category 
+                FROM artwork 
+                WHERE user_id = %s
+            """, (artist['id'],))
+            categories = [row['category'] for row in cursor.fetchall() if row['category']]
+            artist['categories'] = categories or ['Various']
+        
+        cursor.close()
+        conn.close()
+        
+        return render_template('artist_profiles.html', artists=artists)
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/artist/<int:artist_id>', methods=['GET'])
+def get_artist_details(artist_id):
+    """Get detailed information about a specific artist."""
+    try:
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get artist basic info
+        cursor.execute("""
+            SELECT 
+                u.id, u.username, u.first_name, u.last_name, 
+                u.profile_picture, u.bio, u.email, u.phone, u.address,
+                COUNT(a.id) AS artwork_count,
+                IFNULL(l.score, 0) AS leaderboard_score,
+                (
+                    SELECT AVG(r.rating)
+                    FROM artist_ratings r
+                    WHERE r.artist_id = u.id
+                ) AS average_rating,
+                (
+                    SELECT COUNT(*)
+                    FROM artist_ratings r
+                    WHERE r.artist_id = u.id
+                ) AS rating_count,
+                (
+                    SELECT COUNT(*)
+                    FROM artist_followers f
+                    WHERE f.artist_id = u.id
+                ) AS follower_count
+            FROM 
+                users u
+            LEFT JOIN 
+                artwork a ON u.id = a.user_id
+            LEFT JOIN
+                leaderboard l ON u.username = l.username
+            WHERE 
+                u.id = %s
+            GROUP BY 
+                u.id
+        """, (artist_id,))
+        artist = cursor.fetchone()
+        
+        if not artist:
+            return jsonify({'error': 'Artist not found'}), 404
+        
+        # Get artist's categories
+        cursor.execute("""
+            SELECT DISTINCT category 
+            FROM artwork 
+            WHERE user_id = %s
+        """, (artist_id,))
+        artist['categories'] = [row['category'] for row in cursor.fetchall() if row['category']]
+        
+        # Get artist's recent artworks
+        cursor.execute("""
+            SELECT id, title, media, price, 
+                   DATE_FORMAT(created_at, '%Y-%m-%d') as upload_date
+            FROM artwork
+            WHERE user_id = %s
+            ORDER BY created_at DESC
+            LIMIT 6
+        """, (artist_id,))
+        artworks = cursor.fetchall()
+        
+        # Enhance artworks with media URLs
+        for artwork in artworks:
+            artwork['media_url'] = get_media_url(artwork['media'])
+            artwork['media_type'] = get_media_type(artwork['media'])
+        
+        artist['artworks'] = artworks
+        
+        # Get artist's recent reviews
+        cursor.execute("""
+            SELECT 
+                r.id, r.rating, r.comment, r.created_at,
+                u.username as reviewer_name,
+                u.profile_picture as reviewer_avatar
+            FROM 
+                artist_ratings r
+            JOIN 
+                users u ON r.user_id = u.id
+            WHERE 
+                r.artist_id = %s
+            ORDER BY 
+                r.created_at DESC
+            LIMIT 10
+        """, (artist_id,))
+        reviews = cursor.fetchall()
+        
+        # Format dates for reviews
+        for review in reviews:
+            review['created_at'] = review['created_at'].strftime('%b %d, %Y')
+        
+        artist['reviews'] = reviews
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify(artist)
+        
+    except Exception as e:
+        logging.error(f"Error fetching artist details: {e}")
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/api/artist/<int:artist_id>/rate', methods=['POST'])
+@login_required
+def rate_artist(artist_id):
+    """Rate an artist."""
+    try:
+        data = request.get_json()
+        rating = data.get('rating')
+        comment = data.get('comment', '').strip()
+        
+        if not rating or not (1 <= int(rating) <= 5):
+            return jsonify({'error': 'Invalid rating'}), 400
+        
+        # Check if the user is rating themselves
+        if current_user.id == artist_id:
+            return jsonify({'error': 'You cannot rate yourself'}), 400
+        
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        # Check if user already rated this artist
+        cursor.execute("""
+            SELECT id FROM artist_ratings 
+            WHERE artist_id = %s AND user_id = %s
+        """, (artist_id, current_user.id))
+        
+        if cursor.fetchone():
+            # Update existing rating
+            cursor.execute("""
+                UPDATE artist_ratings
+                SET rating = %s, comment = %s
+                WHERE artist_id = %s AND user_id = %s
+            """, (rating, comment, artist_id, current_user.id))
+        else:
+            # Insert new rating
+            cursor.execute("""
+                INSERT INTO artist_ratings (artist_id, user_id, rating, comment)
+                VALUES (%s, %s, %s, %s)
+            """, (artist_id, current_user.id, rating, comment))
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        logging.error(f"Error rating artist: {e}")
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+        return jsonify({'error': 'Internal server error'}), 500
+    
+
+# Database simulation (in a real app, use a proper database)
+collaboration_rooms = {}
+active_users = {}
+whiteboard_states = {}
+document_states = {}
+
+@app.route('/collaboration_hub')
+def collaboration_hub():
+    """Collaboration hub page."""
+    user = get_current_user()
+    username = user.username
+    user_data = {'role': user.role} 
+    return render_template('collaboration_hub.html', 
+                         user=user, 
+                         username=username, 
+                         user_data=user_data)
+
+@socketio.on('connect')
+def handle_connect():
+    if 'username' in session:
+        active_users[session['username']] = request.sid
+        emit('user_status_update', {'users': list(active_users.keys())}, broadcast=True)
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    if 'username' in session and session['username'] in active_users:
+        del active_users[session['username']]
+        emit('user_status_update', {'users': list(active_users.keys())}, broadcast=True)
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    room = data['room_id']
+    join_room(room)
+    session['current_room'] = room
+    
+    # Send current state to new user
+    if room in whiteboard_states:
+        emit('whiteboard_state', whiteboard_states[room])
+    if room in document_states:
+        emit('document_state', document_states[room])
+    
+    emit('room_message', {
+        'user': session['username'],
+        'message': 'has joined the room',
+        'timestamp': datetime.now().strftime('%H:%M')
+    }, room=room)
+
+@socketio.on('leave_room')
+def handle_leave_room():
+    room = session.get('current_room')
+    if room:
+        leave_room(room)
+        emit('room_message', {
+            'user': session['username'],
+            'message': 'has left the room',
+            'timestamp': datetime.now().strftime('%H:%M')
+        }, room=room)
+        session.pop('current_room')
+
+@socketio.on('whiteboard_draw')
+def handle_whiteboard_draw(data):
+    room = session.get('current_room')
+    if room:
+        # Store the drawing action
+        if room not in whiteboard_states:
+            whiteboard_states[room] = []
+        whiteboard_states[room].append(data)
+        
+        # Broadcast to other users in the room
+        emit('whiteboard_draw', data, room=room, include_self=False)
+
+@socketio.on('whiteboard_clear')
+def handle_whiteboard_clear():
+    room = session.get('current_room')
+    if room and room in whiteboard_states:
+        whiteboard_states[room] = []
+        emit('whiteboard_clear', room=room)
+
+@socketio.on('document_update')
+def handle_document_update(data):
+    room = session.get('current_room')
+    if room:
+        document_states[room] = data['content']
+        emit('document_update', data, room=room, include_self=False)
+
+@socketio.on('create_task')
+def handle_create_task(data):
+    room = session.get('current_room')
+    if room:
+        emit('new_task', data, room=room)
+
+@socketio.on('update_task')
+def handle_update_task(data):
+    room = session.get('current_room')
+    if room:
+        emit('task_updated', data, room=room)
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    room = session.get('current_room')
+    if room:
+        emit('new_message', {
+            'user': session['username'],
+            'text': data['text'],
+            'timestamp': datetime.now().strftime('%H:%M')
+        }, room=room)
+
+@app.route('/create_room', methods=['POST'])
+def create_room():
+    if 'username' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+        
+    data = request.json
+    room_id = str(uuid.uuid4())
+    
+    collaboration_rooms[room_id] = {
+        'id': room_id,
+        'name': data['name'],
+        'type': data['type'],
+        'description': data.get('description', ''),
+        'creator': session['username'],
+        'private': data.get('private', False),
+        'created_at': datetime.now().isoformat(),
+        'participants': [session['username']]
+    }
+    
+    return jsonify({'room_id': room_id})
+
+
 # =============================================
 # APPLICATION STARTUP
 # =============================================
 
 if __name__ == "__main__":
     load_model()  # Load chatbot model
-    socketio.run(app, debug=True, use_reloader=False)
+    socketio.run(app, debug=True)
