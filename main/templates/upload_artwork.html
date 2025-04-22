@@ -571,59 +571,58 @@
         <span></span>
     </button>
 
-    <!-- Sidebar Navigation -->
-    <div class="sidebar" id="sidebar">
-        <button class="sidebar-toggle" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        
-        <div class="user-profile">
-            <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='img/default_profile.png') }}" 
-                 alt="Profile" class="profile-pic" 
-                 onclick="window.location.href='{{ url_for('profile') }}'">
-            <div class="sidebar-title">{{ user.username }}</div>
-        </div>
-        
-        <div class="sidebar-header">
-            <h3>Africcase</h3>
-            <p>Artist Dashboard</p>
-        </div>
-        
-        <div class="sidebar-menu">
-            <a href="{{ url_for('dashboard') }}">
-                <i class="fas fa-home"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ url_for('upload_artwork') }}" class="active">
-                <i class="fas fa-upload"></i>
-                <span>Upload Artwork</span>
-            </a>
-            <a href="{{ url_for('marketplace') }}">
-                <i class="fas fa-store"></i>
-                <span>Marketplace</span>
-            </a>
-            <a href="{{ url_for('virtual_gallery') }}">
-                <i class="fas fa-images"></i>
-                <span>Virtual Gallery</span>
-            </a>
-            <a href="{{ url_for('sketchboard') }}">
-                <i class="fas fa-trophy"></i>
-                <span>Art Challenges</span>
-            </a>
-            <a href="{{ url_for('collaboration_hub') }}">
-                <i class="fas fa-users"></i>
-                <span>Collaboration</span>
-            </a>
-            <a href="{{ url_for('chat') }}">
-                <i class="fas fa-comment-dots"></i>
-                <span>ArtBot Chat</span>
-            </a>
-            <a href="{{ url_for('logout') }}">
-                <i class="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
-            </a>
-        </div>
+<!-- Sidebar Navigation -->
+<div class="sidebar" id="sidebar">
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <div class="user-profile">
+        <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='img/default_profile.png') }}" 
+             alt="Profile" class="profile-pic" 
+             onclick="window.location.href='{{ url_for('profile') }}'">
+        <div class="sidebar-title">{{ user.username }}</div>
     </div>
+    
+    <div class="sidebar-header">
+        <h3>Africcase</h3>
+    </div>
+    
+    <div class="sidebar-menu">
+        <a href="{{ url_for('dashboard')}}">
+            <i class="fas fa-home"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('upload_artwork')}}" class ='active'>
+            <i class="fas fa-upload"></i>
+            <span>Upload Artwork</span>
+        </a>
+        <a href="{{ url_for('marketplace') }}">
+            <i class="fas fa-store"></i>
+            <span>Marketplace</span>
+        </a>
+        <a href="{{ url_for('virtual_gallery') }}">
+            <i class="fas fa-images"></i>
+            <span>Virtual Gallery</span>
+        </a>
+        <a href="{{ url_for('sketchboard') }}">
+            <i class="fas fa-trophy"></i>
+            <span>Art Challenges</span>
+        </a>
+        <a href="{{ url_for('collaboration_hub') }}">
+            <i class="fas fa-users"></i>
+            <span>Collaboration</span>
+        </a>
+        <a href="{{ url_for('chat') }}">
+            <i class="fas fa-comment-dots"></i>
+            <span>ArtBot Chat</span>
+        </a>
+        <a href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </a>
+    </div>
+</div>
 
     <!-- Main Content -->
     <div class="main-content">

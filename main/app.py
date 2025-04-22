@@ -60,7 +60,6 @@ TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
 TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
 TWILIO_PHONE_NUMBER = '+2330203419613'
 SENDGRID_API_KEY = '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'
-PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -784,6 +783,7 @@ def view_artwork(artwork_id):
         return render_template(
             'artwork_detail.html',
             artwork=artwork,
+            user = current_user,
             related_artworks=related_artworks,
             user_data=user_data,
             username=session.get('username')
@@ -939,7 +939,7 @@ def create_challenges():
 
         return redirect(url_for('display_challenges'))
 
-    return render_template('create_challenges.html')
+    return render_template('create_challenges.html', user =current_user)
 
 @app.route('/edit_challenge', methods=['POST'])
 def edit_challenge():
@@ -1011,11 +1011,11 @@ def leaderboard():
         cursor.close()
         connection.close()
         
-        return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
+        return render_template('leaderboard.html', leaderboard_data=leaderboard_data,user =current_user)
     except Exception as e:
         print(f"Error fetching leaderboard data: {e}")  # Debug statement
         flash('An error occurred while fetching the leaderboard.', 'error')
-        return redirect(url_for('index'))  # Redirect to a safe page
+        return redirect(url_for('leaderboard'))  # Redirect to a safe page
     
 @app.route('/get_statistics')
 @login_required
@@ -1458,7 +1458,7 @@ def delete_artwork():
 @login_required
 def admin_reports():
     # Get all reports from the database
-    return render_template('admin_reports.html')
+    return render_template('admin_reports.html', user=current_user)
 
 
 # =============================================
@@ -1607,7 +1607,8 @@ def message():
                          username=current_user.username, 
                          messages=messages, 
                          room=room, 
-                         user_data=user_data)
+                         user_data=user_data,
+                         user =current_user)
 
 @app.route('/chat')
 def chat():
@@ -1658,6 +1659,7 @@ def send_email_route():
 @app.route('/checkout/<int:artwork_id>', methods=['GET'])
 def checkout(artwork_id):
     user = get_current_user()
+    user_data = {'role': user.role} 
     if not user:
         flash('Please login to complete your purchase', 'error')
         return redirect(url_for('login'))
@@ -1684,7 +1686,7 @@ def checkout(artwork_id):
             flash("You cannot purchase your own artwork", 'error')
             return redirect(url_for('marketplace'))
 
-        return render_template('checkout.html', artwork=artwork, user=user)
+        return render_template('checkout.html', artwork=artwork, user=user, user_data=user_data)
 
     except Exception as e:
         flash(f'Error: {str(e)}', 'error')
@@ -1731,7 +1733,7 @@ def view_receipt(receipt_number):
     receipt['fee'] = price * 0.15
     receipt['total'] = price * 1.15
 
-    return render_template('receipt.html', receipt=receipt)
+    return render_template('receipt.html', receipt=receipt, user = current_user)
 
 from PIL import Image, ImageDraw, ImageFont
 import io
@@ -1868,7 +1870,7 @@ def purchase_history():
     cursor.close()
     conn.close()
 
-    return render_template('purchase_history.html', purchases=purchases)
+    return render_template('purchase_history.html', purchases=purchases,user =current_user)
 
 @app.route('/recent/<int:artwork_id>')
 def recent(artwork_id):
@@ -2109,7 +2111,7 @@ def insights():
         connection.close()
         
         return render_template('insights.html', 
-                             leaderboard_data=leaderboard_data)
+                             leaderboard_data=leaderboard_data, user= current_user)
     except Exception as e:
         logging.error(f"Error: {e}")
         return render_template('insights.html', 
@@ -2174,14 +2176,14 @@ def artwork_management():
     cursor.close()
     conn.close()
     
-    return render_template('task_management.html', artworks=artworks)
+    return render_template('task_management.html', artworks=artworks,user=current_user)
 
 @app.route('/user_management')
 def user_management():
     user = get_current_user()  # Function to get the logged-in user
     username = user.username
     user_data = {'role': user.role} 
-    return render_template('user_management.html', user=user, username=username, user_data=user_data)
+    return render_template('user_management.html', username=username, user_data=user_data, user=current_user)
 
 # =============================================
 # CHATBOT FUNCTIONALITY
@@ -2234,6 +2236,8 @@ def predict():
 @app.route('/artist_profiles')
 def artist_profiles():
     """Display all artists ranked by uploads and leaderboard score."""
+    user = get_current_user()  # Function to get the logged-in user
+    user_data = {'role': user.role} 
     try:
         conn = create_connection()
         cursor = conn.cursor(dictionary=True)
@@ -2289,7 +2293,7 @@ def artist_profiles():
         cursor.close()
         conn.close()
         
-        return render_template('artist_profiles.html', artists=artists,user=current_user)
+        return render_template('artist_profiles.html', artists=artists,user=current_user, user_data=user_data)
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

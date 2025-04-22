@@ -928,15 +928,14 @@
     
     <div class="sidebar-header">
         <h3>Africcase</h3>
-        <p>Artist Dashboard</p>
     </div>
     
     <div class="sidebar-menu">
-        <a href="{{ url_for('dashboard') }}">
+        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ url_for('upload_artwork') }}">
+        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
             <i class="fas fa-upload"></i>
             <span>Upload Artwork</span>
         </a>
@@ -966,6 +965,7 @@
         </a>
     </div>
 </div>
+
 
     <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" id="mobileMenuBtn">

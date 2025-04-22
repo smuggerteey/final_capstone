@@ -1308,15 +1308,14 @@
     
     <div class="sidebar-header">
         <h3>Africcase</h3>
-        <p>Artist Dashboard</p>
     </div>
     
     <div class="sidebar-menu">
-        <a href="{{ url_for('dashboard') }}">
+        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ url_for('upload_artwork') }}">
+        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else 'collaboration_hub'}}">
             <i class="fas fa-upload"></i>
             <span>Upload Artwork</span>
         </a>
@@ -1324,7 +1323,7 @@
             <i class="fas fa-store"></i>
             <span>Marketplace</span>
         </a>
-        <a href="{{ url_for('virtual_gallery') }}" class="active">
+        <a href="{{ url_for('virtual_gallery') }}">
             <i class="fas fa-images"></i>
             <span>Virtual Gallery</span>
         </a>
@@ -1332,7 +1331,7 @@
             <i class="fas fa-trophy"></i>
             <span>Art Challenges</span>
         </a>
-        <a href="{{ url_for('collaboration_hub') }}">
+        <a href="{{ url_for('collaboration_hub') }}" class="active">
             <i class="fas fa-users"></i>
             <span>Collaboration</span>
         </a>
