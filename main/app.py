@@ -2891,5 +2891,5 @@ def create_room():
 # =============================================
 
 if __name__ == "__main__":
-    load_model()  # Load chatbot model
-    socketio.run(app, debug=True)
+    port = int(os.environ.get("PORT", 8080)) 
+    app.run(host='0.0.0.0', port=port)
