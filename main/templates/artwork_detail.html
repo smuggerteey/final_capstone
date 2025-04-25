@@ -1718,14 +1718,6 @@ Thank you!
     </div>
     
     <div class="sidebar-menu">
-        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
-            <i class="fas fa-home"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
-        </a>
         <a href="{{ url_for('marketplace') }}">
             <i class="fas fa-store"></i>
             <span>Marketplace</span>

@@ -667,9 +667,14 @@
             </div>
             <div class="sidebar-header">
                 <h3>Africcase</h3>
-            </div>
+                <p>Artist Dashboard</p>
+                </div>
             
             <div class="sidebar-menu">
+                <a href="{{ url_for('dashboard')}}" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
                 <a href="{{ url_for('upload_artwork') }}">
                     <i class="fas fa-upload"></i>
                     <span>Upload Artwork</span>
@@ -732,49 +737,45 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="stats-card fade-in" style="animation-delay: 0.1s;">
-                        <div class="stats-icon icon-1">
-                            <i class="fas fa-paint-brush"></i>
-                        </div>
-                        <h3 class="stats-number">24</h3>
-                        <p class="stats-title">Artworks Uploaded</p>
-                        <small class="text-muted">+3 this week</small>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="stats-card fade-in" style="animation-delay: 0.2s;">
-                        <div class="stats-icon icon-2">
-                            <i class="fas fa-heart pulse"></i>
-                        </div>
-                        <h3 class="stats-number">356</h3>
-                        <p class="stats-title">Total Likes</p>
-                        <small class="text-muted">+42 this week</small>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="stats-card fade-in" style="animation-delay: 0.3s;">
-                        <div class="stats-icon icon-3">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <h3 class="stats-number">1.2K</h3>
-                        <p class="stats-title">Total Views</p>
-                        <small class="text-muted">+215 this week</small>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3 mb-4">
-                    <div class="stats-card fade-in" style="animation-delay: 0.4s;">
-                        <div class="stats-icon icon-4">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <h3 class="stats-number">$1,850</h3>
-                        <p class="stats-title">Earnings</p>
-                        <small class="text-muted">+$120 this week</small>
-                    </div>
-                </div>
+ <!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.1s;">
+            <div class="stats-icon icon-1">
+                <i class="fas fa-paint-brush"></i>
             </div>
+            <h3 class="stats-number">{{ total_artworks }}</h3>
+            <p class="stats-title">Artworks Uploaded</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.2s;">
+            <div class="stats-icon icon-2">
+                <i class="fas fa-heart pulse"></i>
+            </div>
+            <h3 class="stats-number">3</h3> 
+            <p class="stats-title">Total Likes</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.3s;">
+            <div class="stats-icon icon-3">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="stats-number">11</h3>
+            <p class="stats-title">Total Views</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.4s;">
+            <div class="stats-icon icon-4">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h3 class="stats-number">${{ total_earnings }}</h3>
+            <p class="stats-title">Earnings</p>
+        </div>
+    </div>
+</div>
 
             <!-- Quick Actions -->
             <div class="card mb-4 border-0 shadow-sm fade-in" style="animation-delay: 0.5s;">

@@ -771,37 +771,37 @@
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row g-3">
-                <div class="col-md-3 col-6 text-center">
-                    <div class="stats-card">
-                        <h3 class="stats-number" data-count="2500">0</h3>
-                        <p class="mb-0 text-muted">Artworks</p>
-                    </div>
+<!-- Stats Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-3 col-6 text-center">
+                <div class="stats-card">
+                    <h3 class="stats-number" data-count="{{ artwork_count }}">{{ artwork_count }}</h3>
+                    <p class="mb-0 text-muted">Artworks</p>
                 </div>
-                <div class="col-md-3 col-6 text-center">
-                    <div class="stats-card">
-                        <h3 class="stats-number" data-count="450">0</h3>
-                        <p class="mb-0 text-muted">Artists</p>
-                    </div>
+            </div>
+            <div class="col-md-3 col-6 text-center">
+                <div class="stats-card">
+                    <h3 class="stats-number" data-count="{{ artist_count }}">{{ artist_count }}</h3>
+                    <p class="mb-0 text-muted">Artists</p>
                 </div>
-                <div class="col-md-3 col-6 text-center">
-                    <div class="stats-card">
-                        <h3 class="stats-number" data-count="12000">0</h3>
-                        <p class="mb-0 text-muted">Collectors</p>
-                    </div>
+            </div>
+            <div class="col-md-3 col-6 text-center">
+                <div class="stats-card">
+                    <h3 class="stats-number" data-count="{{ collector_count }}">{{ collector_count }}</h3>
+                    <p class="mb-0 text-muted">Sells</p>
                 </div>
-                <div class="col-md-3 col-6 text-center">
-                    <div class="stats-card">
-                        <h3 class="stats-number" data-count="95">0</h3>
-                        <p class="mb-0 text-muted">Countries</p>
-                    </div>
+            </div>
+            <div class="col-md-3 col-6 text-center">
+                <div class="stats-card">
+                    <h3 class="stats-number" data-count="{{ country_count }}">{{ country_count }}</h3>
+                    <p class="mb-0 text-muted">Countries</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
     <!-- Marketplace Section -->
     <section id="marketplace" class="py-5 bg-light-gray">
@@ -1004,25 +1004,6 @@
                         </a>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Back to Dashboard -->
-            <div class="text-center mt-4">
-                {% if user %}
-                    {% if user.username in ['smuggerteey', 'cicada403'] %}
-                        <a href="{{ url_for('admindashboard') }}" class="btn btn-outline-light dashboard-btn mt-3">
-                            Back to Dashboard
-                        </a>
-                    {% elif user.role == 'Artist' %}
-                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light dashboard-btn mt-3">
-                            Back to Dashboard
-                        </a>
-                    {% else %}
-                        <a href="{{ url_for('userdashboard') }}" class="btn btn-outline-light dashboard-btn mt-3">
-                            Back to Dashboard
-                        </a>
-                    {% endif %}
-                {% endif %}
             </div>
         </div>
     </section>
@@ -1930,10 +1911,6 @@
         <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
         </a>
         <a href="{{ url_for('marketplace') }}" class ="active">
             <i class="fas fa-store"></i>

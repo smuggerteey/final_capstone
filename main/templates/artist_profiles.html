@@ -338,7 +338,7 @@
                 <div class="col-md-4 col-lg-3 mb-4 artist-item" 
                      data-artwork="{{ artist.artwork_count }}" 
                      data-score="{{ artist.leaderboard_score }}" 
-                     data-rating="{{ artist.average_rating or 0 }}"
+                     data-rating="{{ artist.avg_rating or 0 }}"
                      data-name="{{ artist.username|lower }} {{ artist.first_name|lower }} {{ artist.last_name|lower }}"
                      data-categories="{{ artist.categories|join(' ')|lower if artist.categories else '' }}"
                      data-location="{{ artist.location|lower if artist.location else '' }}">
@@ -361,13 +361,13 @@
                             </p>
                             {% endif %}
                             
-                            {% if artist.average_rating %}
+                            {% if artist.avg_rating %}
                             <div class="mb-2">
                                 <span class="rating-stars">
                                     {% for i in range(1, 6) %}
-                                        {% if i <= artist.average_rating|round(0, 'floor')|int %}
+                                        {% if i <= artist.avg_rating|round(0, 'floor')|int %}
                                             <i class="fas fa-star"></i>
-                                        {% elif (i - 0.5) <= artist.average_rating %}
+                                        {% elif (i - 0.5) <= artist.avg_rating %}
                                             <i class="fas fa-star-half-alt"></i>
                                         {% else %}
                                             <i class="far fa-star"></i>
@@ -416,7 +416,7 @@
                                 {% endif %}
                             </div>
                             
-                            <a href="/artist/{{ artist.id }}" class="btn btn-primary view-profile-btn mt-3">
+                            <a href="{{ url_for('artist_profiles', artist_id=artist.id) }}" class="btn btn-primary view-profile-btn mt-3">
                                 View Portfolio <i class="fas fa-arrow-right ms-2"></i>
                             </a>
                         </div>
@@ -934,10 +934,6 @@
         <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
         </a>
         <a href="{{ url_for('marketplace') }}">
             <i class="fas fa-store"></i>

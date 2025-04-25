@@ -1317,10 +1317,6 @@ p {
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
         </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
-        </a>
         <a href="{{ url_for('marketplace') }}">
             <i class="fas fa-store"></i>
             <span>Marketplace</span>

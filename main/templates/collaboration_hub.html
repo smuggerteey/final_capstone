@@ -283,14 +283,6 @@
                     {% endfor %}
                 </div>
             </div>
-
-            <!-- Back to Dashboard Button -->
-            <div class="text-center mt-5">
-                <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}" 
-                   class="btn btn-secondary btn-lg">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-                </a>
-            </div>
         </div>
     </div>
     <!-- Collaboration Hub Section End -->
@@ -1314,10 +1306,6 @@
         <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else 'collaboration_hub'}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
         </a>
         <a href="{{ url_for('marketplace') }}">
             <i class="fas fa-store"></i>

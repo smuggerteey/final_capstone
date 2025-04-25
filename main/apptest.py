@@ -1,3 +1,4 @@
+import hmac
 import random
 import re
 import os
@@ -823,17 +824,6 @@ def dashboard():
     cursor.execute("SELECT COUNT(*) AS total_likes FROM `Like` WHERE artwork_id IN (SELECT id FROM artwork WHERE user_id = %s)", (current_user.id,))
     total_likes = cursor.fetchone()['total_likes']
 
-    cursor.execute("""
-    SELECT COUNT(DISTINCT id) as collector_count 
-    FROM purchases
-    WHERE artwork_id IN (
-        SELECT id 
-        FROM artwork 
-        WHERE user_id = %s
-    )
-""", (current_user.id,))
-    collector_count = cursor.fetchone()['collector_count']
-
     cursor.execute("SELECT COUNT(*) AS total_views FROM Views WHERE artwork_id IN (SELECT id FROM artwork WHERE user_id = %s)", (current_user.id,))
     total_views = cursor.fetchone()['total_views']
 
@@ -848,8 +838,7 @@ def dashboard():
                            user=current_user, 
                            total_artworks=total_artworks, 
                            total_likes=total_likes, 
-                           total_views=total_views,
-                           collector_count=collector_count, 
+                           total_views=total_views, 
                            total_earnings=total_earnings)
 
 from datetime import datetime
@@ -2069,12 +2058,87 @@ def recent(artwork_id):
         cursor.close()
         conn.close()
 
+from decimal import Decimal
+
+@app.route('/pay', methods=['POST'])
+def pay():
+    """Process payment via Paystack (supports mobile money)."""
+    data = request.json
+    email = data.get("email")
+    amount = data.get("amount")
+    mobile_money_number = data.get("phone")  # New field for mobile money
+    network = data.get("network")  # e.g., 'MTN', 'VOD', 'TGO' (for Ghana)
+    currency = "GHS"
+
+    if not email or not amount:
+        return jsonify({"error": "Email and amount are required"}), 400
+
+    headers = {
+        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "email": email,
+        "amount": int(float(amount) * 100),  # Convert to kobo/pesewas
+        "currency": currency,
+    }
+
+    # Add mobile money details if provided
+    if mobile_money_number and network:
+        payload["mobile_money"] = {
+            "phone": mobile_money_number,
+            "provider": network
+        }
+
+    response = requests.post("https://api.paystack.co/transaction/initialize", 
+                           json=payload, 
+                           headers=headers)
+    
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({"error": "Payment initialization failed", "details": response.text}), 500
+    
+@app.route('/pay/verify/<string:reference>')
+def verify_payment(reference):
+    """Verify Paystack payment (works for mobile money too)."""
+    headers = {
+        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"
+    }
+
+    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", 
+                          headers=headers)
+    
+    if response.status_code == 200:
+        data = response.json()
+        # For mobile money, you might want to check for specific status codes
+        if data["data"]["status"] == "success":
+            # Update your database here
+            return jsonify({
+                "status": "success",
+                "data": {
+                    "reference": reference,
+                    "amount": data["data"]["amount"] / 100,
+                    "channel": data["data"]["channel"],
+                    "paid_at": data["data"]["paid_at"]
+                }
+            })
+        else:
+            return jsonify({"status": "failed", "message": "Payment not completed"}), 400
+    else:
+        return jsonify({"status": "error", "message": "Verification failed"}), 500
+
 @app.route('/process_purchase/<int:artwork_id>', methods=['POST'])
 def process_purchase(artwork_id):
     user = get_current_user()
     if not user:
         flash('Please login to complete your purchase', 'error')
         return redirect(url_for('login'))
+
+    payment_method = request.form.get('payment_method')
+    mobile_number = request.form.get('mobile_number') if payment_method == 'momo' else None
+    network = request.form.get('network') if payment_method == 'momo' else None
 
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
@@ -2093,135 +2157,118 @@ def process_purchase(artwork_id):
             flash('Artwork not found', 'error')
             return redirect(url_for('marketplace'))
 
-        # Record purchase
+        # For mobile money, we'll create a pending purchase first
+        transaction_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+        
         cursor.execute("""
             INSERT INTO purchases 
-            (buyer_id, artwork_id, price, payment_method, transaction_id)
-            VALUES (%s, %s, %s, %s, %s)
+            (buyer_id, artwork_id, price, payment_method, transaction_id, status)
+            VALUES (%s, %s, %s, %s, %s, 'pending')
         """, (
             user.id,
             artwork_id,
             float(Decimal(str(artwork['price']))),
-            request.form.get('payment_method', 'credit_card'),
-            ''.join(random.choices(string.ascii_uppercase + string.digits, k=16))
+            payment_method,
+            transaction_id
         ))
         purchase_id = cursor.lastrowid
 
-        # Generate receipt
+        # Generate receipt number but don't mark as complete yet
         receipt_number = f"RCPT-{datetime.now().strftime('%Y%m%d')}-{purchase_id:06d}"
         cursor.execute("""
-            INSERT INTO receipts (purchase_id, receipt_number)
-            VALUES (%s, %s)
+            INSERT INTO receipts (purchase_id, receipt_number, status)
+            VALUES (%s, %s, 'pending')
         """, (purchase_id, receipt_number))
 
         conn.commit()
 
-        return redirect(url_for('view_receipt', receipt_number=receipt_number))
+        if payment_method == 'momo':
+            # Initiate mobile money payment
+            payload = {
+                "email": user.email,
+                "amount": float(Decimal(str(artwork['price']))),
+                "phone": mobile_number,
+                "network": network
+            }
+            
+            # Use the /pay endpoint we modified earlier
+            response = requests.post(
+                "http://localhost:5000/pay",  # Or your actual domain
+                json=payload,
+                headers={"Content-Type": "application/json"}
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                return jsonify({
+                    "status": "pending",
+                    "message": "Mobile Money payment initiated",
+                    "receipt_number": receipt_number,
+                    "payment_reference": data.get('data', {}).get('reference')
+                })
+            else:
+                return jsonify({"status": "error", "message": "Failed to initiate payment"}), 400
+        else:
+            # For other payment methods, proceed as before
+            return jsonify({
+                "status": "success",
+                "receipt_number": receipt_number
+            })
 
     except Exception as e:
         conn.rollback()
-        flash(f'Purchase error: {str(e)}', 'error')
-        return redirect(url_for('checkout', artwork_id=artwork_id))
+        return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
+@app.route('/webhook/paystack', methods=['POST'])
+def paystack_webhook():
+    # Verify the event is from Paystack
+    if request.headers.get('x-paystack-signature'):
+        # Verify the signature
+        secret = PAYSTACK_SECRET_KEY
+        signature = request.headers['x-paystack-signature']
+        body = request.get_data(as_text=True)
+        
+        if not verify_paystack_signature(body, signature, secret):
+            return jsonify({"status": "failed"}), 403
 
-@app.route('/pay', methods=['POST'])
-def pay():
-    """Process payment via Paystack."""
-    data = request.json
-    email = data.get("email")
-    amount = data.get("amount")
-    currency = "GHS"
-
-    if not email or not amount:
-        return jsonify({"error": "Email and amount are required"}), 400
-
-    headers = {
-        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}",
-        "Content-Type": "application/json"
-    }
-    
-    payload = {
-        "email": email,
-        "amount": int(amount) * 100,
-        "currency": currency
-    }
-
-    response = requests.post("https://api.paystack.co/transaction/initialize", 
-                           json=payload, 
-                           headers=headers)
-    
-    if response.status_code == 200:
-        return jsonify(response.json())
+        event = request.json
+        if event['event'] == 'charge.success':
+            # Update your database
+            reference = event['data']['reference']
+            conn = create_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            try:
+                # Update purchase status
+                cursor.execute("""
+                    UPDATE purchases p
+                    JOIN receipts r ON p.id = r.purchase_id
+                    SET p.status = 'completed',
+                        r.status = 'completed',
+                        p.payment_reference = %s
+                    WHERE p.transaction_id = %s OR p.payment_reference = %s
+                """, (reference, reference, reference))
+                
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                print(f"Error updating payment status: {str(e)}")
+            finally:
+                cursor.close()
+                conn.close()
+                
+        return jsonify({"status": "success"}), 200
     else:
-        return jsonify({"error": "Payment initialization failed"}), 500
+        return jsonify({"status": "failed"}), 403
 
-@app.route('/pay/verify/<string:reference>')
-def verify_payment(reference):
-    """Verify Paystack payment."""
-    headers = {
-        "Authorization": f"Bearer {PAYSTACK_SECRET_KEY}"
-    }
+def verify_paystack_signature(payload, signature, secret):
+    """Verify Paystack webhook signature."""
+    hmac_obj = hmac.new(secret.encode('utf-8'), payload.encode('utf-8'), hashlib.sha512)
+    computed_hmac = hmac_obj.hexdigest()
+    return hmac.compare_digest(computed_hmac, signature)
 
-    response = requests.get(f"https://api.paystack.co/transaction/verify/{reference}", 
-                          headers=headers)
-    
-    if response.status_code == 200:
-        data = response.json()
-        if data["data"]["status"] == "success":
-            return "Payment successful"
-        else:
-            return "Payment failed", 400
-    else:
-        return "Verification failed", 500
-
-@app.route('/process_payment', methods=['POST'])
-def process_payment():
-    """Process payment via PayPal."""
-    name = request.form['name']
-    email = request.form['email']
-    phone = request.form['phone']
-    address = request.form['address']
-    payment_method = request.form['payment_method']
-    total_amount = 100.00
-
-    if payment_method == 'paypal':
-        payment = paypalrestsdk.Payment({
-            "intent": "sale",
-            "payer": {"payment_method": "paypal"},
-            "redirect_urls": {
-                "return_url": url_for('payment_success', _external=True),
-                "cancel_url": url_for('payment_cancel', _external=True)
-            },
-            "transactions": [{
-                "amount": {
-                    "total": str(total_amount),
-                    "currency": "GHS"
-                },
-                "description": "Purchase of artwork"
-            }]
-        })
-
-        if payment.create():
-            for link in payment.links:
-                if link.rel == "approval_url":
-                    return redirect(link.href)
-        else:
-            flash('Payment creation failed. Please try again.', 'danger')
-            return redirect(url_for('checkout'))
-
-    elif payment_method == 'momo':
-        flash('MoMo payment processing is not implemented yet.', 'warning')
-        return redirect(url_for('checkout'))
-
-    elif payment_method == 'credit_card':
-        flash('Credit card payment processing is not implemented yet.', 'warning')
-        return redirect(url_for('checkout'))
-
-    else:
-        flash('Invalid payment method selected.', 'danger')
-        return redirect(url_for('checkout'))
 
 @app.route('/payment_success')
 def payment_success():

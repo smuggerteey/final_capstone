@@ -1258,15 +1258,6 @@
             </div>
         </div>
     </div>
-
-                <!-- Back to Dashboard -->
-                <div class="text-center mt-4">
-                    <a href="{{ url_for('collaboration_hub') if username in ['smuggerteey', 'cicada403'] else ('collaboration_hub' if user_data['role'] == 'Artist' else 'collaboration_hub') }}" 
-                       class="btn btn-secondary dashboard-btn">
-                        Go Back
-                    </a>
-                </div>
-
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
@@ -1344,10 +1335,6 @@
             </div>
         </div>
     </div>
-    <!-- Footer End -->
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

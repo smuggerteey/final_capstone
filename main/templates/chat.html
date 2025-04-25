@@ -988,32 +988,6 @@
     </div>
     <!-- Spinner End -->
 
-<!-- Floating Back Button (Horizontally Ovular) -->
-<a href="javascript:void(0);" 
-   onclick="window.history.back();"
-   class="floating-back-btn" 
-   style="position: absolute; 
-          top: 15px; 
-          left: 35px; 
-          background-color: #d9e3e4; 
-          color: rgb(67, 210, 210); 
-          border-radius: 50px;
-          padding: 8px 20px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-          text-decoration: none; 
-          font-size: 16px; 
-          transition: all 0.3s;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: auto;
-          min-width: 40px;
-          height: 40px;
-          cursor: pointer;">
-    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>
-    <span style="white-space: nowrap;"></span>
-</a>
-
     <!-- Chat Container -->
     <div class="container-xxl py-5">
         <div class="container">
@@ -1909,10 +1883,6 @@
         <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
             <i class="fas fa-home"></i>
             <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
         </a>
         <a href="{{ url_for('marketplace') }}">
             <i class="fas fa-store"></i>

@@ -494,9 +494,6 @@
                 </div>
                 
                 <div class="d-grid gap-2 mt-4">
-                    <a href="{{ url_for('purchase_history') }}" class="btn btn-outline-primary">
-                        <i class="fas fa-history me-2"></i> View Purchase History
-                    </a>
                     <form action="{{ url_for('process_purchase', artwork_id=artwork.id) }}" method="POST" id="download-form">
                         <input type="hidden" name="payment_method" value="credit_card">
                         <input type="hidden" name="amount_usd" value="{{ artwork.price }}">
@@ -507,7 +504,7 @@
                                 data-artist-id="{{ artwork.artist_id }}"
                                 data-user-id="{{ user.id if user else '' }}"
                                 data-artwork-title="{{ artwork.title }}">
-                            <i class="fas fa-download me-2"></i>Download Artwork
+                            <i class="fas fa-receipt me-2"></i>Receipt & Purchase History
                         </button>
                     </form>
                 </div>
@@ -1124,15 +1121,7 @@
     </div>
     
     <div class="sidebar-menu">
-        <a href="{{ url_for('admindashboard') if username in ['smuggerteey', 'cicada403'] else ('dashboard' if user_data['role'] == 'Artist' else 'userdashboard') }}">
-            <i class="fas fa-home"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="{{ url_for('upload_artwork') if user_data['role'] == 'Artist' else ''}}">
-            <i class="fas fa-upload"></i>
-            <span>Upload Artwork</span>
-        </a>
-        <a href="{{ url_for('marketplace') }}">
+        <a href="{{ url_for('marketplace') }}" class ="active">
             <i class="fas fa-store"></i>
             <span>Marketplace</span>
         </a>
@@ -1158,6 +1147,7 @@
         </a>
     </div>
 </div>
+
 
     <!-- Mobile Menu Button -->
     <button class="mobile-menu-btn" id="mobileMenuBtn">

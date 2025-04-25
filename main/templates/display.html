@@ -156,12 +156,6 @@
     </div>
     <!-- Main Content End -->
 
-    <div class="text-center mt-3 wow fadeInUp" data-wow-delay="0.5s">
-        <form action="/admindashboard" method="get">
-            <button type="submit" class="btn btn-secondary py-3 px-5">Go Back to Dashboard</button>
-        </form>
-    </div>
-
     <!-- Edit Challenge Modal -->
     <div class="modal fade" id="editChallengeModal" tabindex="-1" aria-labelledby="editChallengeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -651,6 +645,10 @@
             </div>
             
             <div class="sidebar-menu">
+                <a href="{{ url_for('admindashboard') }}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
                 <a href="{{ url_for('marketplace') }}">
                     <i class="fas fa-image"></i>
                     <span>Visit Marketplace</span>
