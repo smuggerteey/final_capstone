@@ -783,6 +783,7 @@ def view_artwork(artwork_id):
         return render_template(
             'artwork_detail.html',
             artwork=artwork,
+            user = current_user,
             related_artworks=related_artworks,
             user_data=user_data,
             username=session.get('username')
@@ -792,6 +793,15 @@ def view_artwork(artwork_id):
         if 'conn' in locals():
             conn.close()
         return f"Error fetching artwork: {str(e)}", 500
+from datetime import datetime
+
+def datetimeformat(value, format='%b %d, %Y %I:%M %p'):
+    if value is None:
+        return ""
+    return value.strftime(format)
+
+# Add this to your Flask app creation
+app.jinja_env.filters['datetimeformat'] = datetimeformat
 
 @app.route('/dashboard')
 @login_required
@@ -799,23 +809,149 @@ def dashboard():
     """Artist dashboard."""
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
+
+    # Fetch challenges
     cursor.execute("SELECT * FROM Challenges")
     challenges = cursor.fetchall()
+
+    # Calculate stats
+    cursor.execute("SELECT COUNT(*) AS total_artworks FROM artwork WHERE user_id = %s", (current_user.id,))
+    total_artworks = cursor.fetchone()['total_artworks']
+
+    # Use backticks around `Like`
+    cursor.execute("SELECT COUNT(*) AS total_likes FROM `Like` WHERE artwork_id IN (SELECT id FROM artwork WHERE user_id = %s)", (current_user.id,))
+    total_likes = cursor.fetchone()['total_likes']
+
+    cursor.execute("""
+    SELECT COUNT(DISTINCT id) as collector_count 
+    FROM purchases
+    WHERE artwork_id IN (
+        SELECT id 
+        FROM artwork 
+        WHERE user_id = %s
+    )
+""", (current_user.id,))
+    collector_count = cursor.fetchone()['collector_count']
+
+    cursor.execute("SELECT COUNT(*) AS total_views FROM Views WHERE artwork_id IN (SELECT id FROM artwork WHERE user_id = %s)", (current_user.id,))
+    total_views = cursor.fetchone()['total_views']
+
+    cursor.execute("SELECT SUM(price) AS total_earnings FROM Purchases WHERE artwork_id IN (SELECT id FROM artwork WHERE user_id = %s)", (current_user.id,))
+    total_earnings = cursor.fetchone()['total_earnings'] or 0.0
+
     cursor.close()
     conn.close()
-    return render_template('dashboard.html', challenges=challenges, user=current_user)
+
+    return render_template('dashboard.html', 
+                           challenges=challenges, 
+                           user=current_user, 
+                           total_artworks=total_artworks, 
+                           total_likes=total_likes, 
+                           total_views=total_views,
+                           collector_count=collector_count, 
+                           total_earnings=total_earnings)
+
+from datetime import datetime
+
+def format_datetime(value, format='%b %d, %Y %I:%M %p'):
+    """Format a datetime object or string."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        try:
+            value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return value
+    return value.strftime(format)
+
+# Register the filter
+app.jinja_env.filters['datetimeformat'] = format_datetime
 
 @app.route('/userdashboard')
 @login_required
 def userdashboard():
-    """Regular user dashboard."""
+    """Regular user dashboard with dynamic data."""
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM Challenges")
-    challenges = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return render_template('userdashboard.html', challenges=challenges, user=current_user)
+    
+    try:
+        # Get user statistics - using backticks for reserved keywords
+        cursor.execute("""
+            SELECT 
+                (SELECT COUNT(*) FROM challenges WHERE id = %s) AS challenges_participated,
+                (SELECT COUNT(*) FROM `like` WHERE artwork_id IN 
+                    (SELECT id FROM artwork WHERE user_id = %s)) AS likes_received,
+                (SELECT COUNT(*) FROM purchases WHERE buyer_id = %s) AS purchases_made,
+                (SELECT COUNT(*) FROM messages WHERE recipient_id = %s AND read_status = 0) AS unread_messages
+        """, (current_user.id, current_user.id, current_user.id, current_user.id))
+        stats = cursor.fetchone() or {}
+        
+        # Get leaderboard score
+        cursor.execute("SELECT score FROM leaderboard WHERE id = %s", (current_user.id,))
+        leaderboard_data = cursor.fetchone()
+        leaderboard_score = leaderboard_data['score'] if leaderboard_data else 0
+        
+        # Get recent activity
+        cursor.execute("""
+            SELECT * FROM user_interactions 
+            WHERE user_id = %s 
+            ORDER BY timestamp DESC 
+            LIMIT 4
+        """, (current_user.id,))
+        recent_activity = cursor.fetchall()
+        
+        # Get recent artworks
+        cursor.execute("""
+            SELECT * FROM artwork 
+            WHERE user_id = %s 
+            ORDER BY created_at DESC 
+            LIMIT 3
+        """, (current_user.id,))
+        recent_artworks = cursor.fetchall()
+        
+        # Get ongoing challenges
+        cursor.execute("""
+            SELECT c.*, uc.progress 
+            FROM challenges c
+            JOIN user_challenges uc ON c.id = uc.challenge_id
+            WHERE uc.id = %s AND c.deadline > NOW()
+            ORDER BY c.deadline ASC
+            LIMIT 2
+        """, (current_user.id,))
+        ongoing_challenges = cursor.fetchall()
+        
+        return render_template('userdashboard.html',
+                            user=current_user,
+                            stats={
+                                'leaderboard_score': leaderboard_score,
+                                'challenges_participated': stats.get('challenges_participated', 0),
+                                'purchases_made': stats.get('purchases_made', 0),
+                                'unread_messages': stats.get('unread_messages', 0),
+                                'likes_received': stats.get('likes_received', 0)
+                            },
+                            recent_activity=recent_activity,
+                            recent_artworks=recent_artworks,
+                            ongoing_challenges=ongoing_challenges)
+    
+    except Exception as e:
+        print(f"Database error: {e}")
+        # Return empty/default data if there's an error
+        return render_template('userdashboard.html',
+                            user=current_user,
+                            stats={
+                                'leaderboard_score': 0,
+                                'challenges_participated': 0,
+                                'purchases_made': 0,
+                                'unread_messages': 0,
+                                'likes_received': 0
+                            },
+                            recent_activity=[],
+                            recent_artworks=[],
+                            ongoing_challenges=[])
+    
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/admindashboard')
 @login_required
@@ -938,7 +1074,7 @@ def create_challenges():
 
         return redirect(url_for('display_challenges'))
 
-    return render_template('create_challenges.html')
+    return render_template('create_challenges.html', user =current_user)
 
 @app.route('/edit_challenge', methods=['POST'])
 def edit_challenge():
@@ -1010,11 +1146,11 @@ def leaderboard():
         cursor.close()
         connection.close()
         
-        return render_template('leaderboard.html', leaderboard_data=leaderboard_data)
+        return render_template('leaderboard.html', leaderboard_data=leaderboard_data,user =current_user)
     except Exception as e:
         print(f"Error fetching leaderboard data: {e}")  # Debug statement
         flash('An error occurred while fetching the leaderboard.', 'error')
-        return redirect(url_for('index'))  # Redirect to a safe page
+        return redirect(url_for('leaderboard'))  # Redirect to a safe page
     
 @app.route('/get_statistics')
 @login_required
@@ -1404,6 +1540,7 @@ def marketplace():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
     
+    # Fetch artworks
     cursor.execute("""
         SELECT 
             a.*,
@@ -1414,22 +1551,43 @@ def marketplace():
         ORDER BY a.category, a.created_at DESC
     """)
     artworks = cursor.fetchall()
-    
+
+    # Organize artworks by category
     artworks_by_category = {}
     for artwork in artworks:
         category = artwork['category']
         if category not in artworks_by_category:
             artworks_by_category[category] = []
         artworks_by_category[category].append(artwork)
-    
+
+    # Fetch statistics
+    cursor.execute("SELECT COUNT(*) as count FROM artwork")
+    artwork_count = cursor.fetchone()['count']
+
+    cursor.execute("SELECT COUNT(*) as count FROM users WHERE role = 'Artist'")
+    artist_count = cursor.fetchone()['count']
+
+    cursor.execute("""
+        SELECT COUNT(DISTINCT id) as count 
+        FROM purchases
+    """)
+    collector_count = cursor.fetchone()['count']
+
+    # Hard-coded country count
+    country_count = 54  # This can be adjusted as needed
+
     cursor.close()
     conn.close()
     
     return render_template('marketplace.html', 
-                         artworks_by_category=artworks_by_category,
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
+                           artworks_by_category=artworks_by_category,
+                           user=user, 
+                           username=username, 
+                           user_data=user_data,
+                           artwork_count=artwork_count,
+                           artist_count=artist_count,
+                           collector_count=collector_count,
+                           country_count=country_count)
 
 @app.route('/delete_artwork', methods=['DELETE'])
 def delete_artwork():
@@ -1457,7 +1615,7 @@ def delete_artwork():
 @login_required
 def admin_reports():
     # Get all reports from the database
-    return render_template('admin_reports.html')
+    return render_template('admin_reports.html', user=current_user)
 
 
 # =============================================
@@ -1470,7 +1628,7 @@ def profile():
     """User profile management."""
     user = get_current_user()
     artworks = []
-    
+    user_data = {'role': user.role} 
     # Database connection for fetching artworks
     conn = create_connection()
     try:
@@ -1576,6 +1734,7 @@ def profile():
 
     return render_template('profile.html', 
                          user=user,
+                         user_data=user_data,
                          artworks=artworks,
                          username=user.username)
 
@@ -1606,7 +1765,8 @@ def message():
                          username=current_user.username, 
                          messages=messages, 
                          room=room, 
-                         user_data=user_data)
+                         user_data=user_data,
+                         user =current_user)
 
 @app.route('/chat')
 def chat():
@@ -1657,6 +1817,7 @@ def send_email_route():
 @app.route('/checkout/<int:artwork_id>', methods=['GET'])
 def checkout(artwork_id):
     user = get_current_user()
+    user_data = {'role': user.role} 
     if not user:
         flash('Please login to complete your purchase', 'error')
         return redirect(url_for('login'))
@@ -1667,7 +1828,8 @@ def checkout(artwork_id):
     try:
         # Get artwork details
         cursor.execute("""
-            SELECT a.*, u.id as artist_id 
+            SELECT a.*, u.username as artist,
+                       u.id as artist_id 
             FROM artwork a
             JOIN users u ON a.user_id = u.id
             WHERE a.id = %s
@@ -1683,7 +1845,7 @@ def checkout(artwork_id):
             flash("You cannot purchase your own artwork", 'error')
             return redirect(url_for('marketplace'))
 
-        return render_template('checkout.html', artwork=artwork, user=user)
+        return render_template('checkout.html', artwork=artwork, user=current_user, user_data=user_data)
 
     except Exception as e:
         flash(f'Error: {str(e)}', 'error')
@@ -1698,6 +1860,7 @@ from decimal import Decimal
 @app.route('/receipt/<receipt_number>')
 def view_receipt(receipt_number):
     user = get_current_user()
+    user_data = {'role': user.role} 
     if not user:
         flash('Please login to view your receipt', 'error')
         return redirect(url_for('login'))
@@ -1730,7 +1893,7 @@ def view_receipt(receipt_number):
     receipt['fee'] = price * 0.15
     receipt['total'] = price * 1.15
 
-    return render_template('receipt.html', receipt=receipt)
+    return render_template('receipt.html', receipt=receipt, user = current_user, user_data=user_data)
 
 from PIL import Image, ImageDraw, ImageFont
 import io
@@ -1847,6 +2010,7 @@ def generate_receipt_image(receipt):
 @app.route('/purchase_history')
 def purchase_history():
     user = get_current_user()
+    user_data = {'role': user.role} 
     if not user:
         flash('Please login to view your purchase history', 'error')
         return redirect(url_for('login'))
@@ -1867,7 +2031,7 @@ def purchase_history():
     cursor.close()
     conn.close()
 
-    return render_template('purchase_history.html', purchases=purchases)
+    return render_template('purchase_history.html', purchases=purchases,user =current_user, user_data=user_data)
 
 @app.route('/recent/<int:artwork_id>')
 def recent(artwork_id):
@@ -2108,7 +2272,7 @@ def insights():
         connection.close()
         
         return render_template('insights.html', 
-                             leaderboard_data=leaderboard_data)
+                             leaderboard_data=leaderboard_data, user= current_user)
     except Exception as e:
         logging.error(f"Error: {e}")
         return render_template('insights.html', 
@@ -2173,14 +2337,14 @@ def artwork_management():
     cursor.close()
     conn.close()
     
-    return render_template('task_management.html', artworks=artworks)
+    return render_template('task_management.html', artworks=artworks,user=current_user)
 
 @app.route('/user_management')
 def user_management():
     user = get_current_user()  # Function to get the logged-in user
     username = user.username
     user_data = {'role': user.role} 
-    return render_template('user_management.html', user=user, username=username, user_data=user_data)
+    return render_template('user_management.html', username=username, user_data=user_data, user=current_user)
 
 # =============================================
 # CHATBOT FUNCTIONALITY
@@ -2232,79 +2396,215 @@ def predict():
 
 @app.route('/artist_profiles')
 def artist_profiles():
-    """Display all artists ranked by uploads and leaderboard score."""
+    """Display all artists or a single artist if artist_id is provided."""
+    user = get_current_user()
+    user_data = get_user_data(current_user.username)
+    artist_id = request.args.get('artist_id')
+    
     try:
         conn = create_connection()
         cursor = conn.cursor(dictionary=True)
         
-        # Get all artists with their artwork count and leaderboard score
-        cursor.execute("""
-            SELECT 
-                u.id, u.username, u.first_name, u.last_name, u.profile_picture, u.bio,
-                COUNT(a.id) AS artwork_count,
-                IFNULL(l.score, 0) AS leaderboard_score,
-                (
-                    SELECT AVG(r.rating)
-                    FROM artist_ratings r
-                    WHERE r.artist_id = u.id
-                ) AS average_rating,
-                (
-                    SELECT COUNT(*)
-                    FROM artist_ratings r
-                    WHERE r.artist_id = u.id
-                ) AS rating_count,
-                (
-                    SELECT COUNT(*)
-                    FROM artist_followers f
-                    WHERE f.artist_id = u.id
-                ) AS follower_count
-            FROM 
-                users u
-            LEFT JOIN 
-                artwork a ON u.id = a.user_id
-            LEFT JOIN
-                leaderboard l ON u.username = l.username
-            WHERE 
-                u.role = 'Artist'
-            GROUP BY 
-                u.id
-            ORDER BY 
-                artwork_count DESC, 
-                leaderboard_score DESC,
-                average_rating DESC
-        """)
-        artists = cursor.fetchall()
-        
-        # Get categories for each artist
-        for artist in artists:
+        if artist_id:
+            # Get basic artist information (NEW QUERY)
+            cursor.execute("""
+                SELECT 
+                    u.username,
+                    u.first_name,
+                    u.last_name,
+                    u.email,
+                    u.phone,
+                    u.address,
+                    u.profile_picture,
+                    u.bio,
+                    u.instagram,
+                    u.twitter,
+                    u.website
+                FROM 
+                    users u
+                WHERE 
+                    u.id = %s
+            """, (artist_id,))
+            artist_basic = cursor.fetchone()
+            
+            if not artist_basic:
+                return "Artist not found", 404
+                
+            # Get artist statistics (existing query)
+            cursor.execute("""
+                SELECT 
+                    COUNT(a.id) AS artwork_count,
+                    IFNULL(l.score, 0) AS leaderboard_score,
+                    (
+                        SELECT AVG(r.rating)
+                        FROM artist_ratings r
+                        WHERE r.artist_id = u.id
+                    ) AS average_rating,
+                    (
+                        SELECT COUNT(*)
+                        FROM artist_ratings r
+                        WHERE r.artist_id = u.id
+                    ) AS rating_count,
+                    (
+                        SELECT COUNT(*)
+                        FROM artist_followers f
+                        WHERE f.artist_id = u.id
+                    ) AS follower_count
+                FROM 
+                    users u
+                LEFT JOIN 
+                    artwork a ON u.id = a.user_id
+                LEFT JOIN
+                    leaderboard l ON u.username = l.username
+                WHERE 
+                    u.id = %s
+                GROUP BY 
+                    u.id
+            """, (artist_id,))
+            artist_stats = cursor.fetchone() or {}
+            
+            # Combine basic info and stats
+            artist = {**artist_basic, **artist_stats}
+                
+            # Get categories for the artist
             cursor.execute("""
                 SELECT DISTINCT category 
                 FROM artwork 
                 WHERE user_id = %s
-            """, (artist['id'],))
+            """, (artist_id,))
             categories = [row['category'] for row in cursor.fetchall() if row['category']]
             artist['categories'] = categories or ['Various']
-        
-        cursor.close()
-        conn.close()
-        
-        return render_template('artist_profiles.html', artists=artists,user=current_user)
+            
+            # Get artist's artworks with media URLs and types
+            cursor.execute("""
+                SELECT 
+                    id, title, description, price, tags, category, 
+                    media, created_at
+                FROM 
+                    artwork
+                WHERE 
+                    user_id = %s
+                ORDER BY 
+                    created_at DESC
+            """, (artist_id,))
+            
+            artworks = cursor.fetchall()
+            for artwork in artworks:
+                artwork['media_url'] = get_media_url(artwork['media'])
+                artwork['media_type'] = get_media_type(artwork['media'])
+                artwork['created_at'] = artwork['created_at'].strftime('%b %d, %Y')
+            
+            artist['artworks'] = artworks
+            
+            cursor.close()
+            conn.close()
+            
+            return render_template('single_artist_profile.html', 
+                                artist=artist, 
+                                user=user,
+                                user_data=user_data)
+            
+        else:
+            # Get list of all artists
+            cursor.execute("""
+                SELECT 
+                    u.id, u.username, u.first_name, u.last_name, 
+                    u.profile_picture, u.bio,
+                    COUNT(a.id) AS artwork_count,
+                    IFNULL(l.score, 0) AS leaderboard_score,
+                    (
+                        SELECT AVG(r.rating)
+                        FROM artist_ratings r
+                        WHERE r.artist_id = u.id
+                    ) AS average_rating,
+                    (
+                        SELECT COUNT(*)
+                        FROM artist_ratings r
+                        WHERE r.artist_id = u.id
+                    ) AS rating_count,
+                    (
+                        SELECT COUNT(*)
+                        FROM artist_followers f
+                        WHERE f.artist_id = u.id
+                    ) AS follower_count
+                FROM 
+                    users u
+                LEFT JOIN 
+                    artwork a ON u.id = a.user_id
+                LEFT JOIN
+                    leaderboard l ON u.username = l.username
+                WHERE 
+                    u.role = 'Artist'
+                GROUP BY 
+                    u.id
+                ORDER BY 
+                    artwork_count DESC, 
+                    leaderboard_score DESC,
+                    average_rating DESC
+            """)
+            
+            artists = cursor.fetchall()
+            
+            # Get categories for each artist
+            for artist in artists:
+                cursor.execute("""
+                    SELECT DISTINCT category 
+                    FROM artwork 
+                    WHERE user_id = %s
+                """, (artist['id'],))
+                categories = [row['category'] for row in cursor.fetchall() if row['category']]
+                artist['categories'] = categories or ['Various']
+            
+            cursor.close()
+            conn.close()
+            
+            return render_template('artist_profiles.html', 
+                                artists=artists, 
+                                user=user,
+                                user_data=user_data)
     
     except Exception as e:
+        logging.error(f"Error in artist_profiles: {str(e)}")
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route('/api/artist/<int:artist_id>', methods=['GET'])
 def get_artist_details(artist_id):
-    """Get detailed information about a specific artist."""
+    """API endpoint to get detailed information about a specific artist."""
     try:
         conn = create_connection()
         cursor = conn.cursor(dictionary=True)
         
-        # Get artist basic info
+        # Get basic artist information (NEW QUERY)
         cursor.execute("""
             SELECT 
-                u.id, u.username, u.first_name, u.last_name, 
-                u.profile_picture, u.bio, u.email, u.phone, u.address,
+                u.username,
+                u.first_name,
+                u.last_name,
+                u.email,
+                u.phone,
+                u.address,
+                u.profile_picture,
+                u.bio,
+                u.instagram,
+                u.twitter,
+                u.website
+            FROM 
+                users u
+            WHERE 
+                u.id = %s
+        """, (artist_id,))
+        artist = cursor.fetchone()
+        
+        if not artist:
+            return jsonify({'error': 'Artist not found'}), 404
+            
+        # Get artist statistics (existing query)
+        cursor.execute("""
+            SELECT 
                 COUNT(a.id) AS artwork_count,
                 IFNULL(l.score, 0) AS leaderboard_score,
                 (
@@ -2333,10 +2633,8 @@ def get_artist_details(artist_id):
             GROUP BY 
                 u.id
         """, (artist_id,))
-        artist = cursor.fetchone()
-        
-        if not artist:
-            return jsonify({'error': 'Artist not found'}), 404
+        stats = cursor.fetchone() or {}
+        artist.update(stats)
         
         # Get artist's categories
         cursor.execute("""
@@ -2346,25 +2644,29 @@ def get_artist_details(artist_id):
         """, (artist_id,))
         artist['categories'] = [row['category'] for row in cursor.fetchall() if row['category']]
         
-        # Get artist's recent artworks
+        # Get artist's recent artworks (limited to 6 for featured display)
         cursor.execute("""
-            SELECT id, title, media, price, 
-                   DATE_FORMAT(created_at, '%Y-%m-%d') as upload_date
-            FROM artwork
-            WHERE user_id = %s
-            ORDER BY created_at DESC
+            SELECT 
+                id, title, description, price, tags, category, 
+                media, created_at
+            FROM 
+                artwork
+            WHERE 
+                user_id = %s
+            ORDER BY 
+                created_at DESC
             LIMIT 6
         """, (artist_id,))
-        artworks = cursor.fetchall()
         
-        # Enhance artworks with media URLs
+        artworks = cursor.fetchall()
         for artwork in artworks:
             artwork['media_url'] = get_media_url(artwork['media'])
             artwork['media_type'] = get_media_type(artwork['media'])
+            artwork['created_at'] = artwork['created_at'].strftime('%b %d, %Y')
         
         artist['artworks'] = artworks
         
-        # Get artist's recent reviews
+        # Get artist's recent reviews (limited to 10)
         cursor.execute("""
             SELECT 
                 r.id, r.rating, r.comment, r.created_at,
@@ -2380,9 +2682,8 @@ def get_artist_details(artist_id):
                 r.created_at DESC
             LIMIT 10
         """, (artist_id,))
-        reviews = cursor.fetchall()
         
-        # Format dates for reviews
+        reviews = cursor.fetchall()
         for review in reviews:
             review['created_at'] = review['created_at'].strftime('%b %d, %Y')
         
@@ -2394,7 +2695,7 @@ def get_artist_details(artist_id):
         return jsonify(artist)
         
     except Exception as e:
-        logging.error(f"Error fetching artist details: {e}")
+        logging.error(f"Error in get_artist_details: {str(e)}")
         if 'cursor' in locals():
             cursor.close()
         if 'conn' in locals():
