@@ -554,6 +554,21 @@
         .sidebar-collapsed .sidebar-toggle {
             right: 25px;
         }
+
+        /* Category-specific file type indicators */
+        .file-type-info {
+            display: none;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgba(6, 187, 204, 0.1);
+            border-radius: 8px;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .file-type-info.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -675,16 +690,16 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group mb-4">
-                                        <label for="category" class="form-label fw-bold">Category</label>
+                                        <label for="category" class="form-label fw-bold">Category*</label>
                                         <select id="category" name="category" class="form-select" required>
                                             <option value="">Select a category</option>
-                                            <option value="painting">Painting</option>
-                                            <option value="photography">Photography</option>
-                                            <option value="digital">Digital Art</option>
-                                            <option value="sculpture">Sculpture</option>
-                                            <option value="music">Music</option>
-                                            <option value="animation">Animation</option>
-                                            <option value="other">Other</option>
+                                            <option value="painting">Painting (Images only)</option>
+                                            <option value="photography">Photography (Images only)</option>
+                                            <option value="digital">Digital Art (Images only)</option>
+                                            <option value="sculpture">Sculpture (Images only)</option>
+                                            <option value="music">Music (Audio only)</option>
+                                            <option value="animation">Animation (Video only)</option>
+                                            <option value="other">Other (Any media type)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -708,11 +723,12 @@
 
                             <div class="form-group mb-4">
                                 <label class="form-label fw-bold">Upload Your Artwork*</label>
+                                <div id="file-type-info" class="file-type-info"></div>
                                 <div class="drag-drop-area bg-light p-5 text-center" id="drag-drop-area">
                                     <i class="fas fa-cloud-upload-alt mb-3"></i>
                                     <h5 class="mb-2">Drag & Drop Your Files Here</h5>
                                     <p class="text-muted mb-3">or click to browse your files</p>
-                                    <small class="text-muted">Supports: JPG, PNG, GIF, MP3, MP4 (Max 20MB)</small>
+                                    <small class="text-muted">Max file size: 20MB</small>
                                     <input type="file" id="media" name="media" accept="image/*,audio/*,video/*" required style="display: none;">
                                 </div>
                                 <div class="file-info" id="file-info"></div>
@@ -854,6 +870,58 @@
             const sidebar = document.getElementById('sidebar');
             const body = document.body;
             const backButton = document.querySelector('.floating-back-btn');
+            const categorySelect = document.getElementById('category');
+            const fileTypeInfo = document.getElementById('file-type-info');
+
+            // Category to file type mapping
+            const categoryFileTypes = {
+                'painting': 'Images only (JPG, PNG, GIF)',
+                'photography': 'Images only (JPG, PNG, GIF)',
+                'digital': 'Images only (JPG, PNG, GIF)',
+                'sculpture': 'Images only (JPG, PNG, GIF)',
+                'music': 'Audio only (MP3, WAV)',
+                'animation': 'Video only (MP4, MOV)',
+                'other': 'Any media type'
+            };
+
+            // Update file type info when category changes
+            categorySelect.addEventListener('change', function() {
+                const selectedCategory = this.value;
+                if (selectedCategory && categoryFileTypes[selectedCategory]) {
+                    fileTypeInfo.textContent = `Allowed file types: ${categoryFileTypes[selectedCategory]}`;
+                    fileTypeInfo.classList.add('show');
+                } else {
+                    fileTypeInfo.classList.remove('show');
+                }
+                
+                // Clear file input if category changes after file selection
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if (!isFileTypeValid(file.type, selectedCategory)) {
+                        fileInput.value = '';
+                        previewImage.style.display = 'none';
+                        previewAudio.classList.add('d-none');
+                        previewVideo.classList.add('d-none');
+                        previewContainer.classList.remove('show');
+                        fileInfo.textContent = '';
+                        submitBtn.classList.remove('pulse-animation');
+                        showFeedback(`Please select a file that matches the ${selectedCategory} category requirements`, 'warning');
+                    }
+                }
+            });
+
+            // Check if file type is valid for selected category
+            function isFileTypeValid(fileType, category) {
+                if (!category || category === 'other') return true;
+                
+                if (category === 'music') {
+                    return fileType.startsWith('audio/');
+                } else if (category === 'animation') {
+                    return fileType.startsWith('video/');
+                } else {
+                    return fileType.startsWith('image/');
+                }
+            }
 
             // Sidebar toggle functionality
             function toggleSidebar() {
@@ -980,17 +1048,25 @@
             });
 
             function handleFileSelection(file) {
-                // Check file size (max 20MB)
-                if (file.size > 20 * 1024 * 1024) {
-                    showFeedback('File size exceeds 20MB limit', 'danger');
+                const selectedCategory = categorySelect.value;
+                
+                // Check if category is selected
+                if (!selectedCategory) {
+                    showFeedback('Please select a category first', 'warning');
                     fileInput.value = '';
                     return;
                 }
                 
-                // Check file type
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'audio/mpeg', 'audio/mp3', 'video/mp4'];
-                if (!validTypes.includes(file.type)) {
-                    showFeedback('Invalid file type. Please upload JPG, PNG, GIF, MP3, or MP4 files.', 'danger');
+                // Check file type against category
+                if (!isFileTypeValid(file.type, selectedCategory)) {
+                    showFeedback(`Invalid file type for ${selectedCategory} category. Please select ${categoryFileTypes[selectedCategory]}`, 'danger');
+                    fileInput.value = '';
+                    return;
+                }
+                
+                // Check file size (max 20MB)
+                if (file.size > 20 * 1024 * 1024) {
+                    showFeedback('File size exceeds 20MB limit', 'danger');
                     fileInput.value = '';
                     return;
                 }
@@ -1081,6 +1157,12 @@
                     return;
                 }
                 
+                // Validate file type against category
+                if (!isFileTypeValid(file.type, category)) {
+                    showFeedback(`Invalid file type for ${category} category. Please select ${categoryFileTypes[category]}`, 'danger');
+                    return;
+                }
+                
                 // Show uploading status
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Uploading...';
@@ -1126,6 +1208,7 @@
                     previewContainer.classList.remove('show');
                     fileInfo.textContent = '';
                     submitBtn.classList.remove('pulse-animation');
+                    fileTypeInfo.classList.remove('show');
                     
                 } catch (error) {
                     console.error('Upload failed:', error);
@@ -1173,6 +1256,7 @@
                     previewContainer.classList.remove('show');
                     fileInfo.textContent = '';
                     submitBtn.classList.remove('pulse-animation');
+                    fileTypeInfo.classList.remove('show');
                     
                 } catch (error) {
                     console.error('Upload failed:', error);
