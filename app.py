@@ -10,6 +10,7 @@ import csv
 from functools import wraps
 from datetime import datetime
 from io import BytesIO
+from urllib.parse import urlparse
 import uuid
 
 from flask import (Flask, current_app, request, jsonify, render_template, redirect, send_file, send_from_directory, 
@@ -1551,6 +1552,11 @@ def marketplace():
     """)
     artworks = cursor.fetchall()
 
+    # Enhance artworks with media info
+    for artwork in artworks:
+        artwork['media_url'] = get_media_url(artwork['media'])
+        artwork['media_type'] = get_media_type(artwork['media'])
+
     # Organize artworks by category
     artworks_by_category = {}
     for artwork in artworks:
@@ -1579,15 +1585,14 @@ def marketplace():
     conn.close()
     
     return render_template('marketplace.html', 
-                           artworks_by_category=artworks_by_category,
-                           user=user, 
-                           username=username, 
-                           artwork=artwork,
-                           user_data=user_data,
-                           artwork_count=artwork_count,
-                           artist_count=artist_count,
-                           collector_count=collector_count,
-                           country_count=country_count)
+                         artworks_by_category=artworks_by_category,
+                         user=user, 
+                         username=username, 
+                         user_data=user_data,
+                         artwork_count=artwork_count,
+                         artist_count=artist_count,
+                         collector_count=collector_count,
+                         country_count=country_count)
 
 @app.route('/delete_artwork', methods=['DELETE'])
 def delete_artwork():
@@ -1628,8 +1633,8 @@ def profile():
     """User profile management."""
     user = get_current_user()
     artworks = []
-    user_data = {'role': user.role} 
-    # Database connection for fetching artworks
+    
+    # Database connection for fetching artworks and extended user data
     conn = create_connection()
     try:
         with conn.cursor(dictionary=True) as cursor:
@@ -1655,13 +1660,22 @@ def profile():
             """, (user.id,))
             artworks = cursor.fetchall()
             
-            # Debug logging
-            app.logger.debug(f"Fetched {len(artworks)} artworks for user {user.id}")
-            for art in artworks:
-                app.logger.debug(f"Artwork {art['id']}: {art['media_path']}")
+            # Fetch complete user data including new fields
+            cursor.execute("""
+                SELECT 
+                    id, username, email, first_name, last_name, bio, 
+                    profile_picture, role, phone, address, created_at, status
+                FROM Users 
+                WHERE id = %s
+            """, (user.id,))
+            user_data = cursor.fetchone()
+            if user_data:
+                user = type('User', (), user_data)  # Convert dict to object for template compatibility
+            
+            app.logger.debug(f"Fetched user data: {user_data}")
 
     except mysql.connector.Error as err:
-        flash('Error fetching artworks', 'error')
+        flash('Error fetching profile data', 'error')
         app.logger.error(f"Database error: {err}")
     finally:
         conn.close()
@@ -1671,18 +1685,51 @@ def profile():
         first_name = request.form.get('first_name')
         last_name = request.form.get('last_name')
         bio = request.form.get('bio')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
         profile_picture = request.files.get('profile_picture')
 
         conn = create_connection()
         try:
             with conn.cursor() as cursor:
-                # Update basic profile info
-                cursor.execute("""
-                    UPDATE Users 
-                    SET first_name = %s, last_name = %s, bio = %s 
-                    WHERE id = %s
-                """, (first_name, last_name, bio, user.id))
-
+                updates = []
+                params = []
+                
+                # Basic info updates
+                if first_name != user.first_name:
+                    updates.append("first_name = %s")
+                    params.append(first_name)
+                if last_name != user.last_name:
+                    updates.append("last_name = %s")
+                    params.append(last_name)
+                if bio != user.bio:
+                    updates.append("bio = %s")
+                    params.append(bio)
+                if phone != user.phone:
+                    updates.append("phone = %s")
+                    params.append(phone)
+                if address != user.address:
+                    updates.append("address = %s")
+                    params.append(address)
+                
+                # Password change handling
+                if current_password and new_password and confirm_password:
+                    if new_password != confirm_password:
+                        flash('New passwords do not match', 'error')
+                    else:
+                        # Verify current password
+                        cursor.execute("SELECT password FROM Users WHERE id = %s", (user.id,))
+                        result = cursor.fetchone()
+                        if result and check_password_hash(result[0], current_password):
+                            updates.append("password = %s")
+                            params.append(generate_password_hash(new_password))
+                            flash('Password updated successfully!', 'success')
+                        else:
+                            flash('Current password is incorrect', 'error')
+                
                 # Handle profile picture upload
                 if profile_picture and profile_picture.filename:
                     if not allowed_file(profile_picture.filename):
@@ -1710,16 +1757,20 @@ def profile():
                         
                         # Store relative path in database
                         db_path = os.path.join('profile_pics', filename).replace('\\', '/')
-                        cursor.execute("""
-                            UPDATE Users 
-                            SET profile_picture = %s 
-                            WHERE id = %s
-                        """, (db_path, user.id))
+                        updates.append("profile_picture = %s")
+                        params.append(db_path)
                         
                         flash('Profile picture updated successfully!', 'success')
                 
-                conn.commit()
-                flash('Profile updated successfully!', 'success')
+                # Only update if there are changes
+                if updates:
+                    update_query = "UPDATE Users SET " + ", ".join(updates) + " WHERE id = %s"
+                    params.append(user.id)
+                    cursor.execute(update_query, tuple(params))
+                    conn.commit()
+                    flash('Profile updated successfully!', 'success')
+                else:
+                    flash('No changes detected', 'info')
                 
                 # Refresh user data
                 user = get_current_user()
@@ -1734,7 +1785,6 @@ def profile():
 
     return render_template('profile.html', 
                          user=user,
-                         user_data=user_data,
                          artworks=artworks,
                          username=user.username)
 

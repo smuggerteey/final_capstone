@@ -668,43 +668,97 @@
                     </div>
                 </div>
             </div>
-
             <!-- Profile Update Form -->
-            <div class="form-container wow fadeInUp" data-wow-delay="0.3s">
-                <h3 class="form-title">Update Your Profile</h3>
-                <form method="POST" enctype="multipart/form-data">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="text" name="first_name" class="form-control" id="floatingFirstName" placeholder="First Name" value="{{ user.first_name }}" required>
-                                <label for="floatingFirstName">First Name</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating">
-                                <input type="text" name="last_name" class="form-control" id="floatingLastName" placeholder="Last Name" value="{{ user.last_name }}" required>
-                                <label for="floatingLastName">Last Name</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-floating">
-                                <textarea name="bio" class="form-control" placeholder="Tell us about yourself..." id="floatingBio" style="height: 120px" required>{{ user.bio }}</textarea>
-                                <label for="floatingBio">Your Bio</label>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <label for="formFile" class="form-label">Profile Picture</label>
-                            <input class="form-control" type="file" name="profile_picture" id="formFile" accept="image/*">
-                            <div class="form-text">Max size 2MB (JPEG, PNG recommended)</div>
-                        </div>
-                        <div class="col-12 text-center">
-                            <button type="submit" class="btn btn-primary px-5 py-2">
-                                <i class="fas fa-save me-2"></i>Update Profile
-                            </button>
+<div class="form-container wow fadeInUp" data-wow-delay="0.3s">
+    <h3 class="form-title">Update Your Profile</h3>
+    <form method="POST" enctype="multipart/form-data">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="first_name" class="form-control" id="floatingFirstName" placeholder="First Name" value="{{ user.first_name }}" required>
+                    <label for="floatingFirstName">First Name</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="last_name" class="form-control" id="floatingLastName" placeholder="Last Name" value="{{ user.last_name }}" required>
+                    <label for="floatingLastName">Last Name</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="tel" name="phone" class="form-control" id="floatingPhone" placeholder="Phone Number" value="{{ user.phone if user.phone else '' }}">
+                    <label for="floatingPhone">Phone Number</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" name="address" class="form-control" id="floatingAddress" placeholder="Address" value="{{ user.address if user.address else '' }}">
+                    <label for="floatingAddress">Address</label>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-floating">
+                    <textarea name="bio" class="form-control" placeholder="Tell us about yourself..." id="floatingBio" style="height: 120px">{{ user.bio if user.bio else '' }}</textarea>
+                    <label for="floatingBio">Your Bio</label>
+                </div>
+            </div>
+            
+            <!-- Password Update Section -->
+            <div class="col-12 mt-4">
+                <h5 class="mb-3">Change Password</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="password" name="current_password" class="form-control" id="floatingCurrentPassword" placeholder="Current Password">
+                            <label for="floatingCurrentPassword">Current Password</label>
                         </div>
                     </div>
-                </form>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="password" name="new_password" class="form-control" id="floatingNewPassword" placeholder="New Password">
+                            <label for="floatingNewPassword">New Password</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="password" name="confirm_password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm Password">
+                            <label for="floatingConfirmPassword">Confirm Password</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-text">Leave blank to keep current password</div>
             </div>
+            
+            <!-- Profile Picture Upload -->
+            <div class="col-12">
+                <label for="formFile" class="form-label">Profile Picture</label>
+                <input class="form-control" type="file" name="profile_picture" id="formFile" accept="image/*">
+                <div class="form-text">Max size 2MB (JPEG, PNG recommended)</div>
+            </div>
+            
+            <!-- Read-only fields -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingStatus" placeholder="Status" value="{{ user.status if user.status else 'Active' }}" readonly>
+                    <label for="floatingStatus">Account Status</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="floatingJoinDate" placeholder="Join Date" value="{{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'N/A' }}" readonly>
+                    <label for="floatingJoinDate">Member Since</label>
+                </div>
+            </div>
+            
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary px-5 py-2">
+                    <i class="fas fa-save me-2"></i>Update Profile
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
 
             <!-- Portfolio Section -->
             <div class="section-header wow fadeIn" data-wow-delay="0.4s">
