@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+    Bandit Report
+</title>
+
+<style>
+
+html * {
+    font-family: "Arial", sans-serif;
+}
+
+pre {
+    font-family: "Monaco", monospace;
+}
+
+.bordered-box {
+    border: 1px solid black;
+    padding-top:.5em;
+    padding-bottom:.5em;
+    padding-left:1em;
+}
+
+.metrics-box {
+    font-size: 1.1em;
+    line-height: 130%;
+}
+
+.metrics-title {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-bottom: .25em;
+}
+
+.issue-description {
+    font-size: 1.3em;
+    font-weight: 500;
+}
+
+.candidate-issues {
+    margin-left: 2em;
+    border-left: solid 1px; LightGray;
+    padding-left: 5%;
+    margin-top: .2em;
+    margin-bottom: .2em;
+}
+
+.issue-block {
+    border: 1px solid LightGray;
+    padding-left: .5em;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.issue-sev-high {
+    background-color: Pink;
+}
+
+.issue-sev-medium {
+    background-color: NavajoWhite;
+}
+
+.issue-sev-low {
+    background-color: LightCyan;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="metrics">
+    <div class="metrics-box bordered-box">
+        <div class="metrics-title">
+            Metrics:<br>
+        </div>
+        Total lines of code: <span id="loc">1716</span><br>
+        Total lines skipped (#nosec): <span id="nosec">0</span>
+    </div>
+</div>
+
+
+
+
+<br>
+<div id="results">
+    
+<div id="issue-0">
+<div class="issue-block issue-sev-low">
+    <b>hardcoded_password_string: </b> Possible hardcoded password: 'tinotenda'<br>
+    <b>Test ID:</b> B105<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/259.html" target="_blank">CWE-259</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>48<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b105_hardcoded_password_string.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b105_hardcoded_password_string.html</a><br>
+
+<div class="code">
+<pre>
+47	# Configuration
+48	app.secret_key = &#x27;tinotenda&#x27;
+49	app.config[&#x27;UPLOAD_FOLDER&#x27;] = &quot;static/uploads&quot;
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-1">
+<div class="issue-block issue-sev-medium">
+    <b>blacklist: </b> By default, Python will create a secure, verified ssl context for use in such classes as HTTPSConnection. However, it still allows using an insecure context via the _create_unverified_context that  reverts to the previous behavior that does not validate certificates or perform hostname checks.<br>
+    <b>Test ID:</b> B323<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/295.html" target="_blank">CWE-295</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>137<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/blacklists/blacklist_calls.html#b323-unverified-context" target="_blank">https://bandit.readthedocs.io/en/1.8.3/blacklists/blacklist_calls.html#b323-unverified-context</a><br>
+
+<div class="code">
+<pre>
+136	    
+137	    context = ssl._create_unverified_context()
+138	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-2">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>165<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+164	                
+165	                cursor.execute(f&quot;SELECT * FROM {table}&quot;)
+166	                for row in cursor.fetchall():
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-3">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>169<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+168	                    values = &#x27;, &#x27;.join([f&quot;&#x27;{str(v)}&#x27;&quot; if v is not None else &#x27;NULL&#x27; for v in row.values()])
+169	                    f.write(f&quot;INSERT INTO {table} ({columns}) VALUES ({values});\n&quot;)
+170	                f.write(&quot;\n&quot;)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-4">
+<div class="issue-block issue-sev-low">
+    <b>hardcoded_password_funcarg: </b> Possible hardcoded password: ''<br>
+    <b>Test ID:</b> B106<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/259.html" target="_blank">CWE-259</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>329<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b106_hardcoded_password_funcarg.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b106_hardcoded_password_funcarg.html</a><br>
+
+<div class="code">
+<pre>
+328	def get_db_connection():
+329	    return mysql.connector.connect(
+330	        host=&quot;localhost&quot;,
+331	        user=&quot;root&quot;,
+332	        password=&quot;&quot;,
+333	        database=&quot;testDB&quot;
+334	    )
+335	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-5">
+<div class="issue-block issue-sev-medium">
+    <b>request_without_timeout: </b> Call to requests without timeout<br>
+    <b>Test ID:</b> B113<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank">CWE-400</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>1440<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b113_request_without_timeout.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b113_request_without_timeout.html</a><br>
+
+<div class="code">
+<pre>
+1439	
+1440	    response = requests.post(&quot;https://api.paystack.co/transaction/initialize&quot;, 
+1441	                           json=payload, 
+1442	                           headers=headers)
+1443	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-6">
+<div class="issue-block issue-sev-medium">
+    <b>request_without_timeout: </b> Call to requests without timeout<br>
+    <b>Test ID:</b> B113<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank">CWE-400</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>1456<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b113_request_without_timeout.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b113_request_without_timeout.html</a><br>
+
+<div class="code">
+<pre>
+1455	
+1456	    response = requests.get(f&quot;https://api.paystack.co/transaction/verify/{reference}&quot;, 
+1457	                          headers=headers)
+1458	    
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-7">
+<div class="issue-block issue-sev-high">
+    <b>flask_debug_true: </b> A Flask app appears to be run with debug=True, which exposes the Werkzeug debugger and allows the execution of arbitrary code.<br>
+    <b>Test ID:</b> B201<br>
+    <b>Severity: </b>HIGH<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/94.html" target="_blank">CWE-94</a><br>
+    <b>File: </b><a href="C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py" target="_blank">C:/Users/vanessa.apaliya/documents/final_capstone/main/app.py</a><br>
+    <b>Line number: </b>2106<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b201_flask_debug_true.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b201_flask_debug_true.html</a><br>
+
+<div class="code">
+<pre>
+2105	    load_model()  # Load chatbot model
+2106	    socketio.run(app, debug=True)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+</div>
+
+</body>
+</html>

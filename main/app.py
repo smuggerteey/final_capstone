@@ -51,8 +51,8 @@ app = Flask(__name__)
 
 # Configuration
 app.secret_key = 'tinotenda'
-app.config['UPLOAD_FOLDER'] = "main/static/uploads"
-app.config['PROFILE_PICS_FOLDER'] = "main/static/profile_pics"
+app.config['UPLOAD_FOLDER'] = "static/uploads"
+app.config['PROFILE_PICS_FOLDER'] = "static/profile_pics"
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
@@ -1284,8 +1284,6 @@ def upload_artwork():
                 'message': 'Please enter a valid price'
             }), 400
 
-        # Create uploads directory if it doesn't exist
-        os.makedirs('main/static/uploads', exist_ok=True)
 
         # Calculate file hash
         file_content = media.read()
@@ -1325,13 +1323,13 @@ def upload_artwork():
 
             # Save the file
             filename = secure_filename(media.filename)
-            file_path = os.path.join("main/static/uploads", filename)
+            file_path = os.path.join("static/uploads", filename)
             
             # Ensure unique filename
             counter = 1
             while os.path.exists(file_path):
                 name, ext = os.path.splitext(filename)
-                file_path = os.path.join("main/static/uploads", f"{name}_{counter}{ext}")
+                file_path = os.path.join("static/uploads", f"{name}_{counter}{ext}")
                 counter += 1
             
             media.save(file_path)
@@ -1584,6 +1582,7 @@ def marketplace():
                            artworks_by_category=artworks_by_category,
                            user=user, 
                            username=username, 
+                           artwork=artwork,
                            user_data=user_data,
                            artwork_count=artwork_count,
                            artist_count=artist_count,
