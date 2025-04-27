@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Dashboard - Africcase 🎨</title>
+
+    <!-- Favicon -->
+    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{{ url_for('static', filename='lib/animate/animate.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #06BBCC;
+            --primary-dark: #049aab;
+            --secondary-color: #5cbaf0;
+            --accent-color: #ff6584;
+            --light-bg: #f8f9fa;
+            --dark-bg: #343a40;
+            --sidebar-width: 280px;
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #3f7fa4;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Sidebar - Glass Morphism Effect */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(42, 40, 40, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #3fc4c4;
+            position: fixed;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .sidebar-header h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            color: hsl(186, 25%, 84%);
+            font-size: 0.85rem;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: #e7dddd;
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin: 5px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(6, 187, 204, 0.1);
+            color: var(--primary-dark);
+            border-left: 4px solid var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            transition: var(--transition);
+        }
+        
+        /* Top Navbar - Gradient Background */
+        .top-navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: rgb(41, 167, 198);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .top-navbar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .welcome-message h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: rgb(7, 7, 7);
+        }
+        
+        .welcome-message p {
+            color: rgba(15, 14, 14, 0.8);
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+        
+        /* Stats Cards - Neumorphic Design */
+        .stats-card {
+            background: rgb(255, 255, 255);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .icon-1 { background: rgba(108, 99, 255, 0.1); color: var(--primary-color); }
+        .icon-2 { background: rgba(255, 101, 132, 0.1); color: var(--accent-color); }
+        .icon-3 { background: rgba(75, 192, 192, 0.1); color: #4bc0c0; }
+        .icon-4 { background: rgba(255, 159, 64, 0.1); color: #ff9f40; }
+        
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stats-title {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* Recent Activity - Timeline Style */
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--card-shadow);
+            height: 100%;
+        }
+        
+        .activity-item {
+            display: flex;
+            padding: 15px 0;
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .activity-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 21px;
+            top: 40px;
+            bottom: -15px;
+            width: 2px;
+            background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(108, 99, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: absolute;
+            left: 0;
+            top: 15px;
+            z-index: 1;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-content h6 {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            color: #888;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-time::before {
+            content: '•';
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+        
+        /* Artwork Grid - Masonry Style */
+        .artwork-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .artwork-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .artwork-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .artwork-img {
+            height: 180px;
+            object-fit: cover;
+            width: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .artwork-card:hover .artwork-img {
+            transform: scale(1.05);
+        }
+        
+        .artwork-body {
+            padding: 15px;
+        }
+        
+        .artwork-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .artwork-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        .artwork-meta span:first-child {
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+        
+        /* Quick Actions - Floating Buttons */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .quick-action-btn {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            color: #555;
+            text-decoration: none;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(6, 187, 204, 0.1), rgba(92, 186, 240, 0.1));
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .quick-action-btn:hover {
+            color: var(--primary-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-action-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .quick-action-btn i {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .quick-action-btn:hover i {
+            transform: scale(1.1);
+        }
+        
+        /* Challenges Cards - Interactive */
+        .challenge-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+            position: relative;
+        }
+        
+        .challenge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .challenge-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        
+        .challenge-img {
+            height: 160px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .challenge-card:hover .challenge-img {
+            transform: scale(1.05);
+        }
+        
+        .challenge-body {
+            padding: 20px;
+        }
+        
+        .challenge-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .challenge-text {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Section Titles */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: -10px;
+            left: 0;
+            border-radius: 3px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+                overflow: hidden;
+            }
+            
+            .sidebar-header h3, .sidebar-menu span {
+                display: none;
+            }
+            
+            .sidebar-menu a {
+                justify-content: center;
+                padding: 15px 0;
+                margin: 5px 10px;
+            }
+            
+            .sidebar-menu i {
+                margin-right: 0;
+                font-size: 1.3rem;
+            }
+            
+            .main-content {
+                margin-left: 80px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1100;
+                width: 280px;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+        
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+        
+        .mobile-menu-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+        
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Dashboard Layout Start -->
+    <div class="dashboard-container">
+        <!-- Sidebar Start -->
+        <div class="sidebar">
+
+            <div class="user-profile">
+                <style>
+                    .user-profile {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                    }
+            
+                    .profile-pic {
+                        width: 100px; /* Adjust size as needed */
+                        height: 100px; /* Adjust size as needed */
+                        border-radius: 50%;
+                        object-fit: cover;
+                        cursor: pointer;
+                        border: 2px solid #e3e6f0;
+                        margin-bottom: 10px; /* Space below the image */
+                    }
+            
+                    .sidebar-title {
+                        font-size: 1.2rem; /* Adjust font size as needed */
+                        font-weight: bold;
+                        color: #4e73df; /* Example text color */
+                    }
+                </style>
+                
+                <div class="dropdown">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                
+                <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='img/default_profile.png') }}" 
+                     alt="Profile" class="profile-pic" 
+                     onclick="window.location.href='{{ url_for('profile') }}'">
+                
+                <div class="sidebar-title"></div>
+            </div>
+            <div class="sidebar-header">
+                <h3>Africcase</h3>
+                <p>Artist Dashboard</p>
+                </div>
+            
+            <div class="sidebar-menu">
+                <a href="{{ url_for('dashboard')}}" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('upload_artwork') }}">
+                    <i class="fas fa-upload"></i>
+                    <span>Upload Artwork</span>
+                </a>
+                <a href="{{ url_for('marketplace') }}">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="{{ url_for('virtual_gallery') }}">
+                    <i class="fas fa-images"></i>
+                    <span>Virtual Gallery</span>
+                </a>
+                <a href="{{ url_for('sketchboard') }}">
+                    <i class="fas fa-trophy"></i>
+                    <span>Art Challenges</span>
+                </a>
+                <a href="{{ url_for('collaboration_hub') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Collaboration</span>
+                </a>
+                <a href="{{ url_for('chat') }}">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>ArtBot Chat</span>
+                </a>
+                <a href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+        <!-- Sidebar End -->
+
+        <!-- Main Content Start -->
+        <div class="main-content">
+            <!-- Top Navbar -->
+            <div class="top-navbar animate__animated animate__fadeIn">
+                <style>
+                    .top-navbar {
+                        display: flex;
+                        justify-content: center; /* Center horizontally */
+                        align-items: center; /* Center vertically */
+                        text-align: center; /* Center text */
+                        padding: 20px; /* Adjust padding as needed */
+                    }
+            
+                    .welcome-message h1 {
+                        font-size: 2.5rem; /* Increase font size */
+                        margin: 0; /* Remove default margin */
+                    }
+            
+                    .welcome-message p {
+                        font-size: 1.2rem; /* Increase paragraph font size */
+                        margin-top: 10px; /* Space between heading and paragraph */
+                    }
+                </style>
+            
+                <div class="welcome-message">
+                    <h1>Welcome back, {{ user.username }}! 👋</h1>
+                    <p>Here's what's happening with your art today</p>
+                </div>
+            </div>
+
+ <!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.1s;">
+            <div class="stats-icon icon-1">
+                <i class="fas fa-paint-brush"></i>
+            </div>
+            <h3 class="stats-number">{{ total_artworks }}</h3>
+            <p class="stats-title">Artworks Uploaded</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.2s;">
+            <div class="stats-icon icon-2">
+                <i class="fas fa-heart pulse"></i>
+            </div>
+            <h3 class="stats-number">3</h3> 
+            <p class="stats-title">Total Likes</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.3s;">
+            <div class="stats-icon icon-3">
+                <i class="fas fa-eye"></i>
+            </div>
+            <h3 class="stats-number">11</h3>
+            <p class="stats-title">Total Views</p>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="stats-card fade-in" style="animation-delay: 0.4s;">
+            <div class="stats-icon icon-4">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <h3 class="stats-number">${{ total_earnings }}</h3>
+            <p class="stats-title">Earnings</p>
+        </div>
+    </div>
+</div>
+
+            <!-- Quick Actions -->
+            <div class="card mb-4 border-0 shadow-sm fade-in" style="animation-delay: 0.5s;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4 section-title">Quick Actions</h5>
+                    <div class="quick-actions">
+                        <a href="{{ url_for('upload_artwork') }}" class="quick-action-btn">
+                            <i class="fas fa-upload"></i>
+                            Upload Artwork
+                        </a>
+                        <a href="{{ url_for('marketplace') }}" class="quick-action-btn">
+                            <i class="fas fa-store"></i>
+                            Browse Marketplace
+                        </a>
+                        <a href="{{ url_for('sketchboard') }}" class="quick-action-btn">
+                            <i class="fas fa-trophy"></i>
+                            Join Challenge
+                        </a>
+                        <a href="{{ url_for('chat') }}" class="quick-action-btn">
+                            <i class="fas fa-robot"></i>
+                            Chat with ArtBot
+                        </a>
+                        <a href="{{ url_for('virtual_gallery') }}" class="quick-action-btn">
+                            <i class="fas fa-images"></i>
+                            Vitual Gallery
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity and Recent Artwork -->
+            <div class="row fade-in" style="animation-delay: 0.6s;">
+                <div class="col-lg-6 mb-4">
+                    <div class="recent-activity">
+                        <h5 class="mb-4 section-title">Recent Activity</h5>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>Your artwork "Sunset Dreams" received 15 new likes</h6>
+                                <p class="activity-time">2 hours ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>New comment on "Urban Jungle": "Amazing colors!"</h6>
+                                <p class="activity-time">5 hours ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>"Abstract Thoughts" was purchased for $120</h6>
+                                <p class="activity-time">1 day ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h6>You've been selected as featured artist of the week</h6>
+                                <p class="activity-time">2 days ago</p>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="btn btn-sm btn-link text-primary mt-2">View all activity</a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">   
+                            <h5 class="card-title mb-4 section-title">Recent Artwork</h5>
+                            <div class="artwork-grid">
+                                <div class="artwork-card">
+                                    <img src="{{ url_for('static', filename='img/artwork1.jpg') }}" class="artwork-img" alt="Artwork">
+                                    <div class="artwork-body">
+                                        <h6 class="artwork-title">Sunset Dreams</h6>
+                                        <div class="artwork-meta">
+                                            <span><i class="fas fa-heart me-1"></i> 12 likes</span>
+                                            <span>2 days ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="artwork-card">
+                                    <img src="{{ url_for('static', filename='img/artwork2.jpg') }}" class="artwork-img" alt="Artwork">
+                                    <div class="artwork-body">
+                                        <h6 class="artwork-title">Urban Jungle</h6>
+                                        <div class="artwork-meta">
+                                            <span><i class="fas fa-heart me-1"></i> 45 likes</span>
+                                            <span>1 week ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('profile') }}" class="btn btn-sm btn-link text-primary mt-3">View all artwork</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Challenges -->
+            <div class="card mb-4 border-0 shadow-sm fade-in" style="animation-delay: 0.7s;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0 section-title">Active Challenges</h5>
+                        <a href="{{ url_for('sketchboard') }}" class="btn btn-sm btn-primary">View All Challenges</a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="challenge-card h-100">
+                                <img src="{{ url_for('static', filename='img/challenge1.jpg') }}" class="challenge-img" alt="Challenge">
+                                <span class="challenge-badge bg-warning">Ongoing</span>
+                                <div class="challenge-body">
+                                    <h6 class="challenge-title">Abstract Expressions</h6>
+                                    <p class="challenge-text">Create your interpretation of abstract art. Ends in 3 days.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted"><i class="fas fa-users me-1"></i> 124 participants</small>
+                                        <a href="#" class="btn btn-sm btn-primary">Join</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="challenge-card h-100">
+                                <img src="{{ url_for('static', filename='img/challenge2.jpg') }}" class="challenge-img" alt="Challenge">
+                                <span class="challenge-badge bg-success">New</span>
+                                <div class="challenge-body">
+                                    <h6 class="challenge-title">Portrait Mastery</h6>
+                                    <p class="challenge-text">Showcase your portrait skills. Just started!</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted"><i class="fas fa-users me-1"></i> 87 participants</small>
+                                        <a href="#" class="btn btn-sm btn-primary">Join</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-4">
+                            <div class="challenge-card h-100">
+                                <img src="{{ url_for('static', filename='img/challenge3.jpg') }}" class="challenge-img" alt="Challenge">
+                                <span class="challenge-badge bg-info">Featured</span>
+                                <div class="challenge-body">
+                                    <h6 class="challenge-title">Nature's Beauty</h6>
+                                    <p class="challenge-text">Capture the essence of nature. 5 days remaining.</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted"><i class="fas fa-users me-1"></i> 215 participants</small>
+                                        <a href="#" class="btn btn-sm btn-primary">Join</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Inspiration Gallery -->
+            <div class="card mb-4 border-0 shadow-sm fade-in" style="animation-delay: 0.8s;">
+                <div class="card-body">
+                    <h5 class="card-title mb-4 section-title">Inspiration Gallery</h5>
+                    <p class="text-muted mb-4">Trending artworks from the community to spark your creativity</p>
+                    
+                    <div class="row">
+                        <div class="col-md-3 col-6 mb-4">
+                            <div class="artwork-card">
+                                <img src="{{ url_for('static', filename='img/inspiration1.jpg') }}" class="artwork-img" alt="Inspiration">
+                                <div class="artwork-body">
+                                    <h6 class="artwork-title">Ocean Waves</h6>
+                                    <div class="artwork-meta">
+                                        <span>by Artist123</span>
+                                        <span><i class="fas fa-heart me-1"></i> 89</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-4">
+                            <div class="artwork-card">
+                                <img src="{{ url_for('static', filename='img/inspiration2.jpg') }}" class="artwork-img" alt="Inspiration">
+                                <div class="artwork-body">
+                                    <h6 class="artwork-title">Mountain Peak</h6>
+                                    <div class="artwork-meta">
+                                        <span>by CreativeSoul</span>
+                                        <span><i class="fas fa-heart me-1"></i> 112</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-4">
+                            <div class="artwork-card">
+                                <img src="{{ url_for('static', filename='img/inspiration3.jpg') }}" class="artwork-img" alt="Inspiration">
+                                <div class="artwork-body">
+                                    <h6 class="artwork-title">Urban Sketch</h6>
+                                    <div class="artwork-meta">
+                                        <span>by SketchMaster</span>
+                                        <span><i class="fas fa-heart me-1"></i> 76</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6 mb-4">
+                            <div class="artwork-card">
+                                <img src="{{ url_for('static', filename='img/inspiration4.jpg') }}" class="artwork-img" alt="Inspiration">
+                                <div class="artwork-body">
+                                    <h6 class="artwork-title">Digital Dreams</h6>
+                                    <div class="artwork-meta">
+                                        <span>by PixelArtist</span>
+                                        <span><i class="fas fa-heart me-1"></i> 154</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Content End -->
+        
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <!-- Dashboard Layout End -->
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/waypoints/waypoints.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/owlcarousel/owl.carousel.min.js') }}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        // Initialize tooltips
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+        
+        // Active sidebar item
+        $(document).ready(function() {
+            const currentPage = window.location.pathname.split('/').pop() || 'dashboard';
+            $('.sidebar-menu a').each(function() {
+                const linkPage = $(this).attr('href').split('/').pop();
+                if (currentPage.includes(linkPage)) {
+                    $(this).addClass('active');
+                }
+            });
+            
+            // Mobile menu toggle
+            $('#mobileMenuBtn').click(function() {
+                $('.sidebar').toggleClass('active');
+            });
+            
+            // Animate elements on scroll
+            $(window).scroll(function() {
+                $('.fade-in').each(function() {
+                    const position = $(this).offset().top;
+                    const scroll = $(window).scrollTop();
+                    const windowHeight = $(window).height();
+                    
+                    if (scroll > position - windowHeight + 200) {
+                        $(this).addClass('animate__animated animate__fadeInUp');
+                    }
+                });
+            });
+            
+            // Trigger scroll event on load
+            $(window).trigger('scroll');
+            
+            // Pulse animation for notifications
+            setInterval(function() {
+                $('.pulse').toggleClass('animate__pulse');
+            }, 2000);
+        });
+        
+        // Hide spinner when page is loaded
+        window.addEventListener('load', function() {
+            const spinner = document.getElementById('spinner');
+            spinner.style.transition = 'opacity 0.5s';
+            spinner.style.opacity = '0';
+            setTimeout(function() {
+                spinner.style.display = 'none';
+            }, 500);
+        });
+    </script>
+</body>
+
+</html>

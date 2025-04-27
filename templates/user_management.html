@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management | Admin Dashboard</title>
+
+    <!-- Favicon -->
+    <link href="{{ url_for('static', filename='img/favicon.ico') }}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <!-- Customized Bootstrap -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #06BBCC;
+            --secondary-color: #1cc88a;
+            --danger-color: #e74a3b;
+            --warning-color: #f6c23e;
+            --dark-color: #5a5c69;
+            --light-color: #f8f9fc;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #3f7fa4;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
+        }
+        
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .floating-back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
+            color: white;
+        }
+        
+        .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .table tbody tr {
+            transition: all 0.2s;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+            transform: scale(1.01);
+        }
+        
+        .badge-admin {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .badge-user {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-moderator {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .action-btn {
+            border-radius: 50px;
+            padding: 5px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .btn-edit {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background-color: #dda20a;
+            color: white;
+        }
+        
+        .btn-remove {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-remove:hover {
+            background-color: #be2617;
+            color: white;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .search-box input {
+            padding-left: 45px;
+            border-radius: 50px;
+            border: 1px solid #e3e6f0;
+            box-shadow: none;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 12px;
+            color: #d1d3e2;
+        }
+        
+        .stats-card {
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stats-card.total-users {
+            background: linear-gradient(135deg, var(--primary-color), #224abe);
+        }
+        
+        .stats-card.admins {
+            background: linear-gradient(135deg, var(--secondary-color), #17a673);
+        }
+        
+        .stats-card.active {
+            background: linear-gradient(135deg, var(--warning-color), #dda20a);
+        }
+        
+        .stats-card i {
+            font-size: 2.5rem;
+            opacity: 0.7;
+        }
+        
+        .stats-card .count {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .stats-card .label {
+            font-size: 1rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .role-select {
+            border-radius: 50px;
+            padding: 5px 10px;
+            border: 1px solid #e3e6f0;
+            font-size: 14px;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .pagination .page-link {
+            color: var(--primary-color);
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spinner -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <button onclick="window.history.back();" class="floating-back-btn">
+        <i class="fas fa-arrow-left me-2"></i>
+    </button>
+
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Section -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h1 class="mb-3 fw-bold text-gradient">User Management</h1>
+                <p class="mb-3 fw-bold text-gradient">Manage all user accounts, roles, and permissions in one place</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="col-md-4">
+                    <div class="stats-card total-users glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="count" id="totalUsers">0</div>
+                                <div class="label">Total Users</div>
+                            </div>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card admins glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="count" id="adminCount">0</div>
+                                <div class="label">Administrators</div>
+                            </div>
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card active glass-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="count" id="activeUsers">0</div>
+                                <div class="label">Active Today</div>
+                            </div>
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="row justify-content-center wow fadeInUp" data-wow-delay="0.4s">
+                <div class="col-lg-12">
+                    <div class="glass-card p-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="userTable">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Role</th>
+                                        <th>Joined</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userList">
+                                    <!-- User data will be dynamically inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ url_for('static', filename='lib/wow/wow.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/easing/easing.min.js') }}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- User Management Script -->
+    <script>
+        // Initialize toast
+        const toastLiveExample = document.getElementById('liveToast');
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('liveToast');
+            toast.querySelector('.toast-body').textContent = message;
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toastBootstrap.show();
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Get role badge
+        function getRoleBadge(role) {
+            switch(role.toLowerCase()) {
+                case 'admin':
+                    return '<span class="badge badge-admin rounded-pill px-3 py-1">Admin</span>';
+                case 'moderator':
+                    return '<span class="badge badge-moderator rounded-pill px-3 py-1">Moderator</span>';
+                default:
+                    return '<span class="badge badge-user rounded-pill px-3 py-1">User</span>';
+            }
+        }
+
+        // Get status badge
+        function getStatusBadge(active) {
+            if (active) {
+                return '<span class="badge bg-success rounded-pill px-3 py-1">Active</span>';
+            } else {
+                return '<span class="badge bg-secondary rounded-pill px-3 py-1">Inactive</span>';
+            }
+        }
+
+        // Fetch users from the backend
+        async function fetchUsers() {
+            try {
+                // Show loading state
+                $('#userList').html('<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></td></tr>');
+                
+                const response = await fetch('/get_users');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+                const users = await response.json();
+
+                // Update stats
+                $('#totalUsers').text(users.length);
+                $('#adminCount').text(users.filter(u => u.role.toLowerCase() === 'admin').length);
+                $('#activeUsers').text(users.filter(u => u.active).length);
+
+                // Update the UI with the fetched users
+                const userList = document.getElementById('userList');
+                userList.innerHTML = users.map(user => `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="${user.avatar || 'https://ui-avatars.com/api/?name=' + user.username + '&background=random'}" 
+                                     class="rounded-circle me-3" width="40" height="40" alt="${user.username}">
+                                <div>
+                                    <h6 class="mb-0">${user.username}</h6>
+                                    <small class="text-muted">ID: ${user.id}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${getStatusBadge(user.active)}</td>
+                        <td>
+                            ${getRoleBadge(user.role)}
+                        </td>
+                        <td>${formatDate(user.created_at || new Date().toISOString())}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <select class="role-select form-select form-select-sm" onchange="updateUserRole(${user.id}, this.value)" data-user-id="${user.id}">
+                                    <option value="user" ${user.role.toLowerCase() === 'user' ? 'selected' : ''}>User</option>
+                                    <option value="moderator" ${user.role.toLowerCase() === 'moderator' ? 'selected' : ''}>Moderator</option>
+                                    <option value="admin" ${user.role.toLowerCase() === 'admin' ? 'selected' : ''}>Admin</option>
+                                </select>
+                                <button class="btn btn-edit action-btn" onclick="editUser(${user.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-remove action-btn" onclick="confirmRemoveUser(${user.id}, '${user.username}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Initialize DataTable
+                $('#userTable').DataTable({
+                    responsive: true,
+                    dom: '<"top"f>rt<"bottom"lip><"clear">',
+                    language: {
+                        search: "_INPUT_",
+                        searchPlaceholder: "Search users...",
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                // Display an error message to the user
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load users. Please try again later.</td></tr>';
+            }
+        }
+
+        // Update user role
+        async function updateUserRole(userId, newRole) {
+            try {
+                const response = await fetch(`/update_user_role/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to update user role');
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast(`User role updated to ${newRole} successfully!`);
+                    // Update the role badge without refreshing the whole page
+                    $(`select[data-user-id="${userId}"]`).closest('td').prev().html(getRoleBadge(newRole));
+                    // Update admin count if needed
+                    if (newRole === 'admin') {
+                        $('#adminCount').text(parseInt($('#adminCount').text()) + 1);
+                    }
+                }
+            } catch (error) {
+                console.error('Error updating user role:', error);
+                showToast('Failed to update user role', 'danger');
+                // Revert the select value
+                fetchUsers();
+            }
+        }
+
+        // Confirm before removing a user
+        function confirmRemoveUser(userId, username) {
+            if (confirm(`Are you sure you want to remove ${username}? This action cannot be undone.`)) {
+                removeUser(userId);
+            }
+        }
+
+        // Remove a user
+        async function removeUser(userId) {
+            try {
+                const response = await fetch(`/remove_user/${userId}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to remove user');
+                }
+                
+                const data = await response.json();
+                if (data.success) {
+                    showToast('User removed successfully!');
+                    // Refresh the user list
+                    fetchUsers();
+                }
+            } catch (error) {
+                console.error('Error removing user:', error);
+                showToast('Failed to remove user', 'danger');
+            }
+        }
+
+        // Edit user (placeholder for future implementation)
+        function editUser(userId) {
+            showToast(`Edit user ${userId} functionality will be implemented soon`, 'info');
+            // In a real implementation, this would open a modal with user details
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide spinner
+            setTimeout(() => {
+                $('#spinner').fadeOut();
+            }, 500);
+            
+            // Fetch users
+            fetchUsers();
+            
+            // Initialize animations
+            new WOW().init();
+        });
+    </script>
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Template</title>
+    
+    <!-- Required Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+
+:root {
+            --primary:  #06BBCC;
+            --primary-light: #6b8cbc;
+            --primary-dark: #3a5a8f;
+            --secondary: #ff7e5f;
+            --light: #f8f9fa;
+            --dark: #2b3a4e;
+            --light-gray: #f1f3f5;
+            --text-dark: #363440;
+            --text-light: #6c757d;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+            --primary-color: #06BBCC;
+            --secondary-color: #ff6584;
+            --dark-color: #2d3748;
+            --light-color: #f8f9fa;
+            --sidebar-width: 280px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            background-color: #3f7fa4;
+            overflow-x: hidden;
+            padding-top: 70px; /* To account for fixed header */
+
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+        }
+        
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(42, 40, 40, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #3fc4c4;
+            position: fixed;
+            height: 100vh;
+            padding: 20px 0;
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+            border-right: 1px solid rgba(255, 255, 255, 0.3);
+            transition: var(--transition);
+            left: 0;
+            top: 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+        }
+        
+        .sidebar-header h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            color: hsl(186, 25%, 84%);
+            font-size: 0.85rem;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: #e7dddd;
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+            margin: 5px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(6, 187, 204, 0.1);
+            color: var(--primary-color);
+            border-left: 4px solid var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* User Profile in Sidebar */
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #e3e6f0;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+
+        .profile-pic:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        /* Main content adjustment when sidebar is closed */
+        body.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        body.sidebar-hidden {
+            margin-left: 0;
+        }
+
+        .sidebar-collapsed .sidebar {
+            width: 80px;
+            overflow: hidden;
+        }
+
+        .sidebar-collapsed .sidebar-header h3, 
+        .sidebar-collapsed .sidebar-menu span,
+        .sidebar-collapsed .sidebar-title,
+        .sidebar-collapsed .user-profile .username {
+            display: none;
+        }
+
+        .sidebar-collapsed .sidebar-menu a {
+            justify-content: center;
+            padding: 15px 0;
+            margin: 5px 10px;
+        }
+
+        .sidebar-collapsed .sidebar-menu i {
+            margin-right: 0;
+            font-size: 1.3rem;
+        }
+
+        .sidebar-collapsed .profile-pic {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Mobile styles */
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            /* Adjust main content when sidebar is open on mobile */
+            body.sidebar-active {
+                overflow: hidden;
+            }
+            
+            body.sidebar-active::after {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+        }
+
+        /* Back button styles */
+        .floating-back-btn {
+            position: fixed;
+            top: 20px;
+            left: calc(var(--sidebar-width) + 20px);
+            background-color: #06BBCC;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+        }
+
+        .floating-back-btn:hover {
+            background-color: #0499a8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .floating-back-btn i {
+            margin-right: 8px;
+        }
+
+        .sidebar-collapsed .floating-back-btn {
+            left: 100px;
+        }
+
+        @media (max-width: 768px) {
+            .floating-back-btn {
+                left: 20px;
+            }
+        }
+
+        /* Sidebar toggle button */
+        .sidebar-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #3fc4c4;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .sidebar-collapsed .sidebar-toggle {
+            right: 25px;
+        }
+
+        /* Mobile menu button */
+        .mobile-menu-btn {
+            display: none;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+        }
+
+        .mobile-menu-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary-dark);
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Main content area styling */
+        .main-content {
+            padding: 20px;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+  <!-- Floating Back Button -->
+  <button onclick="window.history.back();" class="floating-back-btn">
+    <i class="fas fa-arrow-left"></i>
+    <span></span>
+</button>
+
+        <!-- Sidebar Start -->
+        <div class="sidebar">
+            <div class="user-profile">
+                <style>
+                    .user-profile {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                    }
+            
+                    .profile-pic {
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        cursor: pointer;
+                        border: 2px solid #e3e6f0;
+                        margin-bottom: 10px;
+                    }
+            
+                    .sidebar-title {
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        color: #4e73df;
+                    }
+                </style>
+                
+                <div class="dropdown">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+                
+                <img src="{{ url_for('static', filename=user.profile_picture) if user.profile_picture else url_for('static', filename='img/default_profile.png') }}" 
+                     alt="Profile" class="profile-pic" 
+                     onclick="window.location.href='{{ url_for('profile') }}'">
+                
+                <div class="sidebar-title">Admin Panel</div>
+            </div>
+            <div class="sidebar-header">
+                <h3>Africcase</h3>
+                <p>Administration Dashboard</p>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="{{ url_for('admindashboard') }}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('marketplace') }}">
+                    <i class="fas fa-image"></i>
+                    <span>Visit Marketplace</span>
+                </a>
+                <a href="{{ url_for('user_management') }}">
+                    <i class="fas fa-users"></i>
+                    <span>Manage User</span>
+                </a>
+                <a href="{{ url_for('artwork_management') }}">
+                    <i class="fas fa-paint-brush"></i>
+                    <span>Manage Artworks</span>
+                </a>
+                <a href="{{ url_for('display_challenges') }}">
+                    <i class="fas fa-list-alt"></i>
+                    <span>Challenges</span>
+                </a>
+                <a href="{{ url_for('insights') }}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="{{ url_for('admin_review') }}">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Review Artwork</span>
+                </a>
+                <a href="{{ url_for('admin_reports') }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const body = document.body;
+            const backButton = document.querySelector('.floating-back-btn');
+
+            // Sidebar toggle functionality
+            function toggleSidebar() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('active');
+                    body.classList.toggle('sidebar-active');
+                } else {
+                    body.classList.toggle('sidebar-collapsed');
+                    
+                    // Update back button position
+                    if (body.classList.contains('sidebar-collapsed')) {
+                        backButton.style.left = '100px';
+                    } else {
+                        backButton.style.left = 'calc(var(--sidebar-width) + 20px)';
+                    }
+                }
+            }
+
+            // Sidebar toggle button click
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleSidebar();
+            });
+
+            // Mobile menu button click
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleSidebar();
+            });
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768 && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== mobileMenuBtn && 
+                    sidebar.classList.contains('active')) {
+                    toggleSidebar();
+                }
+            });
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('active');
+                    body.classList.remove('sidebar-active');
+                    
+                    // Update back button position based on sidebar state
+                    if (body.classList.contains('sidebar-collapsed')) {
+                        backButton.style.left = '100px';
+                    } else {
+                        backButton.style.left = 'calc(var(--sidebar-width) + 20px)';
+                    }
+                } else {
+                    // On mobile, ensure sidebar is hidden by default
+                    if (!sidebar.classList.contains('active')) {
+                        backButton.style.left = '20px';
+                    }
+                }
+            });
+
+            // Initialize sidebar state based on screen size
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                backButton.style.left = '20px';
+            }
+        });
+    </script>
+</body>
+</html>
