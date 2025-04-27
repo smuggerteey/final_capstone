@@ -603,16 +603,7 @@ def handle_send_message(data):
     if not room_id or not message:
         return
         
-    # Broadcast message to room
-    emit('new_message', {
-        'user_id': current_user.id,
-        'username': current_user.username,
-        'profile_picture': current_user.profile_picture,
-        'message': message,
-        'timestamp': datetime.now().isoformat()
-    }, room=room_id)
-    
-    # Save to database
+    # Save to database first
     conn = create_connection()
     if not conn:
         return
@@ -624,8 +615,30 @@ def handle_send_message(data):
             VALUES (%s, %s, %s)
         """, (room_id, current_user.id, message))
         conn.commit()
+        
+        # Get the saved message with full details
+        cursor.execute("""
+            SELECT cm.id, cm.user_id, u.username, u.profile_picture, 
+                   cm.message, cm.created_at
+            FROM chat_messages cm
+            JOIN users u ON cm.user_id = u.id
+            WHERE cm.id = LAST_INSERT_ID()
+        """)
+        saved_message = cursor.fetchone()
+        
+        # Broadcast message to room with full details
+        emit('new_message', {
+            'id': saved_message['id'],
+            'user_id': saved_message['user_id'],
+            'username': saved_message['username'],
+            'profile_picture': saved_message['profile_picture'],
+            'message': saved_message['message'],
+            'created_at': saved_message['created_at'].isoformat()
+        }, room=room_id)
+        
     except mysql.connector.Error as err:
         logger.error(f"Error saving message: {err}")
+        conn.rollback()
     finally:
         cursor.close()
         conn.close()
