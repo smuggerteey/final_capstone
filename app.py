@@ -57,10 +57,6 @@ app.config['PROFILE_PICS_FOLDER'] = "static/profile_pics"
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'mp4', 'webm', 'mp3', 'wav'}
-TWILIO_ACCOUNT_SID = 'US153b06ac498ef1b403ab552f6673f964'
-TWILIO_AUTH_TOKEN = '8PJ3VNDJV6BWD5H7VD92LSCW'
-TWILIO_PHONE_NUMBER = '+2330203419613'
-SENDGRID_API_KEY = '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'
 PAYSTACK_SECRET_KEY = "sk_test_ed78162ac6ecfa0caadb9bc3346619e781498fb5"
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 # Ensure upload directories exist
@@ -74,7 +70,24 @@ db_config = {
     'host': 'localhost',
     'database': 'art_showcase'
 }
-
+# Database schema for messages
+def init_db():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS messages (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            username VARCHAR(255) NOT NULL,
+            room VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            timestamp DATETIME NOT NULL,
+            message_type ENUM('text', 'image') DEFAULT 'text'
+        )
+    """)
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
 # Third-party service configurations
 
 # Initialize extensions
@@ -85,7 +98,6 @@ mail = Mail(app)
 # =============================================
 # HELPER FUNCTIONS
 # =============================================
-
 def create_connection():
     """Create a database connection."""
     try:
@@ -97,6 +109,62 @@ def create_connection():
         logging.error(f"Database connection error: {e}")
         return None
 
+def save_message(username, room, message, message_type='text'):
+    """Save message to database."""
+    try:
+        conn = create_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO messages (username, room, message, timestamp, type)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (username, room, message, datetime.now(), message_type))
+        
+        conn.commit()
+        return cursor.lastrowid
+    except Exception as e:
+        logging.error(f"Error saving message: {e}")
+        return None
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+def get_recent_messages(room='general', limit=50):
+    """Retrieve recent messages for a room."""
+    try:
+        conn = create_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            SELECT id, username, room, message, timestamp, type
+            FROM messages
+            WHERE room = %s
+            ORDER BY timestamp DESC
+            LIMIT %s
+        """, (room, limit))
+        
+        messages = cursor.fetchall()
+        # Convert timestamp to string for JSON serialization
+        for message in messages:
+            message['timestamp'] = message['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+        
+        return messages[::-1]  # Return in chronological order
+    except Exception as e:
+        logging.error(f"Error retrieving messages: {e}")
+        return []
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+def get_online_users():
+    """Get list of online users (simplified implementation)."""
+    # In a real app, you'd track this in Redis or a dedicated table
+    return []
+
 def allowed_file(filename):
     """Check if file extension is allowed."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -105,90 +173,6 @@ def get_current_user():
     """Get the current logged-in user."""
     return current_user
 
-def log_system_activity(user_id, activity_type, description, ip_address):
-    """Log system activities for audit trail."""
-    try:
-        conn = create_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO system_logs (user_id, log_type, description, ip_address)
-            VALUES (%s, %s, %s, %s)
-        """, (user_id, activity_type, description, ip_address))
-        conn.commit()
-    except Exception as e:
-        logging.error(f"Error logging system activity: {e}")
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
-
-def send_whatsapp_message(to, message):
-    """Send WhatsApp message via Twilio."""
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    try:
-        message = client.messages.create(
-            body=message,
-            from_=f'whatsapp:{TWILIO_PHONE_NUMBER}',
-            to=f'whatsapp:{to}'
-        )
-        logging.info(f"WhatsApp message sent to {to}: {message.sid}")
-        return True
-    except Exception as e:
-        logging.error(f"Failed to send WhatsApp message: {e}")
-        return False
-
-def send_email(to_email, subject, content):
-    """Send email via SendGrid."""
-    sg = sendgrid.SendGridAPIClient(api_key=SENDGRID_API_KEY)
-    from_email = Email("tynochagaka@gmail.com")
-    to_email = To(to_email)
-    content = Content("text/plain", content)
-    
-    context = ssl._create_unverified_context()
-    
-    try:
-        response = sg.client.mail.send.post(request_body=mail.get(), ssl_context=context)
-        logging.info(f"Email sent to {to_email}: {response.status_code}")
-        return True
-    except Exception as e:
-        logging.error(f"Failed to send email: {e}")
-        return False
-
-def backup_database(filename):
-    """Backup database to a file."""
-    try:
-        backup_path = os.path.join('backups', filename)
-        os.makedirs('backups', exist_ok=True)
-        
-        conn = create_connection()
-        cursor = conn.cursor(dictionary=True)
-        
-        cursor.execute("SHOW TABLES")
-        tables = [row[f"Tables_in_{db_config['database']}"] for row in cursor.fetchall()]
-        
-        with open(backup_path, 'w') as f:
-            for table in tables:
-                cursor.execute(f"SHOW CREATE TABLE {table}")
-                create_table = cursor.fetchone()
-                f.write(f"{create_table['Create Table']};\n\n")
-                
-                cursor.execute(f"SELECT * FROM {table}")
-                for row in cursor.fetchall():
-                    columns = ', '.join([f"`{k}`" for k in row.keys()])
-                    values = ', '.join([f"'{str(v)}'" if v is not None else 'NULL' for v in row.values()])
-                    f.write(f"INSERT INTO {table} ({columns}) VALUES ({values});\n")
-                f.write("\n")
-        
-        return True
-    except Exception as e:
-        logging.error(f"Error backing up database: {e}")
-        return False
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
 @app.route('/artwork/<int:artwork_id>/report')
 def report_artwork(artwork_id):
     # Get the artwork or return 404 if not found
@@ -431,41 +415,6 @@ def load_user(user_id):
     if user_data:
         return Users(**user_data)
     return None
-
-# =============================================
-# SOCKET.IO HANDLERS
-# =============================================
-
-@socketio.on('send_message')
-def handle_send_message(data):
-    """Handle sending messages via SocketIO."""
-    room = data['room']
-    emit('receive_message', {
-        'message': data['message'],
-        'username': data['username']
-    }, room=room)
-
-@socketio.on('join')
-def on_join(data):
-    """Handle joining rooms via SocketIO."""
-    username = data['username']
-    room = data['room']
-    join_room(room)
-    emit('receive_message', {
-        'message': f'{username} has joined the room.',
-        'username': 'System'
-    }, room=room)
-
-@socketio.on('leave')
-def on_leave(data):
-    """Handle leaving rooms via SocketIO."""
-    username = data['username']
-    room = data['room']
-    leave_room(room)
-    emit('receive_message', {
-        'message': f'{username} has left the room.',
-        'username': 'System'
-    }, room=room)
 
 # =============================================
 # ROUTES - AUTHENTICATION
@@ -1789,78 +1738,6 @@ def profile():
                          username=user.username)
 
 # =============================================
-# ROUTES - COMMUNICATION
-# =============================================
-
-@app.route('/message')
-@login_required
-def message():
-    """Chat messaging interface."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    room = 'general'
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT username, message, timestamp 
-        FROM messages 
-        WHERE room = %s 
-        ORDER BY timestamp ASC
-    """, (room,))
-    messages = cursor.fetchall()
-    conn.close()
-    
-    return render_template('message.html', 
-                         username=current_user.username, 
-                         messages=messages, 
-                         room=room, 
-                         user_data=user_data,
-                         user =current_user)
-
-@app.route('/chat')
-def chat():
-    """Chat interface."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('chat.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
-
-@app.route('/send_whatsapp', methods=['POST'])
-def send_whatsapp():
-    """Send WhatsApp message."""
-    data = request.json
-    to = data.get('to')
-    message = data.get('message')
-    
-    if not to or not message:
-        return jsonify({'error': 'Missing "to" or "message" in request'}), 400
-    
-    if send_whatsapp_message(to, message):
-        return jsonify({'success': 'WhatsApp message sent successfully'}), 200
-    else:
-        return jsonify({'error': 'Failed to send WhatsApp message'}), 500
-
-@app.route('/send_email', methods=['POST'])
-def send_email_route():
-    """Send email."""
-    data = request.json
-    to_email = data.get('to_email')
-    subject = data.get('subject')
-    content = data.get('content')
-    
-    if not to_email or not subject or not content:
-        return jsonify({'error': 'Missing "to_email", "subject", or "content" in request'}), 400
-    
-    if send_email(to_email, subject, content):
-        return jsonify({'success': 'Email sent successfully'}), 200
-    else:
-        return jsonify({'error': 'Failed to send email'}), 500
-
-# =============================================
 # ROUTES - PAYMENTS
 # =============================================
 
@@ -2400,6 +2277,18 @@ def user_management():
 # CHATBOT FUNCTIONALITY
 # =============================================
 
+@app.route('/chat')
+def chat():
+    """Chat interface."""
+    user = get_current_user()
+    username = user.username
+    user_data = {'role': user.role} 
+    return render_template('chat.html', 
+                         user=user, 
+                         username=username, 
+                         user_data=user_data)
+
+
 # Define chatbot model globally
 MODEL_NAME = "MBZUAI/LaMini-T5-738M"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -2804,8 +2693,145 @@ def rate_artist(artist_id):
         if 'conn' in locals():
             conn.close()
         return jsonify({'error': 'Internal server error'}), 500
-    
+# =============================================
+# ROUTES - COMMUNICATION
+# =============================================
 
+# Function to fetch messages from database
+
+
+@app.route('/message')
+@login_required
+def message():
+    user = get_current_user()  # Function to get the logged-in user
+    username = user.username
+    user_data = {'role': user.role} 
+    room = 'general'  # Set room name
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT username, message, timestamp FROM messages WHERE room = %s ORDER BY timestamp ASC", (room,))
+    messages = cursor.fetchall()
+    conn.close()
+    
+    return render_template('message.html', username=current_user.username, user=user, messages=messages, room=room, user_data=user_data)
+def fetch_messages(room, limit=50):
+    """Fetch messages for a specific room"""
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT username, message, timestamp, message_type 
+        FROM messages 
+        WHERE room = %s 
+        ORDER BY timestamp DESC 
+        LIMIT %s
+    """, (room, limit))
+    messages = cursor.fetchall()
+    conn.close()
+    return messages[::-1]  # Reverse to show oldest first
+
+def fetch_private_messages(username, limit=50):
+    """Fetch all private messages involving this user"""
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT username, message, timestamp, message_type, room 
+        FROM messages 
+        WHERE room IN (
+            SELECT DISTINCT room 
+            FROM messages 
+            WHERE room LIKE %s OR room LIKE %s
+        )
+        AND room != 'general'
+        ORDER BY timestamp DESC 
+        LIMIT %s
+    """, (f"{username}_%", f"%_{username}", limit))
+    messages = cursor.fetchall()
+    conn.close()
+    return messages[::-1]  # Reverse to show oldest first
+
+def log_message(username, room, message, message_type='text'):
+    """Log a message to the database"""
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO messages (username, room, message, timestamp, message_type) 
+        VALUES (%s, %s, %s, %s, %s)
+    """, (username, room, message, datetime.utcnow(), message_type))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+# Socket.IO Events
+@socketio.on('join')
+def handle_join(data):
+    username = current_user.username
+    room = data['room']
+    join_room(room)
+    
+    # Send join notification
+    system_message = f'{username} joined the chat'
+    log_message('System', room, system_message)
+    send({
+        'username': 'System',
+        'message': system_message,
+        'timestamp': datetime.utcnow().isoformat(),
+        'room': room,
+        'type': 'system'
+    }, room=room)
+    
+    # Send message history
+    messages = fetch_messages(room)
+    for msg in messages:
+        send({
+            'username': msg['username'],
+            'message': msg['message'],
+            'timestamp': msg['timestamp'].isoformat(),
+            'room': room,
+            'type': msg['message_type']
+        }, room=request.sid)  # Send only to the joining user
+
+@socketio.on('leave')
+def handle_leave(data):
+    username = current_user.username
+    room = data['room']
+    leave_room(room)
+    
+    system_message = f'{username} left the chat'
+    log_message('System', room, system_message)
+    send({
+        'username': 'System',
+        'message': system_message,
+        'timestamp': datetime.utcnow().isoformat(),
+        'room': room,
+        'type': 'system'
+    }, room=room)
+
+@socketio.on('send_message')
+def handle_message(data):
+    username = current_user.username
+    room = data['room']
+    message = data['message']
+    message_type = data.get('type', 'text')
+    
+    # Handle file uploads
+    if message_type == 'image':
+        # In a real implementation, you'd save the file and store the path
+        # For now, we'll just log the base64 data (not recommended for production)
+        pass
+    
+    # Log the message
+    log_message(username, room, message, message_type)
+    
+    # Broadcast the message
+    send({
+        'username': username,
+        'message': message,
+        'timestamp': datetime.utcnow().isoformat(),
+        'room': room,
+        'type': message_type
+    }, room=room)
+
+    
 # Database simulation (in a real app, use a proper database)
 collaboration_rooms = {}
 active_users = {}
