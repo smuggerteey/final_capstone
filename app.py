@@ -13,7 +13,7 @@ from io import BytesIO
 from urllib.parse import urlparse
 import uuid
 
-from flask import (Flask, current_app, request, jsonify, render_template, redirect, send_file, send_from_directory, 
+from flask import (Flask, current_app, json, request, jsonify, render_template, redirect, send_file, send_from_directory, 
                   session, url_for, flash, make_response)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (LoginManager, UserMixin, login_user, logout_user, 
@@ -70,25 +70,6 @@ db_config = {
     'host': 'localhost',
     'database': 'art_showcase'
 }
-# Database schema for messages
-def init_db():
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS messages (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(255) NOT NULL,
-            room VARCHAR(255) NOT NULL,
-            message TEXT NOT NULL,
-            timestamp DATETIME NOT NULL,
-            message_type ENUM('text', 'image') DEFAULT 'text'
-        )
-    """)
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-# Third-party service configurations
 
 # Initialize extensions
 login_manager = LoginManager(app)
@@ -98,72 +79,872 @@ mail = Mail(app)
 # =============================================
 # HELPER FUNCTIONS
 # =============================================
+
+# Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.example.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'your-email@example.com'
+app.config['MAIL_PASSWORD'] = 'your-email-password'
+app.config['MAIL_DEFAULT_SENDER'] = 'noreply@africcase.com'
+
+# Initialize extensions
+login_manager = LoginManager(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+mail = Mail(app)
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+# Helper functions
 def create_connection():
     """Create a database connection."""
     try:
         conn = mysql.connector.connect(**db_config)
-        if conn.is_connected():
-            logging.debug("Connected to MySQL database")
-            return conn
-    except mysql.connector.Error as e:
-        logging.error(f"Database connection error: {e}")
+        return conn
+    except mysql.connector.Error as err:
+        logger.error(f"Database connection error: {err}")
         return None
 
-def save_message(username, room, message, message_type='text'):
-    """Save message to database."""
+def get_user_by_id(user_id):
+    """Get user by ID."""
+    conn = create_connection()
+    if not conn:
+        return None
+        
     try:
-        conn = create_connection()
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO messages (username, room, message, timestamp, type)
-            VALUES (%s, %s, %s, %s, %s)
-        """, (username, room, message, datetime.now(), message_type))
-        
-        conn.commit()
-        return cursor.lastrowid
-    except Exception as e:
-        logging.error(f"Error saving message: {e}")
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, username, email, profile_picture FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        return user
+    except mysql.connector.Error as err:
+        logger.error(f"Error fetching user: {err}")
         return None
     finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
+        cursor.close()
+        conn.close()
 
-def get_recent_messages(room='general', limit=50):
-    """Retrieve recent messages for a room."""
+# Socket.IO event handlers
+@socketio.on('connect')
+def handle_connect():
+    if current_user.is_authenticated:
+        logger.info(f"User {current_user.username} connected")
+    else:
+        logger.info("Anonymous user connected")
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    if current_user.is_authenticated:
+        logger.info(f"User {current_user.username} disconnected")
+    else:
+        logger.info("Anonymous user disconnected")
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    if not current_user.is_authenticated:
+        return
+    
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+    
+    # Check if user has access to the room
+    conn = create_connection()
+    if not conn:
+        return
+        
     try:
-        conn = create_connection()
         cursor = conn.cursor(dictionary=True)
         
+        # Check if room exists
+        cursor.execute("SELECT id FROM collaboration_rooms WHERE id = %s", (room_id,))
+        room = cursor.fetchone()
+        if not room:
+            emit('error', {'message': 'Room not found'})
+            return
+            
+        # Add user to participants if not already there
         cursor.execute("""
-            SELECT id, username, room, message, timestamp, type
-            FROM messages
-            WHERE room = %s
-            ORDER BY timestamp DESC
-            LIMIT %s
-        """, (room, limit))
+            INSERT IGNORE INTO room_participants (room_id, user_id) 
+            VALUES (%s, %s)
+        """, (room_id, current_user.id))
+        conn.commit()
         
-        messages = cursor.fetchall()
-        # Convert timestamp to string for JSON serialization
-        for message in messages:
-            message['timestamp'] = message['timestamp'].strftime('%Y-%m-%d %H:%M:%S')
+        join_room(room_id)
+        logger.info(f"User {current_user.username} joined room {room_id}")
         
-        return messages[::-1]  # Return in chronological order
-    except Exception as e:
-        logging.error(f"Error retrieving messages: {e}")
-        return []
+        # Notify others in the room
+        emit('user_joined', {
+            'user_id': current_user.id,
+            'username': current_user.username,
+            'profile_picture': current_user.profile_picture,
+            'timestamp': datetime.now().isoformat()
+        }, room=room_id)
+        
+        # Send current room state to the user
+        send_room_state(room_id, current_user.id)
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error joining room: {err}")
+        emit('error', {'message': 'Error joining room'})
     finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals():
-            conn.close()
+        cursor.close()
+        conn.close()
 
-def get_online_users():
-    """Get list of online users (simplified implementation)."""
-    # In a real app, you'd track this in Redis or a dedicated table
-    return []
+@socketio.on('leave_room')
+def handle_leave_room(data):
+    if not current_user.is_authenticated:
+        return
+    
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+        
+    leave_room(room_id)
+    logger.info(f"User {current_user.username} left room {room_id}")
+    
+    # Update last active time in database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE room_participants 
+            SET last_active = NOW() 
+            WHERE room_id = %s AND user_id = %s
+        """, (room_id, current_user.id))
+        conn.commit()
+        
+        # Notify others in the room
+        emit('user_left', {
+            'user_id': current_user.id,
+            'username': current_user.username,
+            'timestamp': datetime.now().isoformat()
+        }, room=room_id)
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error updating participant: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def send_room_state(room_id, user_id):
+    """Send the current state of a room to a specific user."""
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get room type
+        cursor.execute("SELECT room_type FROM collaboration_rooms WHERE id = %s", (room_id,))
+        room = cursor.fetchone()
+        if not room:
+            return
+            
+        room_type = room['room_type']
+        
+        # Get participants
+        cursor.execute("""
+            SELECT u.id, u.username, u.profile_picture 
+            FROM room_participants rp
+            JOIN users u ON rp.user_id = u.id
+            WHERE rp.room_id = %s
+            ORDER BY rp.last_active DESC
+        """, (room_id,))
+        participants = cursor.fetchall()
+        
+        # Get chat history (last 50 messages)
+        cursor.execute("""
+            SELECT cm.id, cm.user_id, u.username, u.profile_picture, 
+                   cm.message, cm.message_type, cm.created_at
+            FROM chat_messages cm
+            JOIN users u ON cm.user_id = u.id
+            WHERE cm.room_id = %s
+            ORDER BY cm.created_at DESC
+            LIMIT 50
+        """, (room_id,))
+        messages = cursor.fetchall()
+        
+        # Get room-specific state
+        room_state = {}
+        if room_type == 'whiteboard':
+            cursor.execute("SELECT canvas_data FROM whiteboard_states WHERE room_id = %s", (room_id,))
+            whiteboard = cursor.fetchone()
+            room_state['whiteboard'] = whiteboard['canvas_data'] if whiteboard else None
+            
+        elif room_type == 'document':
+            cursor.execute("SELECT title, content FROM document_states WHERE room_id = %s", (room_id,))
+            document = cursor.fetchone()
+            room_state['document'] = document if document else {
+                'title': 'Untitled Document',
+                'content': '<h2>Welcome to your shared document!</h2><p>Start collaborating...</p>'
+            }
+            
+        elif room_type == 'project':
+            cursor.execute("""
+                SELECT id, title, description, status, created_by
+                FROM project_tasks
+                WHERE room_id = %s
+                ORDER BY status, created_at
+            """, (room_id,))
+            tasks = cursor.fetchall()
+            room_state['tasks'] = tasks
+            
+        # Emit the room state to the user
+        emit('room_state', {
+            'room_id': room_id,
+            'room_type': room_type,
+            'participants': participants,
+            'messages': messages,
+            'state': room_state
+        }, room=request.sid)
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Error fetching room state: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+# Collaboration tool event handlers
+@socketio.on('whiteboard_draw')
+def handle_whiteboard_draw(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    path_data = data.get('path')
+    
+    if not room_id or not path_data:
+        return
+        
+    # Broadcast drawing to other users in the room
+    emit('whiteboard_draw', {
+        'user_id': current_user.id,
+        'path': path_data,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id, include_self=False)
+    
+    # Update canvas state in database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        
+        # Check if whiteboard state exists
+        cursor.execute("SELECT 1 FROM whiteboard_states WHERE room_id = %s", (room_id,))
+        exists = cursor.fetchone()
+        
+        if exists:
+            # Update existing state
+            cursor.execute("""
+                UPDATE whiteboard_states 
+                SET canvas_data = JSON_ARRAY_APPEND(canvas_data, '$', %s)
+                WHERE room_id = %s
+            """, (json.dumps(path_data), room_id))
+        else:
+            # Create new state
+            cursor.execute("""
+                INSERT INTO whiteboard_states (room_id, canvas_data)
+                VALUES (%s, %s)
+            """, (room_id, json.dumps([path_data])))
+            
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error updating whiteboard: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('whiteboard_clear')
+def handle_whiteboard_clear(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+        
+    # Broadcast clear to other users
+    emit('whiteboard_clear', {
+        'user_id': current_user.id,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id)
+    
+    # Update database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE whiteboard_states 
+            SET canvas_data = '[]', last_updated = NOW()
+            WHERE room_id = %s
+        """, (room_id,))
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error clearing whiteboard: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('document_update')
+def handle_document_update(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    title = data.get('title')
+    content = data.get('content')
+    
+    if not room_id or not content:
+        return
+        
+    # Broadcast update to other users
+    emit('document_update', {
+        'user_id': current_user.id,
+        'title': title,
+        'content': content,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id, include_self=False)
+    
+    # Update database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        
+        # Check if document exists
+        cursor.execute("SELECT 1 FROM document_states WHERE room_id = %s", (room_id,))
+        exists = cursor.fetchone()
+        
+        if exists:
+            # Update existing document
+            cursor.execute("""
+                UPDATE document_states 
+                SET title = %s, content = %s, last_updated = NOW()
+                WHERE room_id = %s
+            """, (title, content, room_id))
+        else:
+            # Create new document
+            cursor.execute("""
+                INSERT INTO document_states (room_id, title, content)
+                VALUES (%s, %s, %s)
+            """, (room_id, title, content))
+            
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error updating document: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('task_create')
+def handle_task_create(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    title = data.get('title')
+    description = data.get('description')
+    status = data.get('status', 'todo')
+    
+    if not room_id or not title:
+        return
+        
+    task_id = str(uuid.uuid4())
+    
+    # Broadcast new task to room
+    emit('task_create', {
+        'id': task_id,
+        'room_id': room_id,
+        'title': title,
+        'description': description,
+        'status': status,
+        'created_by': current_user.id,
+        'creator_username': current_user.username,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id)
+    
+    # Add to database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO project_tasks (id, room_id, title, description, status, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (task_id, room_id, title, description, status, current_user.id))
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error creating task: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('task_update')
+def handle_task_update(data):
+    if not current_user.is_authenticated:
+        return
+        
+    task_id = data.get('task_id')
+    room_id = data.get('room_id')
+    title = data.get('title')
+    description = data.get('description')
+    status = data.get('status')
+    
+    if not task_id or not room_id:
+        return
+        
+    # Broadcast update to room
+    emit('task_update', {
+        'id': task_id,
+        'room_id': room_id,
+        'title': title,
+        'description': description,
+        'status': status,
+        'updated_by': current_user.id,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id)
+    
+    # Update database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        
+        update_fields = []
+        params = []
+        
+        if title:
+            update_fields.append("title = %s")
+            params.append(title)
+        if description:
+            update_fields.append("description = %s")
+            params.append(description)
+        if status:
+            update_fields.append("status = %s")
+            params.append(status)
+            
+        if not update_fields:
+            return
+            
+        params.append(task_id)
+        
+        query = f"""
+            UPDATE project_tasks 
+            SET {', '.join(update_fields)}, updated_at = NOW()
+            WHERE id = %s
+        """
+        cursor.execute(query, params)
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error updating task: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('task_delete')
+def handle_task_delete(data):
+    if not current_user.is_authenticated:
+        return
+        
+    task_id = data.get('task_id')
+    room_id = data.get('room_id')
+    
+    if not task_id or not room_id:
+        return
+        
+    # Broadcast deletion to room
+    emit('task_delete', {
+        'id': task_id,
+        'room_id': room_id,
+        'deleted_by': current_user.id,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id)
+    
+    # Delete from database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM project_tasks WHERE id = %s", (task_id,))
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error deleting task: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@socketio.on('send_message')
+def handle_send_message(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    message = data.get('message')
+    
+    if not room_id or not message:
+        return
+        
+    # Broadcast message to room
+    emit('new_message', {
+        'user_id': current_user.id,
+        'username': current_user.username,
+        'profile_picture': current_user.profile_picture,
+        'message': message,
+        'timestamp': datetime.now().isoformat()
+    }, room=room_id)
+    
+    # Save to database
+    conn = create_connection()
+    if not conn:
+        return
+        
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO chat_messages (room_id, user_id, message)
+            VALUES (%s, %s, %s)
+        """, (room_id, current_user.id, message))
+        conn.commit()
+    except mysql.connector.Error as err:
+        logger.error(f"Error saving message: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+# Flask routes
+@app.route('/collaboration')
+@login_required
+def collaboration_hub():
+    """Render the collaboration hub page."""
+    user = get_current_user()
+    user_data = {'role': user.role} 
+    conn = create_connection()
+    if not conn:
+        return render_template('error.html', message="Database connection error"), 500
+        
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get public rooms and rooms the user is in
+        cursor.execute("""
+            SELECT cr.id, cr.name, cr.description, cr.room_type, 
+                   cr.creator_id, u.username as creator_name,
+                   COUNT(rp.user_id) as participant_count
+            FROM collaboration_rooms cr
+            LEFT JOIN room_participants rp ON cr.id = rp.room_id
+            JOIN users u ON cr.creator_id = u.id
+            WHERE cr.is_private = FALSE OR cr.id IN (
+                SELECT room_id FROM room_participants WHERE user_id = %s
+            )
+            GROUP BY cr.id
+            ORDER BY cr.created_at DESC
+        """, (current_user.id,))
+        rooms = cursor.fetchall()
+        
+        return render_template('collaboration_hub.html', user=current_user, user_data=user_data, rooms=rooms)
+    
+    except mysql.connector.Error as err:
+        logger.error(f"Error fetching rooms: {err}")
+        return render_template('error.html', message="Error loading collaboration hub"), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/collaboration/create', methods=['POST'])
+@login_required
+def create_collaboration_room():
+    """Create a new collaboration room."""
+    data = request.get_json()
+    name = data.get('name')
+    description = data.get('description')
+    room_type = data.get('type')
+    is_private = data.get('private', False)
+    
+    if not name or not room_type or room_type not in ['whiteboard', 'document', 'project']:
+        return jsonify({'error': 'Invalid request'}), 400
+        
+    room_id = str(uuid.uuid4())
+    
+    conn = create_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection error'}), 500
+        
+    try:
+        cursor = conn.cursor()
+        
+        # Create room
+        cursor.execute("""
+            INSERT INTO collaboration_rooms (id, name, description, room_type, creator_id, is_private)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (room_id, name, description, room_type, current_user.id, is_private))
+        
+        # Add creator as participant
+        cursor.execute("""
+            INSERT INTO room_participants (room_id, user_id)
+            VALUES (%s, %s)
+        """, (room_id, current_user.id))
+        
+        # Initialize room state based on type
+        if room_type == 'whiteboard':
+            cursor.execute("""
+                INSERT INTO whiteboard_states (room_id, canvas_data)
+                VALUES (%s, '[]')
+            """, (room_id,))
+        elif room_type == 'document':
+            cursor.execute("""
+                INSERT INTO document_states (room_id, title, content)
+                VALUES (%s, %s, %s)
+            """, (room_id, 'Untitled Document', '<h2>Welcome to your shared document!</h2><p>Start collaborating...</p>'))
+            
+        conn.commit()
+        
+        return jsonify({
+            'success': True,
+            'room_id': room_id,
+            'redirect': url_for('collaboration_room', room_id=room_id)
+        })
+    except mysql.connector.Error as err:
+        conn.rollback()
+        logger.error(f"Error creating room: {err}")
+        return jsonify({'error': 'Error creating room'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/collaboration/<room_id>')
+@login_required
+def collaboration_room(room_id):
+    """Render a specific collaboration room."""
+    conn = create_connection()
+    if not conn:
+        return render_template('error.html', message="Database connection error"), 500
+        
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get room info
+        cursor.execute("""
+            SELECT cr.*, u.username as creator_name
+            FROM collaboration_rooms cr
+            JOIN users u ON cr.creator_id = u.id
+            WHERE cr.id = %s
+        """, (room_id,))
+        room = cursor.fetchone()
+        
+        if not room:
+            return render_template(message="Room not found"), 404
+            
+        # Check if user has access (creator, participant, or public room)
+        cursor.execute("""
+            SELECT 1 FROM room_participants 
+            WHERE room_id = %s AND user_id = %s
+        """, (room_id, current_user.id))
+        is_participant = cursor.fetchone()
+        
+        if not is_participant and room['is_private']:
+            return render_template(message="You don't have access to this room"), 403
+            
+        # Get participants
+        cursor.execute("""
+            SELECT u.id, u.username, u.profile_picture 
+            FROM room_participants rp
+            JOIN users u ON rp.user_id = u.id
+            WHERE rp.room_id = %s
+            ORDER BY rp.last_active DESC
+        """, (room_id,))
+        participants = cursor.fetchall()
+        
+        return render_template('collaboration_room.html', 
+                             room=room, 
+                             participants=participants,
+                             current_user_id=current_user.id)
+    except mysql.connector.Error as err:
+        logger.error(f"Error fetching room: {err}")
+        return render_template('error.html', message="Error loading room"), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/collaboration/invite', methods=['POST'])
+@login_required
+def invite_to_room():
+    """Invite users to a collaboration room."""
+    data = request.get_json()
+    room_id = data.get('room_id')
+    emails = data.get('emails')  # Array of email addresses
+    
+    if not room_id or not emails or not isinstance(emails, list):
+        return jsonify({'error': 'Invalid request'}), 400
+        
+    conn = create_connection()
+    if not conn:
+        return jsonify({'error': 'Database connection error'}), 500
+        
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Verify user has permission to invite (is participant)
+        cursor.execute("""
+            SELECT 1 FROM room_participants 
+            WHERE room_id = %s AND user_id = %s
+        """, (room_id, current_user.id))
+        is_participant = cursor.fetchone()
+        
+        if not is_participant:
+            return jsonify({'error': 'You are not a participant in this room'}), 403
+            
+        # Get room info
+        cursor.execute("""
+            SELECT name, is_private FROM collaboration_rooms WHERE id = %s
+        """, (room_id,))
+        room = cursor.fetchone()
+        
+        if not room:
+            return jsonify({'error': 'Room not found'}), 404
+            
+        # Create invitations
+        invitations = []
+        for email in emails:
+            # Check if user exists
+            cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+            user = cursor.fetchone()
+            
+            token = str(uuid.uuid4())
+            invitation_id = str(uuid.uuid4())
+            
+            if user:
+                # User exists - add to room if not already a participant
+                cursor.execute("""
+                    INSERT IGNORE INTO room_participants (room_id, user_id)
+                    VALUES (%s, %s)
+                """, (room_id, user['id']))
+                
+                # Create invitation record
+                cursor.execute("""
+                    INSERT INTO room_invitations (id, room_id, sender_id, recipient_email, token, status)
+                    VALUES (%s, %s, %s, %s, %s, 'accepted')
+                """, (invitation_id, room_id, current_user.id, email, token))
+            else:
+                # User doesn't exist - create pending invitation
+                cursor.execute("""
+                    INSERT INTO room_invitations (id, room_id, sender_id, recipient_email, token)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (invitation_id, room_id, current_user.id, email, token))
+                
+                # Send invitation email
+                send_invitation_email(email, room_id, room['name'], current_user.username, token)
+                
+            invitations.append({
+                'email': email,
+                'token': token
+            })
+            
+        conn.commit()
+        
+        return jsonify({
+            'success': True,
+            'invitations': invitations
+        })
+    except mysql.connector.Error as err:
+        conn.rollback()
+        logger.error(f"Error creating invitations: {err}")
+        return jsonify({'error': 'Error creating invitations'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+def send_invitation_email(email, room_id, room_name, sender_name, token):
+    """Send an invitation email."""
+    try:
+        accept_url = url_for('accept_invitation', token=token, _external=True)
+        
+        msg = Message(
+            subject=f"Invitation to join '{room_name}' on Africcase",
+            recipients=[email],
+            html=f"""
+                <h2>You've been invited to collaborate!</h2>
+                <p>{sender_name} has invited you to join the room "{room_name}" on Africcase.</p>
+                <p>Click the link below to accept the invitation:</p>
+                <p><a href="{accept_url}">{accept_url}</a></p>
+                <p>If you don't have an account yet, you'll be prompted to create one.</p>
+            """
+        )
+        mail.send(msg)
+        return True
+    except Exception as e:
+        logger.error(f"Error sending invitation email: {e}")
+        return False
+
+@app.route('/collaboration/invite/accept/<token>')
+def accept_invitation(token):
+    """Handle invitation acceptance."""
+    conn = create_connection()
+    if not conn:
+        return render_template('error.html', message="Database connection error"), 500
+        
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get invitation
+        cursor.execute("""
+            SELECT ri.*, cr.name as room_name, u.username as sender_name
+            FROM room_invitations ri
+            JOIN collaboration_rooms cr ON ri.room_id = cr.id
+            JOIN users u ON ri.sender_id = u.id
+            WHERE ri.token = %s AND ri.status = 'pending' AND ri.expires_at > NOW()
+        """, (token,))
+        invitation = cursor.fetchone()
+        
+        if not invitation:
+            return render_template('error.html', message="Invalid or expired invitation"), 400
+            
+        if current_user.is_authenticated:
+            # Add user to room
+            cursor.execute("""
+                INSERT IGNORE INTO room_participants (room_id, user_id)
+                VALUES (%s, %s)
+            """, (invitation['room_id'], current_user.id))
+            
+            # Update invitation status
+            cursor.execute("""
+                UPDATE room_invitations 
+                SET status = 'accepted'
+                WHERE id = %s
+            """, (invitation['id'],))
+            
+            conn.commit()
+            
+            return redirect(url_for('collaboration_room', room_id=invitation['room_id']))
+        else:
+            # Store invitation in session for after login
+            session['pending_invitation'] = token
+            return redirect(url_for('login', next=url_for('accept_invitation', token=token)))
+    except mysql.connector.Error as err:
+        conn.rollback()
+        logger.error(f"Error accepting invitation: {err}")
+        return render_template('error.html', message="Error accepting invitation"), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 def allowed_file(filename):
     """Check if file extension is allowed."""
@@ -2693,272 +3474,6 @@ def rate_artist(artist_id):
         if 'conn' in locals():
             conn.close()
         return jsonify({'error': 'Internal server error'}), 500
-# =============================================
-# ROUTES - COMMUNICATION
-# =============================================
-
-# Function to fetch messages from database
-
-
-@app.route('/message')
-@login_required
-def message():
-    user = get_current_user()  # Function to get the logged-in user
-    username = user.username
-    user_data = {'role': user.role} 
-    room = 'general'  # Set room name
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT username, message, timestamp FROM messages WHERE room = %s ORDER BY timestamp ASC", (room,))
-    messages = cursor.fetchall()
-    conn.close()
-    
-    return render_template('message.html', username=current_user.username, user=user, messages=messages, room=room, user_data=user_data)
-def fetch_messages(room, limit=50):
-    """Fetch messages for a specific room"""
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT username, message, timestamp, message_type 
-        FROM messages 
-        WHERE room = %s 
-        ORDER BY timestamp DESC 
-        LIMIT %s
-    """, (room, limit))
-    messages = cursor.fetchall()
-    conn.close()
-    return messages[::-1]  # Reverse to show oldest first
-
-def fetch_private_messages(username, limit=50):
-    """Fetch all private messages involving this user"""
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT username, message, timestamp, message_type, room 
-        FROM messages 
-        WHERE room IN (
-            SELECT DISTINCT room 
-            FROM messages 
-            WHERE room LIKE %s OR room LIKE %s
-        )
-        AND room != 'general'
-        ORDER BY timestamp DESC 
-        LIMIT %s
-    """, (f"{username}_%", f"%_{username}", limit))
-    messages = cursor.fetchall()
-    conn.close()
-    return messages[::-1]  # Reverse to show oldest first
-
-def log_message(username, room, message, message_type='text'):
-    """Log a message to the database"""
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-        INSERT INTO messages (username, room, message, timestamp, message_type) 
-        VALUES (%s, %s, %s, %s, %s)
-    """, (username, room, message, datetime.utcnow(), message_type))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-# Socket.IO Events
-@socketio.on('join')
-def handle_join(data):
-    username = current_user.username
-    room = data['room']
-    join_room(room)
-    
-    # Send join notification
-    system_message = f'{username} joined the chat'
-    log_message('System', room, system_message)
-    send({
-        'username': 'System',
-        'message': system_message,
-        'timestamp': datetime.utcnow().isoformat(),
-        'room': room,
-        'type': 'system'
-    }, room=room)
-    
-    # Send message history
-    messages = fetch_messages(room)
-    for msg in messages:
-        send({
-            'username': msg['username'],
-            'message': msg['message'],
-            'timestamp': msg['timestamp'].isoformat(),
-            'room': room,
-            'type': msg['message_type']
-        }, room=request.sid)  # Send only to the joining user
-
-@socketio.on('leave')
-def handle_leave(data):
-    username = current_user.username
-    room = data['room']
-    leave_room(room)
-    
-    system_message = f'{username} left the chat'
-    log_message('System', room, system_message)
-    send({
-        'username': 'System',
-        'message': system_message,
-        'timestamp': datetime.utcnow().isoformat(),
-        'room': room,
-        'type': 'system'
-    }, room=room)
-
-@socketio.on('send_message')
-def handle_message(data):
-    username = current_user.username
-    room = data['room']
-    message = data['message']
-    message_type = data.get('type', 'text')
-    
-    # Handle file uploads
-    if message_type == 'image':
-        # In a real implementation, you'd save the file and store the path
-        # For now, we'll just log the base64 data (not recommended for production)
-        pass
-    
-    # Log the message
-    log_message(username, room, message, message_type)
-    
-    # Broadcast the message
-    send({
-        'username': username,
-        'message': message,
-        'timestamp': datetime.utcnow().isoformat(),
-        'room': room,
-        'type': message_type
-    }, room=room)
-
-    
-# Database simulation (in a real app, use a proper database)
-collaboration_rooms = {}
-active_users = {}
-whiteboard_states = {}
-document_states = {}
-
-@app.route('/collaboration_hub')
-def collaboration_hub():
-    """Collaboration hub page."""
-    user = get_current_user()
-    username = user.username
-    user_data = {'role': user.role} 
-    return render_template('collaboration_hub.html', 
-                         user=user, 
-                         username=username, 
-                         user_data=user_data)
-
-@socketio.on('connect')
-def handle_connect():
-    if 'username' in session:
-        active_users[session['username']] = request.sid
-        emit('user_status_update', {'users': list(active_users.keys())}, broadcast=True)
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    if 'username' in session and session['username'] in active_users:
-        del active_users[session['username']]
-        emit('user_status_update', {'users': list(active_users.keys())}, broadcast=True)
-
-@socketio.on('join_room')
-def handle_join_room(data):
-    room = data['room_id']
-    join_room(room)
-    session['current_room'] = room
-    
-    # Send current state to new user
-    if room in whiteboard_states:
-        emit('whiteboard_state', whiteboard_states[room])
-    if room in document_states:
-        emit('document_state', document_states[room])
-    
-    emit('room_message', {
-        'user': session['username'],
-        'message': 'has joined the room',
-        'timestamp': datetime.now().strftime('%H:%M')
-    }, room=room)
-
-@socketio.on('leave_room')
-def handle_leave_room():
-    room = session.get('current_room')
-    if room:
-        leave_room(room)
-        emit('room_message', {
-            'user': session['username'],
-            'message': 'has left the room',
-            'timestamp': datetime.now().strftime('%H:%M')
-        }, room=room)
-        session.pop('current_room')
-
-@socketio.on('whiteboard_draw')
-def handle_whiteboard_draw(data):
-    room = session.get('current_room')
-    if room:
-        # Store the drawing action
-        if room not in whiteboard_states:
-            whiteboard_states[room] = []
-        whiteboard_states[room].append(data)
-        
-        # Broadcast to other users in the room
-        emit('whiteboard_draw', data, room=room, include_self=False)
-
-@socketio.on('whiteboard_clear')
-def handle_whiteboard_clear():
-    room = session.get('current_room')
-    if room and room in whiteboard_states:
-        whiteboard_states[room] = []
-        emit('whiteboard_clear', room=room)
-
-@socketio.on('document_update')
-def handle_document_update(data):
-    room = session.get('current_room')
-    if room:
-        document_states[room] = data['content']
-        emit('document_update', data, room=room, include_self=False)
-
-@socketio.on('create_task')
-def handle_create_task(data):
-    room = session.get('current_room')
-    if room:
-        emit('new_task', data, room=room)
-
-@socketio.on('update_task')
-def handle_update_task(data):
-    room = session.get('current_room')
-    if room:
-        emit('task_updated', data, room=room)
-
-@socketio.on('send_message')
-def handle_send_message(data):
-    room = session.get('current_room')
-    if room:
-        emit('new_message', {
-            'user': session['username'],
-            'text': data['text'],
-            'timestamp': datetime.now().strftime('%H:%M')
-        }, room=room)
-
-@app.route('/create_room', methods=['POST'])
-def create_room():
-    if 'username' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-        
-    data = request.json
-    room_id = str(uuid.uuid4())
-    
-    collaboration_rooms[room_id] = {
-        'id': room_id,
-        'name': data['name'],
-        'type': data['type'],
-        'description': data.get('description', ''),
-        'creator': session['username'],
-        'private': data.get('private', False),
-        'created_at': datetime.now().isoformat(),
-        'participants': [session['username']]
-    }
-    
-    return jsonify({'room_id': room_id})
 
 # =============================================
 # APPLICATION STARTUP
