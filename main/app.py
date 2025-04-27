@@ -1285,7 +1285,7 @@ def upload_artwork():
             }), 400
 
         # Create uploads directory if it doesn't exist
-        os.makedirs('static/uploads', exist_ok=True)
+        os.makedirs('main/static/uploads', exist_ok=True)
 
         # Calculate file hash
         file_content = media.read()
@@ -1325,13 +1325,13 @@ def upload_artwork():
 
             # Save the file
             filename = secure_filename(media.filename)
-            file_path = os.path.join("static/uploads", filename)
+            file_path = os.path.join("main/static/uploads", filename)
             
             # Ensure unique filename
             counter = 1
             while os.path.exists(file_path):
                 name, ext = os.path.splitext(filename)
-                file_path = os.path.join("static/uploads", f"{name}_{counter}{ext}")
+                file_path = os.path.join("main/static/uploads", f"{name}_{counter}{ext}")
                 counter += 1
             
             media.save(file_path)
@@ -2890,5 +2890,5 @@ def create_room():
 # =============================================
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080)) 
-    app.run(host='0.0.0.0', port=port)
+    load_model()  # Load chatbot model
+    socketio.run(app, debug=True)
