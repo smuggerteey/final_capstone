@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,24 +30,46 @@
     <!-- Fabric.js for Whiteboard -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     
+    <!-- Quill for Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    
+    <!-- PeerJS for WebRTC -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
+    
     <!-- Custom Collaboration Styles -->
     <style>
+        :root {
+            --primary-color: #06BBCC;
+            --secondary-color: #ff6584;
+            --light-bg: #f8f9fa;
+            --light-border: #e3e6f0;
+            --text-color: #333;
+            --text-light: #6c757d;
+            --sidebar-width: 280px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+    
         .collab-card {
-            transition: all 0.3s ease;
+            transition: var(--transition);
             border-radius: 10px;
             overflow: hidden;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid var(--light-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background-color: white;
         }
+        
         .collab-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+        
         .collab-tool-icon {
             font-size: 2rem;
             margin-bottom: 1rem;
-            color: #4e73df;
+            color: var(--primary-color);
         }
+        
         .live-indicator {
             width: 10px;
             height: 10px;
@@ -58,74 +79,342 @@
             margin-right: 5px;
             animation: pulse 2s infinite;
         }
+        
         @keyframes pulse {
             0% { transform: scale(0.95); opacity: 1; }
             50% { transform: scale(1.1); opacity: 0.7; }
             100% { transform: scale(0.95); opacity: 1; }
         }
+        
         .collab-room {
-            background-color: #f8f9fc;
+            background-color: white;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 20px;
-            border-left: 4px solid #4e73df;
+            border-left: 4px solid var(--primary-color);
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
         }
+        
+        .collab-room:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 10px;
+            border: 2px solid var(--light-border);
         }
+        
         .tool-card {
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
+            background-color: white;
         }
+        
         .tool-card:hover {
-            background-color: #f0f3ff;
+            background-color: #f0f8ff;
+            transform: scale(1.02);
         }
+        
         #collabContainer {
             min-height: 500px;
             border-radius: 10px;
-            background-color: #f8f9fc;
-            border: 1px solid #e3e6f0;
+            background-color: white;
+            border: 1px solid var(--light-border);
+            position: relative;
+            overflow: hidden;
         }
+        
         #whiteboardCanvas {
-            border: 1px solid #ddd;
+            border: 1px solid var(--light-border);
             background-color: white;
             width: 100%;
             height: 500px;
         }
+        
         .message {
-            padding: 8px 12px;
-            margin-bottom: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
             border-radius: 8px;
-            background-color: #f1f1f1;
+            background-color: #f8f9fa;
+            transition: var(--transition);
+            color: var(--text-color);
         }
+        
         .own-message {
-            background-color: #d4edff;
+            background-color: #e6f7ff;
             margin-left: 20%;
+            border: 1px solid #d4edff;
         }
+        
         .other-message {
             margin-right: 20%;
+            border: 1px solid #e9ecef;
         }
+        
         .message-user {
             font-weight: bold;
-            color: #4e73df;
+            color: var(--primary-color);
         }
+        
         .message-time {
             font-size: 0.8em;
-            color: #6c757d;
+            color: var(--text-light);
         }
+        
         .task-card {
             cursor: move;
             margin-bottom: 10px;
+            transition: var(--transition);
+            background-color: white;
+            border: 1px solid var(--light-border);
+            border-radius: 6px;
         }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
         .kanban-column {
             min-height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--light-border);
         }
-        #documentEditor:focus {
-            outline: none;
+        
+        #documentEditor {
+            height: 500px;
+            background-color: white;
+            border: 1px solid var(--light-border);
+            border-radius: 4px;
+        }
+        
+        /* Video chat styles */
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--light-border);
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            height: 100%;
+            background-color: #f1f3f5;
+        }
+        
+        .video-item {
+            position: relative;
+            background-color: white;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--light-border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .video-item video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #f8f9fa;
+        }
+        
+        .video-username {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--text-color);
+            padding: 5px;
+            font-size: 12px;
+            border-top: 1px solid var(--light-border);
+        }
+        
+        .video-controls {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .video-control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: var(--primary-color);
+            border: 1px solid var(--light-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-control-btn:hover {
+            background-color: white;
+            transform: scale(1.1);
+        }
+        
+        .video-control-btn.end-call {
+            background-color: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+        
+        /* File sharing styles */
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background-color: white;
+            border: 1px solid var(--light-border);
+        }
+        
+        .file-icon {
+            font-size: 24px;
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+            color: var(--text-color);
+        }
+        
+        .file-meta {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        
+        /* Toolbar styles */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 12px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--light-border);
+            flex-wrap: wrap;
+        }
+        
+        .toolbar-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: white;
+            border: 1px solid var(--light-border);
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-color);
+        }
+        
+        .toolbar-btn:hover {
+            background-color: #f1f8ff;
+        }
+        
+        .toolbar-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .message {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            
+            .kanban-column {
+                margin-bottom: 20px;
+            }
+            
+            .toolbar {
+                gap: 6px;
+                padding: 8px;
+            }
+            
+            .toolbar-btn {
+                padding: 4px 8px;
+                font-size: 0.9em;
+            }
+        }
+        
+        /* Card header styles */
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Form control styles */
+        .form-control {
+            border: 1px solid var(--light-border);
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(6, 187, 204, 0.25);
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #05a5b5;
+            border-color: #0595a5;
+        }
+        
+        /* Alert styles */
+        .alert-info {
+            background-color: #e6f7ff;
+            border-color: #d4edff;
+            color: #31708f;
+        }
+        
+        /* Badge styles */
+        .badge {
+            font-weight: 500;
+            padding: 5px 8px;
+        }
+        
+        /* Input group styles */
+        .input-group-text {
+            background-color: #f8f9fa;
+            border: 1px solid var(--light-border);
         }
     </style>
 </head>
@@ -152,7 +441,7 @@
 
             <!-- Quick Access Toolbar -->
             <div class="row mb-5 g-4">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card tool-card h-100" onclick="openTool('whiteboard')">
                         <div class="card-body text-center">
                             <div class="collab-tool-icon"><i class="fas fa-chalkboard"></i></div>
@@ -162,7 +451,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card tool-card h-100" onclick="openTool('document')">
                         <div class="card-body text-center">
                             <div class="collab-tool-icon"><i class="fas fa-file-alt"></i></div>
@@ -172,12 +461,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card tool-card h-100" onclick="openTool('project')">
                         <div class="card-body text-center">
                             <div class="collab-tool-icon"><i class="fas fa-tasks"></i></div>
                             <h5 class="card-title">Project Board</h5>
                             <p class="card-text">Manage your collaborative projects</p>
+                            <span class="badge bg-success"><span class="live-indicator"></span> Live</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card tool-card h-100" onclick="openTool('video')">
+                        <div class="card-body text-center">
+                            <div class="collab-tool-icon"><i class="fas fa-video"></i></div>
+                            <h5 class="card-title">Video Chat</h5>
+                            <p class="card-text">Connect face-to-face with collaborators</p>
                             <span class="badge bg-success"><span class="live-indicator"></span> Live</span>
                         </div>
                     </div>
@@ -193,6 +492,9 @@
                             <div id="roomInfo" style="display: none;">
                                 <span class="badge bg-light text-dark me-2" id="roomNameBadge"></span>
                                 <span class="badge bg-success" id="participantCount">1 user</span>
+                                <button class="btn btn-sm btn-outline-light ms-2" onclick="toggleFullscreen()">
+                                    <i class="fas fa-expand"></i>
+                                </button>
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -208,16 +510,41 @@
                     
                     <!-- Chat Section (shown when in a room) -->
                     <div class="card mb-4 collab-card" id="chatSection" style="display: none;">
-                        <div class="card-header bg-info text-white">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                             <h4 class="mb-0">Chat</h4>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="typingIndicatorToggle" checked>
+                                <label class="form-check-label" for="typingIndicatorToggle">Typing Indicators</label>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div id="chatMessages" style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
                                 <!-- Messages will appear here -->
                             </div>
                             <div class="input-group">
-                                <input type="text" id="chatInput" class="form-control" placeholder="Type your message..." onkeypress="handleChatKeyPress(event)">
+                                <input type="text" id="chatInput" class="form-control" placeholder="Type your message..." 
+                                       onkeypress="handleChatKeyPress(event)"
+                                       oninput="handleTyping()">
                                 <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                            </div>
+                            <div id="typingIndicator" class="text-muted small mt-2" style="display: none;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- File Sharing Section -->
+                    <div class="card mb-4 collab-card" id="fileSection" style="display: none;">
+                        <div class="card-header bg-secondary text-white">
+                            <h4 class="mb-0">Shared Files</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="fileList" class="mb-3">
+                                <!-- Files will appear here -->
+                            </div>
+                            <div class="input-group">
+                                <input type="file" id="fileUpload" class="form-control" multiple>
+                                <button class="btn btn-success" onclick="uploadFiles()">
+                                    <i class="fas fa-upload"></i> Upload
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -226,8 +553,11 @@
                 <div class="col-lg-4">
                     <!-- Active Collaborators -->
                     <div class="card mb-4 collab-card">
-                        <div class="card-header bg-info text-white">
+                        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                             <h4 class="mb-0">Active Collaborators</h4>
+                            <button class="btn btn-sm btn-outline-light" onclick="refreshParticipants()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
                         </div>
                         <div class="card-body" id="activeUsersList">
                             <!-- Users will be populated via WebSocket -->
@@ -253,12 +583,39 @@
                             <button class="btn btn-outline-primary w-100 mb-2" onclick="inviteCollaborators()" id="inviteButton" disabled>
                                 <i class="fas fa-user-plus me-2"></i> Invite People
                             </button>
-                            <a href="{{ url_for('chat_messages') }}" class="btn btn-outline-success w-100">
-                                <i class="fas fa-messages me-2"></i> Messages
-                            </a>
-                            <a href="{{ url_for('workshops') }}" class="btn btn-outline-success w-100">
-                                <i class="fas fa-chalkboard-teacher me-2"></i> Join Workshop
-                            </a>
+                            <button class="btn btn-outline-success w-100 mb-2" onclick="toggleFileSection()">
+                                <i class="fas fa-file-upload me-2"></i> Share Files
+                            </button>
+                            <button class="btn btn-outline-danger w-100 mb-2" onclick="leaveRoom()" id="leaveButton" disabled>
+                                <i class="fas fa-sign-out-alt me-2"></i> Leave Room
+                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary w-100 dropdown-toggle" type="button" id="moreActionsDropdown" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-h me-2"></i> More Actions
+                                </button>
+                                <ul class="dropdown-menu w-100">
+                                    <li><a class="dropdown-item" href="#" onclick="exportSession()"><i class="fas fa-download me-2"></i> Export Session</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="startRecording()"><i class="fas fa-record-vinyl me-2"></i> Record Session</a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="toggleDarkMode()"><i class="fas fa-moon me-2"></i> Toggle Dark Mode</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Assistant Section -->
+                    <div class="card mt-4 collab-card">
+                        <div class="card-header bg-warning text-dark">
+                            <h4 class="mb-0"><i class="fas fa-robot me-2"></i> AI Assistant</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" id="aiPrompt" style="height: 100px" placeholder="Ask the AI assistant for help..."></textarea>
+                                <label for="aiPrompt">Ask the AI assistant for help...</label>
+                            </div>
+                            <button class="btn btn-warning w-100" onclick="askAI()">
+                                <i class="fas fa-paper-plane me-2"></i> Ask
+                            </button>
+                            <div id="aiResponse" class="mt-3 p-2 bg-light rounded" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
@@ -266,7 +623,12 @@
 
             <!-- Active Collaboration Rooms -->
             <div class="mt-5">
-                <h3 class="mb-4"><i class="fas fa-door-open me-2"></i> Active Collaboration Rooms</h3>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3><i class="fas fa-door-open me-2"></i> Active Collaboration Rooms</h3>
+                    <button class="btn btn-primary" onclick="loadRooms()">
+                        <i class="fas fa-sync-alt me-2"></i> Refresh
+                    </button>
+                </div>
                 
                 <div class="row" id="roomsList">
                     <!-- Rooms will be populated via JavaScript -->
@@ -292,6 +654,41 @@
         </div>
     </div>
     <!-- Collaboration Hub Section End -->
+
+    <!-- Invite Modal -->
+    <div class="modal fade" id="inviteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Invite Collaborators</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inviteEmails" class="form-label">Email Addresses (comma separated)</label>
+                        <textarea class="form-control" id="inviteEmails" rows="3" placeholder="Enter email addresses"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inviteMessage" class="form-label">Custom Message</label>
+                        <textarea class="form-control" id="inviteMessage" rows="2" placeholder="Optional message"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Or share this link:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="inviteLink" readonly>
+                            <button class="btn btn-outline-secondary" onclick="copyInviteLink()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="sendInvitations()">Send Invitations</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -320,11 +717,20 @@
         let currentRoom = null;
         let currentTool = null;
         let canvas = null;
+        let quill = null;
         let isDrawing = false;
         let currentColor = '#000000';
         let currentBrushSize = 5;
         let socket = io();
         let debounceTimer;
+        let peer = null;
+        let peerConnections = {};
+        let localStream = null;
+        let isTyping = false;
+        let typingTimeout = null;
+        let recording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
         
         // Initialize from localStorage if available
         document.addEventListener('DOMContentLoaded', function() {
@@ -335,12 +741,102 @@
                 openTool(savedTool, savedRoom);
             }
             
+            // Initialize WebRTC peer
+            initializePeer();
+            
             // Load rooms from server
             loadRooms();
             
             // Initialize socket listeners
             initSocketListeners();
+            
+            // Check for dark mode preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.body.classList.add('dark-mode');
+            }
         });
+        
+        function initializePeer() {
+            // Generate a random peer ID
+            const peerId = 'user-' + Math.random().toString(36).substr(2, 8);
+            
+            peer = new Peer(peerId, {
+                host: window.location.hostname,
+                port: window.location.port,
+                path: '/peerjs',
+                debug: 3
+            });
+            
+            peer.on('open', function(id) {
+                console.log('PeerJS connected with ID:', id);
+            });
+            
+            peer.on('connection', function(conn) {
+                console.log('Peer connection established:', conn.peer);
+                setupDataConnection(conn);
+            });
+            
+            peer.on('call', function(call) {
+                // Answer the call with our local stream
+                call.answer(localStream);
+                
+                // Set up the remote stream
+                call.on('stream', function(remoteStream) {
+                    addVideoStream(call.peer, remoteStream);
+                });
+                
+                call.on('close', function() {
+                    removeVideoStream(call.peer);
+                });
+            });
+            
+            peer.on('error', function(err) {
+                console.error('PeerJS error:', err);
+            });
+        }
+        
+        function setupDataConnection(conn) {
+            conn.on('open', function() {
+                console.log('Data connection established with:', conn.peer);
+                peerConnections[conn.peer] = conn;
+                
+                // Send our user info
+                conn.send({
+                    type: 'user-info',
+                    userId: '{{ user.id }}',
+                    username: '{{ user.username }}'
+                });
+            });
+            
+            conn.on('data', function(data) {
+                console.log('Received data:', data);
+                handlePeerData(data);
+            });
+            
+            conn.on('close', function() {
+                console.log('Connection closed with:', conn.peer);
+                delete peerConnections[conn.peer];
+                removeVideoStream(conn.peer);
+            });
+        }
+        
+        function handlePeerData(data) {
+            switch(data.type) {
+                case 'user-info':
+                    // Update participant info
+                    break;
+                case 'file':
+                    // Handle received file
+                    receiveFile(data);
+                    break;
+                case 'whiteboard-path':
+                    // Handle whiteboard path from peer
+                    if (canvas && currentRoom === data.roomId) {
+                        canvas.loadFromJSON(data.path, canvas.renderAll.bind(canvas));
+                    }
+                    break;
+            }
+        }
         
         function initSocketListeners() {
             // Handle user status updates
@@ -362,11 +858,28 @@
                 
                 // Update UI with room state
                 updateUIWithRoomState(data);
+                
+                // Enable leave button
+                document.getElementById('leaveButton').disabled = false;
             });
             
             // Handle new chat messages
             socket.on('new_message', function(data) {
                 addMessageToChat(data.username, data.message, data.user_id === {{ user.id }}, data.created_at);
+            });
+            
+            // Handle typing indicators
+            socket.on('typing', function(data) {
+                if (document.getElementById('typingIndicatorToggle').checked) {
+                    const typingIndicator = document.getElementById('typingIndicator');
+                    typingIndicator.textContent = `${data.username} is typing...`;
+                    typingIndicator.style.display = 'block';
+                    
+                    // Hide after 3 seconds
+                    setTimeout(() => {
+                        typingIndicator.style.display = 'none';
+                    }, 3000);
+                }
             });
             
             // Handle whiteboard updates
@@ -378,7 +891,7 @@
             
             // Handle document updates
             socket.on('document_update', function(data) {
-                if (currentRoom === data.room_id && currentTool === 'document') {
+                if (currentRoom === data.room_id && currentTool === 'document' && quill) {
                     // Only update if the change came from another user
                     if (data.user_id !== {{ user.id }}) {
                         const editor = document.getElementById('documentEditor');
@@ -391,7 +904,7 @@
                         
                         // Update content
                         titleInput.value = data.state.title;
-                        editor.innerHTML = data.state.content;
+                        quill.setContents(data.state.content);
                         
                         // Restore cursor position if possible
                         try {
@@ -456,6 +969,23 @@
                     const taskElement = document.getElementById(data.task_id);
                     if (taskElement) {
                         taskElement.remove();
+                    }
+                }
+            });
+            
+            // Handle file uploads
+            socket.on('file_uploaded', function(data) {
+                if (currentRoom === data.room_id) {
+                    addFileToList(data.file);
+                }
+            });
+            
+            // Handle file deletions
+            socket.on('file_deleted', function(data) {
+                if (currentRoom === data.room_id) {
+                    const fileElement = document.getElementById(`file-${data.file_id}`);
+                    if (fileElement) {
+                        fileElement.remove();
                     }
                 }
             });
@@ -545,6 +1075,9 @@
                                 <h6 class="mb-0">${user} <span class="badge bg-success ms-2">Online</span></h6>
                                 <small class="text-muted">Collaborator</small>
                             </div>
+                            <button class="btn btn-sm btn-outline-primary ms-auto" onclick="startVideoChat('${user.id}')">
+                                <i class="fas fa-video"></i>
+                            </button>
                         </div>
                     `;
                 }
@@ -580,7 +1113,7 @@
                 const titleInput = document.querySelector('#documentEditor').previousElementSibling;
                 if (editor && titleInput) {
                     titleInput.value = data.state.document.title;
-                    editor.innerHTML = data.state.document.content;
+                    quill.setContents(data.state.document.content);
                 }
             }
             else if (data.room_type === 'project') {
@@ -594,6 +1127,16 @@
                     addTaskToColumn(task.status, task.title, task.description, task.id, task.created_by);
                 });
             }
+            
+            // Update files list
+            if (data.state.files) {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+                
+                data.state.files.forEach(file => {
+                    addFileToList(file);
+                });
+            }
         }
         
         // Function to open different collaboration tools
@@ -603,6 +1146,7 @@
             const toolTitle = document.getElementById('collabToolTitle');
             const roomInfo = document.getElementById('roomInfo');
             const chatSection = document.getElementById('chatSection');
+            const fileSection = document.getElementById('fileSection');
             
             if (roomId) {
                 currentRoom = roomId;
@@ -614,12 +1158,18 @@
                 roomInfo.style.display = 'block';
                 chatSection.style.display = 'block';
                 document.getElementById('inviteButton').disabled = false;
+                
+                // Update invite link
+                document.getElementById('inviteLink').value = 
+                    `${window.location.origin}/collaboration/join?room=${roomId}`;
             } else {
                 // Not in a specific room
                 currentRoom = null;
                 roomInfo.style.display = 'none';
                 chatSection.style.display = 'none';
+                fileSection.style.display = 'none';
                 document.getElementById('inviteButton').disabled = true;
+                document.getElementById('leaveButton').disabled = true;
             }
             
             switch(toolType) {
@@ -630,16 +1180,21 @@
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i> Draw on the whiteboard below. Your changes will appear in real-time to collaborators.
                             </div>
-                            <canvas id="whiteboardCanvas" width="800%" height="500px"></canvas>
-                            <div class="mt-3">
-                                <button class="btn btn-sm btn-outline-primary me-2" onclick="setTool('pencil')"><i class="fas fa-pencil-alt"></i> Pencil</button>
-                                <button class="btn btn-sm btn-outline-secondary me-2" onclick="setTool('eraser')"><i class="fas fa-eraser"></i> Eraser</button>
-                                <input type="color" id="colorPicker" class="form-control form-control-color d-inline-block me-2" style="width: 40px;" value="${currentColor}" onchange="setColor(this.value)">
-                                <input type="range" id="brushSize" class="form-range d-inline-block me-2" style="width: 100px; height: 30px;" min="1" max="20" value="${currentBrushSize}" onchange="setBrushSize(this.value)">
+                            <div class="toolbar">
+                                <button class="toolbar-btn" onclick="setTool('pencil')"><i class="fas fa-pencil-alt"></i> Pencil</button>
+                                <button class="toolbar-btn" onclick="setTool('brush')"><i class="fas fa-paint-brush"></i> Brush</button>
+                                <button class="toolbar-btn" onclick="setTool('eraser')"><i class="fas fa-eraser"></i> Eraser</button>
+                                <input type="color" id="colorPicker" class="form-control form-control-color d-inline-block" style="width: 40px; height: 38px;" value="${currentColor}" onchange="setColor(this.value)">
+                                <input type="range" id="brushSize" class="form-range d-inline-block" style="width: 100px; height: 38px;" min="1" max="20" value="${currentBrushSize}" onchange="setBrushSize(this.value)">
                                 <span id="brushSizeValue">${currentBrushSize}px</span>
-                                <button class="btn btn-sm btn-outline-danger me-2" onclick="clearWhiteboard()"><i class="fas fa-trash-alt"></i> Clear</button>
-                                <button class="btn btn-sm btn-success float-end" onclick="inviteCollaborators()"><i class="fas fa-share-alt"></i> Invite</button>
+                                <button class="toolbar-btn" onclick="addText()"><i class="fas fa-font"></i> Text</button>
+                                <button class="toolbar-btn" onclick="addShape('rect')"><i class="fas fa-square"></i> Rectangle</button>
+                                <button class="toolbar-btn" onclick="addShape('circle')"><i class="fas fa-circle"></i> Circle</button>
+                                <button class="toolbar-btn" onclick="addShape('line')"><i class="fas fa-minus"></i> Line</button>
+                                <button class="toolbar-btn" onclick="clearWhiteboard()"><i class="fas fa-trash-alt"></i> Clear</button>
+                                <button class="toolbar-btn" onclick="saveWhiteboard()"><i class="fas fa-save"></i> Save</button>
                             </div>
+                            <canvas id="whiteboardCanvas" width="800%" height="500px"></canvas>
                         </div>
                     `;
                     
@@ -656,24 +1211,13 @@
                             </div>
                             <div class="mb-3">
                                 <input type="text" class="form-control mb-2" id="documentTitle" placeholder="Document Title" value="Untitled Collaboration" oninput="debounceDocumentUpdate()">
-                                <div id="documentEditor" contenteditable="true" style="min-height: 400px; border:1px solid #ddd; padding: 15px; background-color: white;"
-                                     oninput="debounceDocumentUpdate()">
-                                    <h2>Welcome to your shared document!</h2>
-                                    <p>Start typing here to collaborate in real-time. All changes will be visible to everyone in this session.</p>
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="formatText('bold')"><i class="fas fa-bold"></i></button>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="formatText('italic')"><i class="fas fa-italic"></i></button>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="formatText('underline')"><i class="fas fa-underline"></i></button>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="insertList('ul')"><i class="fas fa-list-ul"></i></button>
-                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="insertList('ol')"><i class="fas fa-list-ol"></i></button>
-                                </div>
-                                <button class="btn btn-sm btn-success" onclick="inviteCollaborators()"><i class="fas fa-share-alt"></i> Invite</button>
+                                <div id="documentEditor"></div>
                             </div>
                         </div>
                     `;
+                    
+                    // Initialize Quill editor
+                    initDocumentEditor();
                     break;
                     
                 case 'project':
@@ -718,17 +1262,42 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-3">
-                                <button class="btn btn-sm btn-primary" onclick="addTask('todo')"><i class="fas fa-plus"></i> Add Task</button>
-                                <button class="btn btn-sm btn-success float-end" onclick="inviteCollaborators()"><i class="fas fa-share-alt"></i> Invite</button>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'video':
+                    toolTitle.textContent = 'Video Chat';
+                    container.innerHTML = `
+                        <div class="text-start">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i> Video chat with your collaborators. Make sure to allow camera and microphone access.
+                            </div>
+                            <div class="video-container">
+                                <div class="video-grid" id="videoGrid">
+                                    <!-- Video streams will be added here -->
+                                </div>
+                                <div class="video-controls">
+                                    <button class="video-control-btn" onclick="toggleVideo()">
+                                        <i class="fas fa-video"></i>
+                                    </button>
+                                    <button class="video-control-btn" onclick="toggleAudio()">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button class="video-control-btn end-call" onclick="endVideoCall()">
+                                        <i class="fas fa-phone-slash"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
+                    
+                    // Initialize video chat
+                    initVideoChat();
                     break;
             }
         }
         
-        // Initialize the whiteboard
         function initWhiteboard() {
             canvas = new fabric.Canvas('whiteboardCanvas', {
                 isDrawingMode: true,
@@ -770,6 +1339,150 @@
             });
         }
         
+        function initDocumentEditor() {
+            quill = new Quill('#documentEditor', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                },
+                placeholder: 'Start collaborating on your document...'
+            });
+            
+            // Listen for text changes
+            quill.on('text-change', function(delta, oldDelta, source) {
+                if (source === 'user' && currentRoom) {
+                    debounceDocumentUpdate();
+                }
+            });
+        }
+        
+        function initVideoChat() {
+            // Get user media
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(function(stream) {
+                    localStream = stream;
+                    
+                    // Display local video
+                    addVideoStream(peer.id, stream);
+                    
+                    // Connect to other participants
+                    if (currentRoom) {
+                        socket.emit('get_participants', { room_id: currentRoom });
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Error accessing media devices:', err);
+                    alert('Could not access camera/microphone. Please check permissions.');
+                });
+        }
+        
+        function addVideoStream(userId, stream) {
+            const videoGrid = document.getElementById('videoGrid');
+            
+            // Remove existing video if any
+            const existingVideo = document.getElementById(`video-${userId}`);
+            if (existingVideo) {
+                existingVideo.remove();
+            }
+            
+            const videoItem = document.createElement('div');
+            videoItem.className = 'video-item';
+            videoItem.id = `video-${userId}`;
+            
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.autoplay = true;
+            video.playsInline = true;
+            
+            const username = document.createElement('div');
+            username.className = 'video-username';
+            username.textContent = userId === peer.id ? 'You' : userId;
+            
+            videoItem.appendChild(video);
+            videoItem.appendChild(username);
+            videoGrid.appendChild(videoItem);
+        }
+        
+        function removeVideoStream(userId) {
+            const videoItem = document.getElementById(`video-${userId}`);
+            if (videoItem) {
+                videoItem.remove();
+            }
+        }
+        
+        function startVideoChat(userId) {
+            if (!localStream) {
+                alert('Please enable your camera first');
+                return;
+            }
+            
+            const call = peer.call(userId, localStream);
+            
+            call.on('stream', function(remoteStream) {
+                addVideoStream(userId, remoteStream);
+            });
+            
+            call.on('close', function() {
+                removeVideoStream(userId);
+            });
+        }
+        
+        function toggleVideo() {
+            if (localStream) {
+                const videoTracks = localStream.getVideoTracks();
+                videoTracks.forEach(track => {
+                    track.enabled = !track.enabled;
+                });
+                
+                // Update button state
+                const videoBtn = document.querySelector('.video-control-btn:nth-child(1)');
+                if (videoTracks[0].enabled) {
+                    videoBtn.innerHTML = '<i class="fas fa-video"></i>';
+                } else {
+                    videoBtn.innerHTML = '<i class="fas fa-video-slash"></i>';
+                }
+            }
+        }
+        
+        function toggleAudio() {
+            if (localStream) {
+                const audioTracks = localStream.getAudioTracks();
+                audioTracks.forEach(track => {
+                    track.enabled = !track.enabled;
+                });
+                
+                // Update button state
+                const audioBtn = document.querySelector('.video-control-btn:nth-child(2)');
+                if (audioTracks[0].enabled) {
+                    audioBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                } else {
+                    audioBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+                }
+            }
+        }
+        
+        function endVideoCall() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            
+            // Remove all video streams
+            document.getElementById('videoGrid').innerHTML = '';
+            
+            // Reinitialize video chat if still in video mode
+            if (currentTool === 'video') {
+                initVideoChat();
+            }
+        }
+        
         // Set drawing tool
         function setTool(tool) {
             if (!canvas) return;
@@ -779,18 +1492,87 @@
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                 canvas.freeDrawingBrush.color = currentColor;
                 canvas.freeDrawingBrush.width = currentBrushSize;
+            } else if (tool === 'brush') {
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                canvas.freeDrawingBrush.color = currentColor;
+                canvas.freeDrawingBrush.width = currentBrushSize * 2;
             } else if (tool === 'eraser') {
                 canvas.isDrawingMode = true;
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                 canvas.freeDrawingBrush.color = '#ffffff';
                 canvas.freeDrawingBrush.width = currentBrushSize * 2;
+            } else {
+                canvas.isDrawingMode = false;
             }
+        }
+        
+        function addText() {
+            if (!canvas) return;
+            
+            const text = new fabric.IText('Type here', {
+                left: 100,
+                top: 100,
+                fontFamily: 'Arial',
+                fontSize: 20,
+                fill: currentColor
+            });
+            
+            canvas.add(text);
+            canvas.setActiveObject(text);
+            text.enterEditing();
+            text.selectAll();
+            
+            canvas.renderAll();
+        }
+        
+        function addShape(type) {
+            if (!canvas) return;
+            
+            let shape;
+            const fill = currentColor;
+            const stroke = currentColor;
+            const strokeWidth = currentBrushSize / 2;
+            
+            switch(type) {
+                case 'rect':
+                    shape = new fabric.Rect({
+                        left: 100,
+                        top: 100,
+                        width: 100,
+                        height: 100,
+                        fill: 'transparent',
+                        stroke: stroke,
+                        strokeWidth: strokeWidth
+                    });
+                    break;
+                case 'circle':
+                    shape = new fabric.Circle({
+                        left: 100,
+                        top: 100,
+                        radius: 50,
+                        fill: 'transparent',
+                        stroke: stroke,
+                        strokeWidth: strokeWidth
+                    });
+                    break;
+                case 'line':
+                    shape = new fabric.Line([50, 100, 200, 100], {
+                        stroke: stroke,
+                        strokeWidth: strokeWidth
+                    });
+                    break;
+            }
+            
+            canvas.add(shape);
+            canvas.setActiveObject(shape);
+            canvas.renderAll();
         }
         
         // Set drawing color
         function setColor(color) {
             currentColor = color;
-            if (canvas) {
+            if (canvas && canvas.isDrawingMode) {
                 canvas.freeDrawingBrush.color = color;
             }
             document.getElementById('colorPicker').value = color;
@@ -799,7 +1581,7 @@
         // Set brush size
         function setBrushSize(size) {
             currentBrushSize = parseInt(size);
-            if (canvas) {
+            if (canvas && canvas.isDrawingMode) {
                 canvas.freeDrawingBrush.width = currentBrushSize;
             }
             document.getElementById('brushSizeValue').textContent = `${currentBrushSize}px`;
@@ -821,6 +1603,19 @@
             }
         }
         
+        // Save whiteboard as image
+        function saveWhiteboard() {
+            if (!canvas) return;
+            
+            const link = document.createElement('a');
+            link.download = 'whiteboard-' + new Date().toISOString().slice(0, 10) + '.png';
+            link.href = canvas.toDataURL({
+                format: 'png',
+                quality: 1
+            });
+            link.click();
+        }
+        
         // Document editing functions
         function debounceDocumentUpdate() {
             clearTimeout(debounceTimer);
@@ -828,30 +1623,19 @@
         }
         
         function updateDocument() {
-            if (!currentRoom || currentTool !== 'document') return;
+            if (!currentRoom || currentTool !== 'document' || !quill) return;
             
-            const editor = document.getElementById('documentEditor');
             const titleInput = document.getElementById('documentTitle');
             
-            if (editor && titleInput) {
+            if (quill && titleInput) {
                 socket.emit('document_update', {
                     room_id: currentRoom,
                     state: {
                         title: titleInput.value,
-                        content: editor.innerHTML
+                        content: quill.getContents()
                     }
                 });
             }
-        }
-        
-        function formatText(command) {
-            document.execCommand(command, false, null);
-            updateDocument();
-        }
-        
-        function insertList(type) {
-            document.execCommand('insert' + (type === 'ul' ? 'Unordered' : 'Ordered') + 'List', false, null);
-            updateDocument();
         }
         
         // Project board functions
@@ -947,6 +1731,18 @@
             }
         }
         
+        function handleTyping() {
+            if (!isTyping && currentRoom) {
+                isTyping = true;
+                socket.emit('typing', { room_id: currentRoom });
+            }
+            
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+            }, 3000);
+        }
+        
         function sendMessage() {
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
@@ -958,6 +1754,7 @@
                 });
                 
                 input.value = '';
+                isTyping = false;
             }
         }
         
@@ -976,9 +1773,132 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
+        // File sharing functions
+        function toggleFileSection() {
+            const fileSection = document.getElementById('fileSection');
+            fileSection.style.display = fileSection.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function uploadFiles() {
+            const fileInput = document.getElementById('fileUpload');
+            if (fileInput.files.length === 0) return;
+            
+            Array.from(fileInput.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const fileData = {
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: e.target.result
+                    };
+                    
+                    if (currentRoom) {
+                        socket.emit('upload_file', {
+                            room_id: currentRoom,
+                            file: fileData
+                        });
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            fileInput.value = '';
+        }
+        
+        function addFileToList(file) {
+            const fileList = document.getElementById('fileList');
+            
+            // Get file icon based on type
+            let icon = 'fa-file';
+            if (file.type.includes('image')) icon = 'fa-file-image';
+            else if (file.type.includes('audio')) icon = 'fa-file-audio';
+            else if (file.type.includes('video')) icon = 'fa-file-video';
+            else if (file.type.includes('pdf')) icon = 'fa-file-pdf';
+            else if (file.type.includes('word')) icon = 'fa-file-word';
+            else if (file.type.includes('excel')) icon = 'fa-file-excel';
+            else if (file.type.includes('powerpoint')) icon = 'fa-file-powerpoint';
+            else if (file.type.includes('zip') || file.type.includes('compressed')) icon = 'fa-file-archive';
+            
+            // Format file size
+            const fileSize = file.size > 1024 * 1024 
+                ? (file.size / (1024 * 1024)).toFixed(1) + ' MB' 
+                : (file.size / 1024).toFixed(1) + ' KB';
+            
+            fileList.innerHTML += `
+                <div class="file-item" id="file-${file.id}">
+                    <div class="file-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">${fileSize} • Uploaded by ${file.uploaded_by}</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-outline-primary" onclick="downloadFile('${file.id}', '${file.name}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        ${file.uploaded_by === '{{ user.username }}' ? `
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${file.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function downloadFile(fileId, fileName) {
+            // In a real implementation, this would fetch the file from the server
+            alert(`Downloading file: ${fileName}`);
+        }
+        
+        function deleteFile(fileId) {
+            if (confirm('Are you sure you want to delete this file?')) {
+                socket.emit('delete_file', {
+                    room_id: currentRoom,
+                    file_id: fileId
+                });
+            }
+        }
+        
+        function receiveFile(fileData) {
+            // Handle received file data
+            alert(`Received file: ${fileData.name}`);
+        }
+        
         // Room management functions
         function joinRoom(roomId, roomType) {
             openTool(roomType, roomId);
+        }
+        
+        function leaveRoom() {
+            if (currentRoom) {
+                socket.emit('leave_room', { room_id: currentRoom });
+                currentRoom = null;
+                localStorage.removeItem('currentRoom');
+                localStorage.removeItem('currentTool');
+                
+                // Reset UI
+                document.getElementById('collabContainer').innerHTML = `
+                    <div class="py-5">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h4>Select a collaboration tool to begin</h4>
+                        <p class="text-muted">Choose from the tools above or join an existing session below</p>
+                    </div>
+                `;
+                
+                document.getElementById('roomInfo').style.display = 'none';
+                document.getElementById('chatSection').style.display = 'none';
+                document.getElementById('fileSection').style.display = 'none';
+                document.getElementById('inviteButton').disabled = true;
+                document.getElementById('leaveButton').disabled = true;
+                
+                // End video call if active
+                if (currentTool === 'video') {
+                    endVideoCall();
+                }
+            }
         }
         
         function createNewSession() {
@@ -999,6 +1919,7 @@
                                         <option value="whiteboard">Whiteboard</option>
                                         <option value="document">Document</option>
                                         <option value="project">Project Board</option>
+                                        <option value="video">Video Chat</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -1056,22 +1977,133 @@
         function inviteCollaborators() {
             if (!currentRoom) return;
             
-            // In a real app, this would open a modal to select users to invite
-            // For this demo, we'll just show the shareable link
-            const inviteLink = `${window.location.origin}/collaboration/join?room=${currentRoom}`;
+            const inviteModal = new bootstrap.Modal(document.getElementById('inviteModal'));
+            inviteModal.show();
+        }
+        
+        function copyInviteLink() {
+            const inviteLink = document.getElementById('inviteLink');
+            inviteLink.select();
+            document.execCommand('copy');
             
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Join my collaboration session',
-                    text: 'I invite you to join my collaboration session on Africcase',
-                    url: inviteLink
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                    prompt('Copy this link to invite collaborators:', inviteLink);
+            // Show tooltip
+            const tooltip = new bootstrap.Tooltip(inviteLink.nextElementSibling, {
+                title: 'Copied!',
+                trigger: 'manual'
+            });
+            tooltip.show();
+            
+            setTimeout(() => {
+                tooltip.hide();
+            }, 1000);
+        }
+        
+        function sendInvitations() {
+            const emails = document.getElementById('inviteEmails').value
+                .split(',')
+                .map(email => email.trim())
+                .filter(email => email);
+                
+            const message = document.getElementById('inviteMessage').value;
+            
+            if (emails.length === 0) {
+                alert('Please enter at least one email address');
+                return;
+            }
+            
+            fetch('/collaboration/invite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    room_id: currentRoom,
+                    emails: emails,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Invitations sent successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('inviteModal')).hide();
+                } else {
+                    alert('Failed to send invitations: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to send invitations. Please try again.');
+            });
+        }
+        
+        function refreshParticipants() {
+            if (currentRoom) {
+                socket.emit('refresh_participants', { room_id: currentRoom });
+            }
+        }
+        
+        function toggleFullscreen() {
+            const container = document.getElementById('collabContainer');
+            
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable fullscreen: ${err.message}`);
                 });
             } else {
-                prompt('Copy this link to invite collaborators:', inviteLink);
+                document.exitFullscreen();
             }
+        }
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+        
+        function exportSession() {
+            if (!currentRoom) return;
+            
+            // In a real implementation, this would export the session data
+            alert('Exporting session data...');
+        }
+        
+        function startRecording() {
+            if (recording) {
+                stopRecording();
+                return;
+            }
+            
+            if (!currentRoom) {
+                alert('You need to be in a room to record');
+                return;
+            }
+            
+            // In a real implementation, this would start recording the session
+            alert('Starting session recording...');
+            recording = true;
+        }
+        
+        function stopRecording() {
+            // In a real implementation, this would stop and save the recording
+            alert('Stopping session recording...');
+            recording = false;
+        }
+        
+        function askAI() {
+            const prompt = document.getElementById('aiPrompt').value.trim();
+            if (!prompt) return;
+            
+            const aiResponse = document.getElementById('aiResponse');
+            aiResponse.style.display = 'block';
+            aiResponse.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div> Processing...';
+            
+            // In a real implementation, this would call an AI API
+            setTimeout(() => {
+                aiResponse.innerHTML = `
+                    <strong>AI Response:</strong>
+                    <p>This is a simulated response to your query about "${prompt}". In a real implementation, this would be generated by an AI assistant.</p>
+                    <p>For example, if you asked about color theory, the AI might provide information about complementary colors, color harmony, and how to apply these concepts in your artwork.</p>
+                `;
+            }, 1500);
         }
         
         // Handle page beforeunload to clean up
@@ -1079,6 +2111,11 @@
             if (currentRoom) {
                 // Notify server we're leaving
                 socket.emit('leave_room', { room_id: currentRoom });
+            }
+            
+            // End video call if active
+            if (currentTool === 'video') {
+                endVideoCall();
             }
         });
     </script>
