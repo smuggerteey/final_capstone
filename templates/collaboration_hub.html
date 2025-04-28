@@ -590,9 +590,21 @@
                                 <i class="fas fa-sign-out-alt me-2"></i> Leave Room
                             </button>
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary w-100 dropdown-toggle" type="button" id="moreActionsDropdown" data-bs-toggle="dropdown">
-                                    <i class="fas fa-ellipsis-h me-2"></i> More Actions
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('chat_messages') }}" class="btn btn-outline-success flex-grow-1">
+                                        <i class="fas fa-comments me-2"></i> Messages
+                                    </a>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="moreActionsDropdown" data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="exportSession()"><i class="fas fa-download me-2"></i> Export</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="startRecording()"><i class="fas fa-record-vinyl me-2"></i> Record</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="toggleDarkMode()"><i class="fas fa-moon me-2"></i> Dark Mode</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
                                 <ul class="dropdown-menu w-100">
                                     <li><a class="dropdown-item" href="#" onclick="exportSession()"><i class="fas fa-download me-2"></i> Export Session</a></li>
                                     <li><a class="dropdown-item" href="#" onclick="startRecording()"><i class="fas fa-record-vinyl me-2"></i> Record Session</a></li>
