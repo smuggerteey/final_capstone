@@ -592,6 +592,99 @@ def handle_task_delete(data):
         cursor.close()
         conn.close()
 
+@app.route('/messages')
+@login_required
+def chat_messages():
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    offset = (page - 1) * per_page
+
+    try:
+        conn = create_connection()
+        if not conn:
+            flash('Database connection error', 'danger')
+            return redirect(url_for('collaboration_hub'))
+
+        cursor = conn.cursor(dictionary=True)
+        
+        # Get total count for pagination
+        cursor.execute("SELECT COUNT(*) as total FROM chat_messages WHERE user_id = %s", (current_user.id,))
+        total = cursor.fetchone()['total']
+        
+        # Get paginated messages with correct joins and column names
+        cursor.execute("""
+            SELECT m.*, r.name 
+            FROM chat_messages m
+            LEFT JOIN collaboration_rooms r ON m.room_id = r.id
+            WHERE m.user_id = %s
+            ORDER BY m.created_at DESC
+            LIMIT %s OFFSET %s
+        """, (current_user.id, per_page, offset))
+        
+        messages = cursor.fetchall()
+        
+        # Calculate pagination info
+        pagination = {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+            'pages': (total + per_page - 1) // per_page,
+            'has_prev': page > 1,
+            'has_next': page * per_page < total,
+            'prev_num': page - 1 if page > 1 else None,
+            'next_num': page + 1 if page * per_page < total else None
+        }
+        
+        return render_template('chat_messages.html', messages=messages, pagination=pagination)
+        
+    except mysql.connector.Error as err:
+        logger.error(f"Database error: {err}")
+        flash('Error retrieving messages', 'danger')
+        return redirect(url_for('collaboration_hub'))
+    finally:
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    if not current_user.is_authenticated:
+        return
+    
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+    
+    join_room(room_id)
+    logger.info(f"User {current_user.id} joined room {room_id}")
+    
+    # Notify others in the room
+    emit('user_joined', {
+        'user_id': current_user.id,
+        'username': current_user.username,
+        'timestamp': datetime.utcnow().isoformat()
+    }, room=room_id)
+
+@socketio.on('leave_room')
+def handle_leave_room(data):
+    if not current_user.is_authenticated:
+        return
+    
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+    
+    leave_room(room_id)
+    logger.info(f"User {current_user.id} left room {room_id}")
+    
+    # Notify others in the room
+    emit('user_left', {
+        'user_id': current_user.id,
+        'username': current_user.username,
+        'timestamp': datetime.utcnow().isoformat()
+    }, room=room_id)
+
 @socketio.on('send_message')
 def handle_send_message(data):
     if not current_user.is_authenticated:
@@ -609,7 +702,7 @@ def handle_send_message(data):
         return
         
     try:
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute("""
             INSERT INTO chat_messages (room_id, user_id, message)
             VALUES (%s, %s, %s)
@@ -640,9 +733,25 @@ def handle_send_message(data):
         logger.error(f"Error saving message: {err}")
         conn.rollback()
     finally:
-        cursor.close()
-        conn.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
+@socketio.on('typing')
+def handle_typing(data):
+    if not current_user.is_authenticated:
+        return
+        
+    room_id = data.get('room_id')
+    if not room_id:
+        return
+        
+    emit('typing', {
+        'user_id': current_user.id,
+        'username': current_user.username
+    }, room=room_id)
+    
 # Flask routes
 @app.route('/collaboration')
 @login_required
