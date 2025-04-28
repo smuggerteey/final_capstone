@@ -68,7 +68,7 @@ db_config = {
     'user': 'root',
     'password': '',
     'host': 'localhost',
-    'database': 'art_showcase'
+    'database': 'africcase_db'
 }
 
 # Initialize extensions

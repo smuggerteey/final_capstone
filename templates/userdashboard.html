@@ -582,67 +582,18 @@
                 </div>
             </div>
 
-            <!-- Stats Cards -->
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-3">
-                    <div class="dashboard-card stat-card">
-                        <div class="card-icon">
-                            <i class="fas fa-paint-brush"></i>
-                        </div>
-                        <div class="stat-number">6</div>
-                        <div class="stat-title">Artworks Visited</div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="dashboard-card stat-card">
-                        <div class="card-icon">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <div class="stat-number">2</div>
-                        <div class="stat-title">Challenges Partipated in</div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="dashboard-card stat-card">
-                        <div class="card-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="stat-number">6</div>
-                        <div class="stat-title">Likes Received</div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <div class="dashboard-card stat-card">
-                        <div class="card-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <div class="stat-number">2</div>
-                        <div class="stat-title">Comments</div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Recent Activity and Quick Actions -->
             <div class="row mt-4 g-4">
                 <div class="col-lg-8">
                     <div class="dashboard-card h-100">
-                        <h5 class="card-title">Recent Activity</h5>
+                        <h5 class="card-title">Recent Activities</h5>
                         <div class="activity-item">
                             <div class="activity-icon">
-                                <i class="fas fa-heart"></i>
+                                <i class="fas fa-alert"></i>
                             </div>
                             <div class="activity-content">
-                                <h6>Someone liked your artwork "Sunset Dreams"</h6>
-                                <p class="activity-time">2 hours ago</p>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h6>New comment on your submission for "Abstract Challenge"</h6>
-                                <p class="activity-time">5 hours ago</p>
+                                <h6>Artwork "Sunset Dreams" was shared</h6>
+                                <p class="activity-time">4 days ago</p>
                             </div>
                         </div>
                         <div class="activity-item">
@@ -650,17 +601,8 @@
                                 <i class="fas fa-trophy"></i>
                             </div>
                             <div class="activity-content">
-                                <h6>You won 3rd place in "Portrait Mastery Challenge"</h6>
+                                <h6> Challenge created "Portrait Mastery Challenge"</h6>
                                 <p class="activity-time">1 day ago</p>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-user-plus"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h6>You gained 12 new followers</h6>
-                                <p class="activity-time">2 days ago</p>
                             </div>
                         </div>
                         <div class="text-center mt-3">
@@ -688,7 +630,7 @@
             <div class="row mt-4 g-4">
                 <div class="col-lg-6">
                     <div class="dashboard-card h-100">
-                        <h5 class="card-title">Your Recent Artworks</h5>
+                        <h5 class="card-title">Recent Artworks</h5>
                         <div class="row g-3">
                             <div class="col-sm-6 col-md-4">
                                 <img src="{{ url_for('static', filename='img/artwork1.jpg') }}" class="artwork-thumb" alt="Sunset Dreams Artwork" loading="lazy">

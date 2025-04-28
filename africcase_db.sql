@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2025 at 02:41 PM
+-- Generation Time: Apr 28, 2025 at 12:53 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `art_showcase`
+-- Database: `africcase_db`
 --
 
 -- --------------------------------------------------------
@@ -60,19 +60,6 @@ CREATE TABLE `artist_followers` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `artist_likes`
---
-
-CREATE TABLE `artist_likes` (
-  `id` int(11) NOT NULL,
-  `artist_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `artist_ratings`
 --
 
@@ -82,27 +69,6 @@ CREATE TABLE `artist_ratings` (
   `user_id` int(11) NOT NULL,
   `rating` tinyint(4) NOT NULL CHECK (`rating` between 1 and 5),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `artist_verification`
---
-
-CREATE TABLE `artist_verification` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `artist_type` varchar(50) DEFAULT NULL,
-  `security_question1` varchar(255) DEFAULT NULL,
-  `security_answer1` varchar(255) DEFAULT NULL,
-  `security_question2` varchar(255) DEFAULT NULL,
-  `security_answer2` varchar(255) DEFAULT NULL,
-  `status` varchar(20) DEFAULT NULL,
-  `submitted_at` datetime DEFAULT NULL,
-  `reviewed_at` datetime DEFAULT NULL,
-  `reviewer_id` int(11) DEFAULT NULL,
-  `reviewer_notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -141,52 +107,6 @@ INSERT INTO `artwork` (`id`, `title`, `description`, `price`, `tags`, `media`, `
 (72, 'Painting_Test', 'Uploading a painting', 300.00, 'portrait, landscape', 'main/static/uploads\\weeeeeeeeeeeeeeeeeeeeejfjf.png', 2, '1a8e89709578cc91593a7a0985c106936ee6bfceb275f2f38e1352564e95c8b0', 'f8f8fdb060fdf8f0', 'painting', NULL, 0, 0, 1, '2025-04-27 01:22:30'),
 (73, 'DigitalArt', 'Test Upload for a digital art in general', 66.00, 'portrait, landscape', 'main/static/uploads\\Zimbabwe_1.png', 10, '2c9ceecd717904cc3c4f84c9a380631fda18db683893729e744dc1c3c3c94b96', '7e9e003800313830', 'digital', NULL, 1, 0, 1, '2025-04-27 01:24:23'),
 (74, 'Duplicate_Testing', 'Testing duplicate uploads', 11.00, 'modern, portrait, digital, second-hand', 'main/static/uploads\\WOWW.png', 10, '2c9ceecd717904cc3c4f84c9a380631fda18db683893729e744dc1c3c3c94b96', '7e9e003800313830', 'other', 73, 1, 0, 1, '2025-04-27 01:25:16');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `artwork_ownership`
---
--- Error reading structure for table art_showcase.artwork_ownership: #1932 - Table 'art_showcase.artwork_ownership' doesn't exist in engine
--- Error reading data for table art_showcase.artwork_ownership: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`artwork_ownership`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `artwork_tags`
---
--- Error reading structure for table art_showcase.artwork_tags: #1932 - Table 'art_showcase.artwork_tags' doesn't exist in engine
--- Error reading data for table art_showcase.artwork_tags: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`artwork_tags`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `artwork_upload_history`
---
--- Error reading structure for table art_showcase.artwork_upload_history: #1932 - Table 'art_showcase.artwork_upload_history' doesn't exist in engine
--- Error reading data for table art_showcase.artwork_upload_history: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`artwork_upload_history`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `backups`
---
--- Error reading structure for table art_showcase.backups: #1932 - Table 'art_showcase.backups' doesn't exist in engine
--- Error reading data for table art_showcase.backups: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`backups`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `badge`
---
-
-CREATE TABLE `badge` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `description` text DEFAULT NULL,
-  `image_path` varchar(255) DEFAULT NULL,
-  `points_required` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -231,6 +151,63 @@ CREATE TABLE `challenge_submission` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `chat_messages`
+--
+
+CREATE TABLE `chat_messages` (
+  `id` int(11) NOT NULL,
+  `room_id` varchar(36) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `message_type` enum('text','system') DEFAULT 'text',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `chat_messages`
+--
+
+INSERT INTO `chat_messages` (`id`, `room_id`, `user_id`, `message`, `message_type`, `created_at`) VALUES
+(1, '3226d364-3a9e-4b83-a05d-29cd6aef6011', 10, 'HI', 'text', '2025-04-27 18:09:54'),
+(2, '3226d364-3a9e-4b83-a05d-29cd6aef6011', 10, 'HU', 'text', '2025-04-27 18:10:15'),
+(5, 'df09098c-c102-4065-a946-89d7197ecf65', 18, 'HI', 'text', '2025-04-27 19:00:35'),
+(6, 'df09098c-c102-4065-a946-89d7197ecf65', 18, 'HELLOOOOOOOOOOOOO', 'text', '2025-04-27 19:10:07'),
+(12, '2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 10, 'ma1', 'text', '2025-04-27 22:03:11'),
+(16, '2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 10, 'wow', 'text', '2025-04-27 23:15:57'),
+(18, 'df09098c-c102-4065-a946-89d7197ecf65', 18, 'HELLO', 'text', '2025-04-28 00:15:07'),
+(19, '8c2f4930-697b-48e1-b07a-5e54b43c9109', 18, 'HEY', 'text', '2025-04-28 00:42:47'),
+(21, '2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 18, 'hey', 'text', '2025-04-28 01:15:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `collaboration_rooms`
+--
+
+CREATE TABLE `collaboration_rooms` (
+  `id` varchar(36) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `room_type` enum('whiteboard','document','project') NOT NULL,
+  `creator_id` int(11) NOT NULL,
+  `is_private` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `collaboration_rooms`
+--
+
+INSERT INTO `collaboration_rooms` (`id`, `name`, `description`, `room_type`, `creator_id`, `is_private`, `created_at`, `updated_at`) VALUES
+('2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 'iiii', 'fff', 'document', 10, 0, '2025-04-27 21:45:20', '2025-04-27 21:45:20'),
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', 'HH', 'HH', 'whiteboard', 2, 0, '2025-04-27 17:49:58', '2025-04-27 17:49:58'),
+('8c2f4930-697b-48e1-b07a-5e54b43c9109', 'FFFFFF', 'FFFFFFFFFFFF', 'document', 18, 0, '2025-04-27 23:56:10', '2025-04-27 23:56:10'),
+('df09098c-c102-4065-a946-89d7197ecf65', 'one2', 'well', 'document', 18, 0, '2025-04-27 18:16:03', '2025-04-27 18:16:03');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `comments`
 --
 
@@ -241,6 +218,28 @@ CREATE TABLE `comments` (
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `document_states`
+--
+
+CREATE TABLE `document_states` (
+  `room_id` varchar(36) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `content` longtext NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `document_states`
+--
+
+INSERT INTO `document_states` (`room_id`, `title`, `content`, `last_updated`) VALUES
+('2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 'Untitled Document', '<h2>Welcome to your shared document!</h2><p>Start collaborating...</p>', '2025-04-27 21:45:20'),
+('8c2f4930-697b-48e1-b07a-5e54b43c9109', 'Untitled Document', '<h2>Welcome to your shared document!</h2><p>Start collaborating...</p>', '2025-04-27 23:56:10'),
+('df09098c-c102-4065-a946-89d7197ecf65', 'Untitled Document', '<h2>Welcome to your shared document!</h2><p>Start collaborating...</p>', '2025-04-27 18:16:03');
 
 -- --------------------------------------------------------
 
@@ -256,38 +255,6 @@ CREATE TABLE `drawings` (
   `mode` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `favorites`
---
-
-CREATE TABLE `favorites` (
-  `user_id` int(11) NOT NULL,
-  `artwork_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `insights`
---
-
-CREATE TABLE `insights` (
-  `id` int(11) NOT NULL,
-  `views` int(11) DEFAULT 0,
-  `likes` int(11) DEFAULT 0,
-  `shares` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `insights`
---
-
-INSERT INTO `insights` (`id`, `views`, `likes`, `shares`) VALUES
-(2, 5230, 320, 150);
 
 -- --------------------------------------------------------
 
@@ -311,7 +278,8 @@ INSERT INTO `leaderboard` (`id`, `username`, `score`, `created_at`) VALUES
 (2, 'treble3', 2385, '2025-03-23 19:19:24'),
 (3, 'smuggerteey', 469, '2025-03-23 19:46:07'),
 (4, 'onemore', 1662, '2025-03-28 08:11:15'),
-(0, 'first22', 447, '2025-04-20 18:16:53');
+(0, 'first22', 447, '2025-04-20 18:16:53'),
+(0, 'TUTU', 213, '2025-04-27 19:18:49');
 
 -- --------------------------------------------------------
 
@@ -329,53 +297,19 @@ CREATE TABLE `like` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `messages`
+-- Table structure for table `project_tasks`
 --
 
-CREATE TABLE `messages` (
-  `id` int(11) NOT NULL,
-  `username` varchar(50) DEFAULT NULL,
-  `room` varchar(50) DEFAULT NULL,
-  `message` text DEFAULT NULL,
-  `timestamp` datetime DEFAULT current_timestamp()
+CREATE TABLE `project_tasks` (
+  `id` varchar(36) NOT NULL,
+  `room_id` varchar(36) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('todo','progress','done') NOT NULL DEFAULT 'todo',
+  `created_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `messages`
---
-
-INSERT INTO `messages` (`id`, `username`, `room`, `message`, `timestamp`) VALUES
-(12, 'smuggerteey', 'general', 'HI', '2025-02-09 15:47:14'),
-(15, 'treble3', 'general', 'People', '2025-02-09 15:54:31');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `notes`
---
-
-CREATE TABLE `notes` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `content` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `notifications`
---
--- Error reading structure for table art_showcase.notifications: #1932 - Table 'art_showcase.notifications' doesn't exist in engine
--- Error reading data for table art_showcase.notifications: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`notifications`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payment`
---
--- Error reading structure for table art_showcase.payment: #1932 - Table 'art_showcase.payment' doesn't exist in engine
--- Error reading data for table art_showcase.payment: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`payment`' at line 1
 
 -- --------------------------------------------------------
 
@@ -480,19 +414,6 @@ INSERT INTO `receipts` (`id`, `purchase_id`, `receipt_number`, `generated_at`) V
 -- --------------------------------------------------------
 
 --
--- Table structure for table `recordings`
---
-
-CREATE TABLE `recordings` (
-  `id` int(11) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `audio_data` longblob NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `reports`
 --
 
@@ -537,16 +458,47 @@ INSERT INTO `role_permissions` (`id`, `role`, `permission`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `room_message`
+-- Table structure for table `room_invitations`
 --
 
-CREATE TABLE `room_message` (
-  `id` int(11) NOT NULL,
-  `room_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `content` text NOT NULL,
-  `timestamp` datetime DEFAULT NULL
+CREATE TABLE `room_invitations` (
+  `id` varchar(36) NOT NULL,
+  `room_id` varchar(36) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `recipient_email` varchar(100) NOT NULL,
+  `token` varchar(100) NOT NULL,
+  `status` enum('pending','accepted','declined') DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `expires_at` timestamp NOT NULL DEFAULT (current_timestamp() + interval 7 day)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `room_participants`
+--
+
+CREATE TABLE `room_participants` (
+  `room_id` varchar(36) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `joined_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_active` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `room_participants`
+--
+
+INSERT INTO `room_participants` (`room_id`, `user_id`, `joined_at`, `last_active`) VALUES
+('2b3f0b8b-aa8a-4cf9-90e9-25d1bcf4001f', 10, '2025-04-27 21:45:20', '2025-04-27 23:03:30'),
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', 2, '2025-04-27 17:49:58', '2025-04-27 17:49:58'),
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', 6, '2025-04-27 21:32:18', '2025-04-27 21:32:18'),
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', 10, '2025-04-27 17:51:32', '2025-04-27 21:29:35'),
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', 18, '2025-04-27 18:13:15', '2025-04-27 18:13:15'),
+('8c2f4930-697b-48e1-b07a-5e54b43c9109', 18, '2025-04-27 23:56:10', '2025-04-27 23:56:10'),
+('df09098c-c102-4065-a946-89d7197ecf65', 6, '2025-04-27 18:16:52', '2025-04-27 18:16:52'),
+('df09098c-c102-4065-a946-89d7197ecf65', 10, '2025-04-27 18:50:41', '2025-04-27 18:50:41'),
+('df09098c-c102-4065-a946-89d7197ecf65', 18, '2025-04-27 18:16:03', '2025-04-27 18:16:03');
 
 -- --------------------------------------------------------
 
@@ -567,66 +519,6 @@ CREATE TABLE `system_info` (
 
 INSERT INTO `system_info` (`id`, `version`, `last_backup`, `last_optimization`) VALUES
 (1, '1.0.0', '2025-04-02 16:13:13', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `system_settings`
---
-
-CREATE TABLE `system_settings` (
-  `id` int(11) NOT NULL,
-  `setting_name` varchar(100) NOT NULL,
-  `setting_value` text NOT NULL,
-  `category` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `system_settings`
---
-
-INSERT INTO `system_settings` (`id`, `setting_name`, `setting_value`, `category`) VALUES
-(1, 'site_name', 'Creative Showcase', 'general'),
-(2, 'site_url', 'http://localhost:5000', 'general'),
-(3, 'timezone', 'UTC', 'general'),
-(4, 'date_format', 'YYYY-MM-DD', 'general'),
-(5, 'maintenance_mode', '0', 'general'),
-(6, 'user_registration', '1', 'general'),
-(7, 'email_verification', '1', 'users'),
-(8, 'admin_approval', '0', 'users'),
-(9, 'captcha_registration', '1', 'users'),
-(10, 'pre_moderation', '1', 'content'),
-(11, 'auto_purge', '0', 'content'),
-(12, 'max_file_size', '10', 'content'),
-(13, 'items_per_page', '12', 'content'),
-(14, 'brute_force_protection', '1', 'security'),
-(15, 'two_factor_auth', '0', 'security'),
-(16, 'failed_attempts', '5', 'security'),
-(17, 'lockout_time', '30', 'security'),
-(18, 'strong_passwords', '1', 'security'),
-(19, 'min_password_length', '8', 'security'),
-(20, 'password_expiry', '90', 'security'),
-(21, 'smtp_host', '', 'email'),
-(22, 'smtp_port', '587', 'email'),
-(23, 'smtp_ssl', '1', 'email'),
-(24, 'from_email', 'noreply@creativeshowcase.com', 'email'),
-(25, 'from_name', 'Creative Showcase', 'email');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tag`
---
--- Error reading structure for table art_showcase.tag: #1932 - Table 'art_showcase.tag' doesn't exist in engine
--- Error reading data for table art_showcase.tag: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`tag`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `usernotificationsettings`
---
--- Error reading structure for table art_showcase.usernotificationsettings: #1932 - Table 'art_showcase.usernotificationsettings' doesn't exist in engine
--- Error reading data for table art_showcase.usernotificationsettings: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`usernotificationsettings`' at line 1
 
 -- --------------------------------------------------------
 
@@ -663,19 +555,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `phone`, `role`, `address`, `points`, `badges`, `bio`, `profile_picture`, `is_admin`, `created_at`, `last_login`, `status`, `email_verified`, `instagram`, `twitter`, `website`) VALUES
-(2, 'treble3', 'tryy@gmail.com', 'scrypt:32768:8:1$DBndxQITUVsuW40M$53f901f911738b2dcfe11da08f7b5bd887bbebd22c9e97f9f957e99961f45493dba3ff71f131fb48d02ede9e006999aca81aa69a39cdd7d68e937217c013de18', 'Tamika', 'Chasira', '1234567891', 'Artist', '12 Address', 180, '', 'One Two Three', 'profile_pics/user_2_1745232206.jpg', 0, '2025-04-05 16:03:11', NULL, 'active', 0, NULL, NULL, NULL),
+(2, 'treble3', 'tryy@gmail.com', 'scrypt:32768:8:1$DBndxQITUVsuW40M$53f901f911738b2dcfe11da08f7b5bd887bbebd22c9e97f9f957e99961f45493dba3ff71f131fb48d02ede9e006999aca81aa69a39cdd7d68e937217c013de18', 'Nicholas ', 'Mutsaka', '1234567891', 'Artist', '12 Address', 180, '', 'One Two Three', 'profile_pics/user_2_1745232206.jpg', 0, '2025-04-05 16:03:11', NULL, 'active', 0, NULL, NULL, NULL),
 (3, 'tyno25', 'appy@mail.com', 'scrypt:32768:8:1$ggnP4vX6eRUsvGHZ$8d73b563bab5abf9888b0e19a8460c6d620362b19465372276f6c08e86a9aba06727715282ee6f32396d1171e854fd60070dd85fb65bcbbc081eeb87f16e9bd6', 'Happy', 'Tembo', '0203419613', 'Regular User', '12 Address', 0, '', 'oK', 'profile_pics/user_3_1743731562.jpeg', 0, '2025-04-08 10:09:29', NULL, 'active', 0, NULL, NULL, NULL),
-(6, 'smuggerteey', 'tynochagka@gmail.com', 'scrypt:32768:8:1$dS5ZOq3wq31nb3np$821fd67a6a9269db3dcf591c832fb33f77c12b05ebd3afc2ce16a60ef0bc17d2c7d18962f13f774a216b5c01b74c5598667672325a6f0fec83e36b68cb0b9a49', 'Teeno', 'Chagaka', '0780660853', 'Admin', 'Harare, Zimbabwe', 0, '', 'wow!!!', 'profile_pics/user_6_1744032152.jpeg', 0, '2025-04-07 13:21:17', NULL, 'active', 0, NULL, NULL, NULL),
+(6, 'smuggerteey', 'tynochagka@gmail.com', 'scrypt:32768:8:1$cubXeZj29r44pCM5$3db8e5d645a41b3a6b6d5d8c462e92adf011329e7967b51f026282ca444ced3230728f24dbb0218dccb257e87f50655a8106a68ca7e6399421df450eced1a310', 'Tino', 'Chagaka', '0780660853', 'Admin', 'Accra, Ghana', 0, '', 'Well', 'profile_pics/user_6_1744032152.jpeg', 0, '2025-04-07 13:21:17', NULL, 'active', 0, NULL, NULL, NULL),
 (10, 'onemore', 'onemore@gmail.com', 'scrypt:32768:8:1$XZO9IJRAYhhb65KJ$b90411c7218a69523cf84bb673be154408a91388bc3b4ff7aee10a6f4d0d0621f124a70be2957c0ef86ce897f646ee720f81fbbd601f2bc96a792065b9f0bfbd', 'Oney', 'Morey', '660897778', 'Artist', 'Djibout', 0, '', 'Welcomes You', 'profile_pics/user_10_1745747708.png', 0, '2025-04-08 10:09:29', NULL, 'active', 0, NULL, NULL, NULL),
-(18, 'first22', 'weeejjjf@gmail.com', 'scrypt:32768:8:1$ethCs2OsVJ440J2v$11f660e463de2451724f38c7bb7e57912c0b9c979f099f25ff178698e45a58f22caa44015addc156dfb93e0b1d2b60dde011389b9ef7181919cf6f3ae6ab927d', 'First', 'Trial', '123567899', 'Regular User', '12 Accra', 0, '', 'None', 'profile_pics/user_18_1745231704.jpeg', 0, '2025-04-20 17:33:20', NULL, 'active', 0, NULL, NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user_badges`
---
--- Error reading structure for table art_showcase.user_badges: #1932 - Table 'art_showcase.user_badges' doesn't exist in engine
--- Error reading data for table art_showcase.user_badges: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`user_badges`' at line 1
+(18, 'first22', 'weeejjjf@gmail.com', 'scrypt:32768:8:1$ethCs2OsVJ440J2v$11f660e463de2451724f38c7bb7e57912c0b9c979f099f25ff178698e45a58f22caa44015addc156dfb93e0b1d2b60dde011389b9ef7181919cf6f3ae6ab927d', 'First', 'Trial', '123567899', 'Regular User', '12 Accra', 0, '', 'None', 'profile_pics/user_18_1745231704.jpeg', 0, '2025-04-20 17:33:20', NULL, 'active', 0, NULL, NULL, NULL),
+(20, 'TUTU', 'nubi.jeb@gmail.com', 'scrypt:32768:8:1$2F8wHRpV5ouI43ch$8014f94de6cca9d6390a9d9ac8fafcf6882142909c3e5df419f00c4fcc16e7fb56c9c323b62dc233d930b49d1c43cdbe835f37f099c61b0238badd6d3fda0011', 'ALAMIN', 'TUTU', '704860602', 'Regular User', 'ACCRA, GHANA', 0, '', NULL, 'default_profile.png', 0, '2025-04-27 19:15:13', NULL, 'active', 0, NULL, NULL, NULL),
+(21, 'Temi3', 'temi@gmail.com', 'scrypt:32768:8:1$WolA6ebJFbTZDD1o$e1b440fc7904a4830c5a1eb73747c0e1adb9b33f4af4e54247f2820aa60915388f84ddda57ab0139d4f4fd32c46df40841d79971fc432acca6c1001b7b09a546', 'Temi', 'Three', '222223343', 'Artist', 'Angola', 0, '', NULL, 'default_profile.png', 0, '2025-04-28 08:48:38', NULL, 'active', 0, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -736,31 +622,21 @@ INSERT INTO `user_interactions` (`id`, `user_id`, `page_name`, `interaction_type
 -- --------------------------------------------------------
 
 --
--- Table structure for table `videos`
---
--- Error reading structure for table art_showcase.videos: #1932 - Table 'art_showcase.videos' doesn't exist in engine
--- Error reading data for table art_showcase.videos: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`videos`' at line 1
-
--- --------------------------------------------------------
-
---
--- Table structure for table `views`
+-- Table structure for table `whiteboard_states`
 --
 
-CREATE TABLE `views` (
-  `id` int(11) NOT NULL,
-  `artwork_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `view_date` datetime DEFAULT current_timestamp()
+CREATE TABLE `whiteboard_states` (
+  `room_id` varchar(36) NOT NULL,
+  `canvas_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`canvas_data`)),
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
+--
+-- Dumping data for table `whiteboard_states`
+--
 
---
--- Table structure for table `visitor_stats`
---
--- Error reading structure for table art_showcase.visitor_stats: #1932 - Table 'art_showcase.visitor_stats' doesn't exist in engine
--- Error reading data for table art_showcase.visitor_stats: #1064 - You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM `art_showcase`.`visitor_stats`' at line 1
+INSERT INTO `whiteboard_states` (`room_id`, `canvas_data`, `last_updated`) VALUES
+('3226d364-3a9e-4b83-a05d-29cd6aef6011', '[]', '2025-04-27 18:11:22');
 
 --
 -- Indexes for dumped tables
@@ -782,14 +658,6 @@ ALTER TABLE `artist_followers`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `artist_likes`
---
-ALTER TABLE `artist_likes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_like` (`artist_id`,`user_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
 -- Indexes for table `artist_ratings`
 --
 ALTER TABLE `artist_ratings`
@@ -798,20 +666,41 @@ ALTER TABLE `artist_ratings`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `artist_verification`
---
-ALTER TABLE `artist_verification`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user_id` (`user_id`),
-  ADD KEY `reviewer_id` (`reviewer_id`);
-
---
 -- Indexes for table `artwork`
 --
 ALTER TABLE `artwork`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `original_upload_id` (`original_upload_id`);
+
+--
+-- Indexes for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `room_id` (`room_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `collaboration_rooms`
+--
+ALTER TABLE `collaboration_rooms`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `creator_id` (`creator_id`);
+
+--
+-- Indexes for table `document_states`
+--
+ALTER TABLE `document_states`
+  ADD PRIMARY KEY (`room_id`);
+
+--
+-- Indexes for table `project_tasks`
+--
+ALTER TABLE `project_tasks`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `room_id` (`room_id`),
+  ADD KEY `created_by` (`created_by`);
 
 --
 -- Indexes for table `purchases`
@@ -838,6 +727,21 @@ ALTER TABLE `reports`
   ADD KEY `reported_artwork_id` (`reported_artwork_id`);
 
 --
+-- Indexes for table `room_invitations`
+--
+ALTER TABLE `room_invitations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `room_id` (`room_id`),
+  ADD KEY `sender_id` (`sender_id`);
+
+--
+-- Indexes for table `room_participants`
+--
+ALTER TABLE `room_participants`
+  ADD PRIMARY KEY (`room_id`,`user_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -848,12 +752,10 @@ ALTER TABLE `users`
 ALTER TABLE `users` ADD FULLTEXT KEY `ft_search` (`username`,`email`,`first_name`,`last_name`);
 
 --
--- Indexes for table `views`
+-- Indexes for table `whiteboard_states`
 --
-ALTER TABLE `views`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `artwork_id` (`artwork_id`),
-  ADD KEY `user_id` (`user_id`);
+ALTER TABLE `whiteboard_states`
+  ADD PRIMARY KEY (`room_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -866,12 +768,6 @@ ALTER TABLE `artist_followers`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `artist_likes`
---
-ALTER TABLE `artist_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `artist_ratings`
 --
 ALTER TABLE `artist_ratings`
@@ -882,6 +778,12 @@ ALTER TABLE `artist_ratings`
 --
 ALTER TABLE `artwork`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
+
+--
+-- AUTO_INCREMENT for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `purchases`
@@ -905,13 +807,7 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
--- AUTO_INCREMENT for table `views`
---
-ALTER TABLE `views`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- Constraints for dumped tables
@@ -923,13 +819,6 @@ ALTER TABLE `views`
 ALTER TABLE `artist_followers`
   ADD CONSTRAINT `artist_followers_ibfk_1` FOREIGN KEY (`artist_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `artist_followers_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `artist_likes`
---
-ALTER TABLE `artist_likes`
-  ADD CONSTRAINT `artist_likes_ibfk_1` FOREIGN KEY (`artist_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `artist_likes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `artist_ratings`
@@ -946,31 +835,37 @@ ALTER TABLE `artwork`
   ADD CONSTRAINT `artwork_ibfk_2` FOREIGN KEY (`original_upload_id`) REFERENCES `artwork` (`id`);
 
 --
+-- Constraints for table `chat_messages`
+--
+ALTER TABLE `chat_messages`
+  ADD CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `collaboration_rooms` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `chat_messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `collaboration_rooms`
+--
+ALTER TABLE `collaboration_rooms`
+  ADD CONSTRAINT `collaboration_rooms_ibfk_1` FOREIGN KEY (`creator_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `document_states`
+--
+ALTER TABLE `document_states`
+  ADD CONSTRAINT `document_states_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `collaboration_rooms` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `project_tasks`
+--
+ALTER TABLE `project_tasks`
+  ADD CONSTRAINT `project_tasks_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `collaboration_rooms` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `project_tasks_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `purchases`
 --
 ALTER TABLE `purchases`
   ADD CONSTRAINT `purchases_ibfk_1` FOREIGN KEY (`buyer_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `purchases_ibfk_2` FOREIGN KEY (`artwork_id`) REFERENCES `artwork` (`id`);
-
---
--- Constraints for table `receipts`
---
-ALTER TABLE `receipts`
-  ADD CONSTRAINT `receipts_ibfk_1` FOREIGN KEY (`purchase_id`) REFERENCES `purchases` (`id`);
-
---
--- Constraints for table `reports`
---
-ALTER TABLE `reports`
-  ADD CONSTRAINT `reports_ibfk_1` FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `reports_ibfk_2` FOREIGN KEY (`reported_artwork_id`) REFERENCES `artworks` (`id`);
-
---
--- Constraints for table `views`
---
-ALTER TABLE `views`
-  ADD CONSTRAINT `views_ibfk_1` FOREIGN KEY (`artwork_id`) REFERENCES `artwork` (`id`),
-  ADD CONSTRAINT `views_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
