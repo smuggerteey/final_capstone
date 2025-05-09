@@ -1118,12 +1118,12 @@
             
             <div class="points-display floating animate__animated animate__bounceIn animate__delay-2s">
                 <i class="fas fa-coins"></i>
-                <span class="counter" id="totalPoints" data-target="{{ user_data.score if user_data and user_data.score else 0 }}">0</span> points
+                <span class="counter" id="totalPoints" data-target="{{ user_data.score if user_data and user_data.score else 1 }}"></span>
             </div>
             
             <div class="streak-counter animate__animated animate__fadeIn animate__delay-3s">
                 <i class="fas fa-fire"></i>
-                <span id="streak-days">0</span> day streak!
+                <span id="streak-days">0</span>
                 <div class="streak-bar">
                     <div class="streak-progress" style="width: 0%"></div>
                 </div>

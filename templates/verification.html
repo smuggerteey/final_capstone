@@ -37,11 +37,12 @@
             --success-color: #00b894;
             --warning-color: #fdcb6e;
             --danger-color: #d63031;
+            --info-color: #0984e3;
         }
         
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
+            background-color:  #3f7fa4;
             color: #333;
             line-height: 1.6;
         }
@@ -133,6 +134,26 @@
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-trial {
+            background:  #3f7fa4;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .btn-trial:hover {
+            background: #0767b0;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
         }
         
         .file-upload {
@@ -322,55 +343,28 @@
         .accordion-button:focus {
             box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
         }
-        
-        /* Dark mode styles */
-        .dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
+
+        .trial-card {
+            background: rgba(9, 132, 227, 0.1);
+            border-left: 4px solid var(--info-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
-        
-        .dark-mode .verification-card {
-            background-color: #1e1e1e;
-            color: #e0e0e0;
+
+        .trial-card h5 {
+            color:#e0e0e0;
         }
-        
-        .dark-mode .form-control, 
-        .dark-mode .form-select,
-        .dark-mode .accordion-button {
-            background-color: #2d2d2d;
-            color: #e0e0e0;
-            border-color: #444;
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
-        
-        .dark-mode .form-control:focus, 
-        .dark-mode .form-select:focus {
-            background-color: #2d2d2d;
-            color: #e0e0e0;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.25rem rgba(108, 92, 231, 0.25);
-        }
-        
-        .dark-mode .terms-section {
-            background-color: #252525;
-            color: #e0e0e0;
-        }
-        
-        .dark-mode .file-upload-btn {
-            background-color: #252525;
-            border-color: #444;
-        }
-        
-        .dark-mode .security-features {
-            background-color: rgba(108, 92, 231, 0.1);
-        }
-        
-        .dark-mode .step-label {
-            color: #aaa;
-        }
-        
-        .dark-mode .step.active .step-label, 
-        .dark-mode .step.completed .step-label {
-            color: #e0e0e0;
+
+        .btn-container .btn {
+            flex: 1;
+            min-width: 200px;
         }
         
         /* Responsive adjustments */
@@ -394,6 +388,15 @@
             .step {
                 width: 50%;
                 margin-bottom: 20px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-container .btn {
+                width: 100%;
             }
         }
         
@@ -465,7 +468,21 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{{ url_for('artist_verification', username=username) }}" method="POST" enctype="multipart/form-data" class="animate__animated animate__fadeInUp">
+        <!-- Trial Option Card -->
+        <div class="trial-card animate__animated animate__fadeIn">
+            <h5><i class="fas fa-clock me-2"></i>Try Africcase First</h5>
+            <p>Don't want to complete verification now? You can skip this step and start a 2-day free trial to explore the platform. After your trial, you'll need to complete verification to continue using all features.</p>
+            <div class="btn-container">
+                <a href="{{ url_for('login') }}" class="btn btn-trial">
+                    <i class="fas fa-rocket me-2"></i> Start 2-Day Free Trial
+                </a>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#verificationForm">
+                    <i class="fas fa-pencil-alt me-2"></i> Complete Verification Now
+                </button>
+            </div>
+        </div>
+
+        <form action="{{ url_for('artist_verification', username=username) }}" method="POST" enctype="multipart/form-data" class="animate__animated animate__fadeInUp collapse show" id="verificationForm">
             <div class="verification-card mb-4">
                 <h4 class="mb-4"><i class="fas fa-user-circle me-2"></i>Artist Information</h4>
                 
@@ -718,6 +735,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="accordion-item border-0">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed rounded" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            What's included in the free trial?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            The 2-day free trial gives you access to basic platform features, allowing you to explore Africcase before completing verification. Some premium features will be limited until you complete the verification process.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -758,31 +788,6 @@
             }
         });
         
-        // Dark mode toggle
-        const darkModeToggle = document.createElement('button');
-        darkModeToggle.id = 'darkModeToggle';
-        darkModeToggle.className = 'btn btn-primary position-fixed bottom-0 end-0 m-3 rounded-circle';
-        darkModeToggle.style.width = '50px';
-        darkModeToggle.style.height = '50px';
-        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        document.body.appendChild(darkModeToggle);
-        
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-        
-        darkModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('darkMode', 'true');
-                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                localStorage.setItem('darkMode', 'false');
-                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-            }
-        });
-        
         // Spinner removal
         window.addEventListener('load', function() {
             const spinner = document.getElementById('spinner');
@@ -797,6 +802,22 @@
         const formSections = document.querySelectorAll('.verification-card');
         formSections.forEach((section, index) => {
             section.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // Trial option handling
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the user came from the trial option
+            if(window.location.hash === '#trial') {
+                // Show a message about the trial
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-info alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    <strong><i class="fas fa-info-circle me-2"></i>Free Trial Started</strong> 
+                    Your 2-day free trial has begun. Complete verification anytime to unlock all features.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                document.querySelector('.verification-container').prepend(alertDiv);
+            }
         });
     </script>
 </body>
