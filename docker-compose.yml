@@ -1,24 +1,29 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10
+version: '3.8'
 
-# Set the working directory in the container
-WORKDIR /app
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=mysql://root:password@db/africcase_db
+    depends_on:
+      - db
+    volumes:
+      - ./static/uploads:/app/static/uploads
+      - ./static/profile_pics:/app/static/profile_pics
+      - ./backups:/app/backups
 
-# Copy the requirements file into the container
-COPY requirements.txt .
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=africcase_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
 
-# Install any dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose the port the app runs on
-EXPOSE 5000
-
-# Set environment variables (modify as needed)
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=production
-
-# Run the application
-CMD ["python", "app.py"]
+volumes:
+  mysql_data:
