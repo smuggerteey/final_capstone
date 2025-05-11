@@ -1,7 +1,0 @@
-Method,Name,Error,Occurrences
-GET,/virtual_gallery,CatchResponseError('Status 0'),617
-GET,/artwork/[id],CatchResponseError('Status 0'),382
-POST,/login,CatchResponseError('Status 0'),50
-GET,/marketplace,CatchResponseError('Status 0'),449
-POST,/registration,CatchResponseError('Status 0'),16
-POST,/checkout/[id],CatchResponseError('Status 0'),206
