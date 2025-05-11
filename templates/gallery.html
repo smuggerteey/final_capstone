@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Art Gallery</title>
+    <title>Digital Art Gallery | Africcase</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -18,19 +18,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
     
     <style>
-/* Modern Dark Theme */
+/* Modern Oceanic Theme */
 :root {
     --primary: #06BBCC;
-    --secondary: #1e1e1e;
-    --accent: #06BBCC;
-    --accent-light: #06BBCC;
-    --accent-dark: #06BBCC;
+    --primary-light: #4fd1e0;
+    --primary-dark: #0499a8;
+    --secondary: #3f7fa4;
+    --accent: #FF6B6B;
+    --accent-light: #ff8e8e;
+    --accent-dark: #e05555;
     --text: #063358;
-    --text-dark: #1c074d;
-    --card-bg: #252525;
-    --border: rgba(255, 255, 255, 0.1);
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --text-light: #5a7a9a;
+    --text-dark: #0a1f33;
+    --card-bg: #ffffff;
+    --bg-gradient: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 50%, #80deea 100%);
+    --border: rgba(6, 59, 88, 0.1);
+    --shadow: 0 4px 20px rgba(6, 59, 88, 0.1);
+    --shadow-hover: 0 10px 30px rgba(6, 59, 88, 0.2);
+    --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-border: rgba(255, 255, 255, 0.3);
 }
 
 * {
@@ -41,10 +48,11 @@
 
 body {
     font-family: 'Source Sans Pro', sans-serif;
-    background-color:#3f7fa4;
+    background: #3f7fa4;
     color: var(--text);
     overflow-x: hidden;
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 /* Typography */
@@ -54,18 +62,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     color: var(--text);
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 h2 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     color: var(--text);
     margin-bottom: 1.5rem;
+    position: relative;
+    display: inline-block;
 }
 
 h3 {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--text);
     font-weight: 500;
 }
@@ -74,7 +88,7 @@ p {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 300;
     margin-bottom: 1rem;
-    color: var(--text-dark);
+    color: var(--text-light);
 }
 
 /* Layout */
@@ -91,6 +105,13 @@ p {
     margin-bottom: 3rem;
     position: relative;
     z-index: 10;
+    padding: 2rem 0;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
+    margin-top: 1rem;
 }
 
 .header-top {
@@ -98,15 +119,19 @@ p {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .header-title {
     flex-grow: 1;
     text-align: center;
-    font-size: 2.8rem;
-    color: #0d1679;
+    font-size: 3rem;
+    color: var(--text);
     letter-spacing: 1px;
     font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .gallery-title {
@@ -117,15 +142,17 @@ p {
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 3px;
+    display: inline-block;
 }
 
 .gallery-title::after {
     content: '';
     display: block;
     width: 80px;
-    height: 2px;
-    background: #06BBCC;
-    margin: 0.8rem auto;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    margin: 1rem auto;
+    border-radius: 3px;
 }
 
 /* Gallery Controls */
@@ -138,29 +165,50 @@ p {
 }
 
 .filter-btn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.7);
+    border: none;
     color: var(--text);
-    padding: 0.8rem 1.5rem;
+    padding: 0.8rem 1.8rem;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
     transition: var(--transition);
-    border-radius: 30px;
+    border-radius: 50px;
     font-size: 0.85rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    z-index: -1;
+    opacity: 0;
+    transition: var(--transition);
 }
 
 .filter-btn:hover {
-    background: rgba(74, 111, 165, 0.2);
-    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(6, 59, 88, 0.2);
+    color: white;
+}
+
+.filter-btn:hover::before {
+    opacity: 1;
 }
 
 .filter-btn.active {
-    background: var(--accent);
+    background: linear-gradient(to right, var(--primary), var(--secondary));
     color: white;
-    border-color: var(--accent);
+    box-shadow: 0 4px 15px rgba(6, 187, 204, 0.4);
 }
 
 .filter-btn i {
@@ -175,12 +223,23 @@ p {
 }
 
 .section-title {
-    font-size: 2rem;
+    font-size: 2.5rem;
     text-align: center;
     margin-bottom: 1.5rem;
     color: var(--text);
     font-family: 'Playfair Display', serif;
-    font-weight: 500;
+    font-weight: 600;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    margin: 1rem auto;
+    border-radius: 2px;
 }
 
 .section-description {
@@ -188,93 +247,132 @@ p {
     max-width: 800px;
     margin: 0 auto 3rem;
     font-size: 1.1rem;
-    color: var(--text-dark);
+    color: #ededee;
     line-height: 1.8;
+    padding: 0 1rem;
 }
 
 /* Artwork Grid */
 .artwork-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 2rem;
     margin-bottom: 3rem;
 }
 
 .artwork-card {
     background: var(--card-bg);
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
     transition: var(--transition);
     position: relative;
-    border: 1px solid var(--border);
+    border: none;
     box-shadow: var(--shadow);
     cursor: pointer;
 }
 
+.artwork-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.7));
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 1;
+}
+
 .artwork-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-    border-color: rgba(74, 111, 165, 0.5);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+}
+
+.artwork-card:hover::before {
+    opacity: 1;
 }
 
 .media-container {
     width: 100%;
-    height: 200px;
+    height: 250px;
     overflow: hidden;
     position: relative;
-    background: #3f7fa4;;
+    background: #f0f8ff;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 12px 12px 0 0;
 }
 
 .media-preview {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
+    transition: transform 0.8s ease;
 }
 
 .artwork-card:hover .media-preview {
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .audio-icon {
     font-size: 3rem;
-    color: var(--accent);
+    color: var(--primary);
     margin-bottom: 1rem;
 }
 
 .artwork-details {
     padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+    background: white;
+    border-radius: 0 0 12px 12px;
 }
 
 .artwork-title {
     font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 0.5rem;
-    color: #06BBCC;
+    color: var(--text);
+    transition: var(--transition);
+}
+
+.artwork-card:hover .artwork-title {
+    color: var(--primary);
 }
 
 .artwork-meta {
     display: flex;
     justify-content: space-between;
     font-size: 0.9rem;
-    color: #06BBCC;
+    color: var(--text-light);
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
 }
 
 .media-type {
     text-transform: uppercase;
-    color: #06BBCC;
+    color: var(--primary);
     font-size: 0.8rem;
     letter-spacing: 1px;
+    font-weight: 600;
+    background: rgba(6, 187, 204, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
 }
 
 .media-date {
-    color: #06BBCC;
+    color: var(--text-light);
     font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+}
+
+.media-date i {
+    margin-right: 0.3rem;
+    color: var(--primary);
+    font-size: 0.7rem;
 }
 
 /* Buttons */
@@ -282,38 +380,67 @@ p {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.8rem 1.8rem;
+    padding: 0.8rem 2rem;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border-radius: 30px;
+    border-radius: 50px;
     transition: var(--transition);
     text-decoration: none;
     cursor: pointer;
-    border: 1px solid;
+    border: none;
     font-size: 0.9rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.dashboard-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    z-index: -1;
+    transition: var(--transition);
 }
 
 .btn-outline {
     background: transparent;
-    color: var(--accent);
-    border-color: var(--accent);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-outline::before {
+    opacity: 0;
 }
 
 .btn-outline:hover {
-    background: rgba(74, 111, 165, 0.1);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(6, 187, 204, 0.3);
+}
+
+.btn-outline:hover::before {
+    opacity: 1;
 }
 
 .btn-accent {
-    background: var(--accent);
+    background: linear-gradient(to right, var(--primary), var(--secondary));
     color: white;
-    border-color: var(--accent);
 }
 
 .btn-accent:hover {
-    background: var(--accent-light);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(6, 187, 204, 0.4);
+}
+
+.btn-accent::before {
+    opacity: 1;
 }
 
 .dashboard-btn i {
@@ -326,7 +453,11 @@ p {
     padding: 3rem 0;
     margin-top: 3rem;
     position: relative;
-    border-top: 1px solid var(--border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
 }
 
 .footer-content {
@@ -339,7 +470,7 @@ p {
 .copyright {
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
-    color: #06BBCC;
+    color: var(--text-light);
     font-size: 0.9rem;
 }
 
@@ -349,14 +480,23 @@ p {
 }
 
 .social-links a {
-    color: #06BBCC;
-    font-size: 1.2rem;
+    color: var(--text-light);
+    font-size: 1.3rem;
     transition: var(--transition);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .social-links a:hover {
-    color: var(--accent);
-    transform: translateY(-3px);
+    color: white;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 5px 15px rgba(6, 187, 204, 0.3);
 }
 
 /* Modal Styles */
@@ -367,24 +507,27 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #3f7fa4;
+    background: rgba(6, 59, 88, 0.9);
     z-index: 1000;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
-    background: #d5dbe1;
-    border-radius: 8px;
+    background: white;
+    border-radius: 16px;
     width: 90%;
-    max-width: 1000px;
+    max-width: 1100px;
     max-height: 90vh;
     overflow: hidden;
     display: flex;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
     position: relative;
+    transform: scale(0.95);
+    opacity: 0;
+    animation: modalEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .close-modal {
@@ -392,28 +535,29 @@ p {
     top: 1rem;
     right: 1.5rem;
     font-size: 1.8rem;
-    color: var(--text-dark);
+    color: white;
     cursor: pointer;
     transition: var(--transition);
     z-index: 10;
-    background: #1b6594;
+    background: var(--primary);
     width: 40px;
     height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
 .close-modal:hover {
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--accent);
+    transform: rotate(90deg);
 }
 
 .modal-media-container {
     flex: 1;
-    min-height: 400px;
-    background: var(--secondary);
+    min-height: 500px;
+    background: #f5f9ff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -425,25 +569,41 @@ p {
     max-width: 90%;
     max-height: 90%;
     object-fit: contain;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
 
 .modal-details {
     flex: 0 0 350px;
-    padding: 2rem;
-    background: #d5e1e2;
+    padding: 2.5rem;
+    background: white;
     overflow-y: auto;
+    position: relative;
 }
 
 .modal-details h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     margin-bottom: 1.5rem;
-    color: #06BBCC;
+    color: var(--text);
     font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    position: relative;
+}
+
+.modal-details h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    margin: 1rem 0;
+    border-radius: 2px;
 }
 
 .modal-meta {
     display: flex;
-    gap: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border);
@@ -455,18 +615,61 @@ p {
     gap: 0.5rem;
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
-    color: var(--text-dark);
+    color: var(--text-light);
     font-size: 0.9rem;
+    background: rgba(6, 187, 204, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
 }
 
 .modal-meta-item i {
-    color: #06BBCC;
+    color: var(--primary);
+}
+
+.modal-description {
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 2rem;
 }
 
 .modal-actions {
     display: flex;
     gap: 1rem;
     margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Floating back button */
+.floating-back-btn {
+    position: fixed;
+    top: 20px;
+    left: 300px;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 24px;
+    box-shadow: 0 5px 15px rgba(6, 187, 204, 0.4);
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.floating-back-btn i {
+    margin-right: 8px;
+}
+
+.floating-back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(6, 187, 204, 0.5);
+    background: linear-gradient(to right, var(--primary-dark), var(--secondary));
 }
 
 /* Animations */
@@ -475,46 +678,130 @@ p {
     to { opacity: 1; }
 }
 
+@keyframes modalEnter {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 59, 88, 0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.spinner {
+    width: 70px;
+    height: 70px;
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Responsive Adjustments */
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
     .modal-content {
         flex-direction: column;
-        width: 95%;
+        max-height: 85vh;
     }
     
     .modal-media-container {
         min-height: 300px;
+        max-height: 400px;
     }
     
     .modal-details {
         flex: 1;
+        max-height: calc(85vh - 300px);
     }
     
     .artwork-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    .floating-back-btn {
+        left: 280px;
+    }
+}
+
+@media (max-width: 992px) {
+    .header-title {
+        font-size: 2.5rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .floating-back-btn {
+        left: 20px;
+        top: 80px;
     }
 }
 
 @media (max-width: 768px) {
     .header-top {
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
     }
     
     .header-title {
-        font-size: 2rem;
+        font-size: 2.2rem;
+        order: -1;
     }
     
     .gallery-controls {
-        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+    
+    .filter-btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.8rem;
     }
     
     .artwork-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
     
     .modal-actions {
         flex-direction: column;
+    }
+    
+    .modal-details {
+        padding: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .gallery-title {
+        font-size: 1.5rem;
+    }
+    
+    .floating-back-btn {
+        padding: 10px 20px;
+        font-size: 13px;
     }
 }
 
@@ -528,48 +815,42 @@ p {
     }
     
     .modal-details {
-        padding: 1.5rem;
+        padding: 1.2rem;
     }
     
     .section-title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
     }
     
-    .gallery-title {
-        font-size: 1.3rem;
+    .header-title {
+        font-size: 2rem;
+    }
+    
+    .filter-btn {
+        padding: 0.6rem 1.2rem;
     }
 }
     </style>
 </head>
-<body>
-    <!-- Floating Back Button (Horizontally Ovular) -->
+<body>    
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading Artwork...</p>
+    </div>
+    
+    <!-- Modern Header -->
     <div class="gallery-container">
-        
-        <!-- Modern Header -->
-        <header class="main-header">
+        <header class="main-header animate__animated animate__fadeInDown">
             <div class="header-top">
                 <h1 class="header-title">Digital Art Gallery</h1>
-                <div class="header-controls">
-                    {% if user_data %}
-                        <a href="{% if user_data.role in ['Admin', 'Administrator'] %}
-                                    {{ url_for('admindashboard') }}
-                                 {% elif user_data.role == 'Artist' %}
-                                    {{ url_for('dashboard') }}
-                                 {% else %}
-                                    {{ url_for('userdashboard') }}
-                                 {% endif %}" 
-                           class="dashboard-btn btn-outline">
-                            <i class="fas fa-tachometer-alt"></i> DASHBOARD
-                        </a>
-                    {% endif %}
-                </div>
             </div>
             
-            <h2 class="gallery-title">Digital Art Collection</h2>
+            <h2 class="gallery-title">Explore Our Creative Collection</h2>
             
             <div class="gallery-controls">
                 <button class="filter-btn active" data-filter="all">
-                    <i class="fas fa-globe"></i> ALL
+                    <i class="fas fa-globe"></i> ALL ART
                 </button>
                 <button class="filter-btn" data-filter="image">
                     <i class="fas fa-image"></i> IMAGES
@@ -586,9 +867,9 @@ p {
         <!-- Media Room -->
         <div class="media-room">
             <div class="room-content animate__animated animate__fadeIn">
-                <h2 class="section-title">Curated Collection</h2>
+                <h2 class="section-title">Curated Digital Masterpieces</h2>
                 <p class="section-description">
-                    Explore our carefully curated digital art exhibition. Each piece represents a unique fusion of creativity and technology, showcasing the diverse talents of contemporary digital artists.
+                    Immerse yourself in our vibrant collection of digital artworks. Each piece tells a unique story, blending creativity with cutting-edge technology. Click on any artwork to view it in full detail.
                 </p>
                 
                 <div class="artwork-grid" id="artworkGrid">
@@ -598,35 +879,29 @@ p {
                          data-type="{{ artwork.media_type }}">
                         <div class="media-container">
                             {% if artwork.media_type == 'image' %}
-                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview">
+                                <img src="{{ artwork.media_url }}" alt="{{ artwork.title }}" class="media-preview" loading="lazy">
                             {% elif artwork.media_type == 'video' %}
-                                <video class="media-preview" muted loop>
+                                <video class="media-preview" muted loop playsinline>
                                     <source src="{{ artwork.media_url }}" type="video/{{ artwork.media.split('.')[-1] }}">
                                 </video>
                             {% elif artwork.media_type == 'audio' %}
-                                <div style="text-align: center;">
+                                <div style="text-align: center; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);">
                                     <i class="fas fa-music audio-icon"></i>
-                                    <p>Audio Composition</p>
+                                    <p style="color: var(--text); font-weight: 500;">Audio Composition</p>
                                 </div>
                             {% else %}
-                                <div>Unsupported Format</div>
+                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text);">Unsupported Format</div>
                             {% endif %}
                         </div>
                         <div class="artwork-details">
                             <h3 class="artwork-title">{{ artwork.title }}</h3>
                             <div class="artwork-meta">
                                 <span class="media-type">{{ artwork.media_type|upper }}</span>
-                                <span class="media-date">{{ artwork.upload_date }}</span>
+                                <span class="media-date"><i class="far fa-calendar-alt"></i> {{ artwork.upload_date }}</span>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
-                </div>
-
-                <div class="header-controls" style="text-align: center; margin: 20px 0;">
-                    <a href="javascript:history.back()" class="dashboard-btn btn-outline">
-                        <i class="fas fa-arrow-left"></i> GO BACK
-                    </a>
                 </div>
             </div>
         </div>
@@ -635,13 +910,14 @@ p {
         <footer class="main-footer">
             <div class="footer-content">
                 <div class="copyright">
-                    &copy; {{ current_year }} DIGITAL ART GALLERY. ALL RIGHTS RESERVED.
+                    &copy; {{ current_year }} AFRICCASE DIGITAL ART GALLERY. ALL RIGHTS RESERVED.
                 </div>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-instagram"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
                     <a href="#"><i class="fab fa-artstation"></i></a>
                     <a href="#"><i class="fab fa-deviantart"></i></a>
+                    <a href="#"><i class="fab fa-behance"></i></a>
                 </div>
             </div>
         </footer>
@@ -662,17 +938,20 @@ p {
                         <span id="modalType"></span>
                     </div>
                     <div class="modal-meta-item">
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="far fa-calendar-alt"></i>
                         <span id="modalDate"></span>
                     </div>
                 </div>
-                <p id="modalDescription"></p>
+                <p class="modal-description" id="modalDescription"></p>
                 <div class="modal-actions">
                     <a href="#" id="downloadLink" class="dashboard-btn btn-accent">
-                        <i class=""></i>
+                        <i class="fas fa-download"></i> DOWNLOAD
                     </a>
                     <button class="dashboard-btn btn-outline">
-                        <i class=""></i>
+                        <i class="fas fa-heart"></i> FAVORITE
+                    </button>
+                    <button class="dashboard-btn btn-outline">
+                        <i class="fas fa-share-alt"></i> SHARE
                     </button>
                 </div>
             </div>
@@ -681,21 +960,32 @@ p {
     
     <script>
         // Initialize GSAP animations
+        gsap.registerEffect({
+            name: "float",
+            effect: (targets, config) => {
+                return gsap.to(targets, {
+                    y: -10,
+                    duration: 2,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+            },
+            defaults: {duration: 2}
+        });
+        
+        // Apply floating effect to cards
+        document.querySelectorAll('.artwork-card').forEach((card, index) => {
+            gsap.effects.float(card, {delay: index * 0.1});
+        });
+        
+        // Main content animation
         gsap.from(".room-content", {
             duration: 1,
             y: 50,
             opacity: 0,
             ease: "power3.out",
             delay: 0.3
-        });
-        
-        gsap.from(".artwork-card", {
-            duration: 0.8,
-            y: 30,
-            opacity: 0,
-            stagger: 0.1,
-            ease: "back.out(1.7)",
-            delay: 0.5
         });
         
         // Filter functionality
@@ -705,14 +995,16 @@ p {
             
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
+                    // Play click sound
+                    playSound('click');
+                    
                     // Update active button
                     filterBtns.forEach(b => {
                         b.classList.remove('active');
                         gsap.to(b, {
                             duration: 0.3,
-                            background: 'rgba(255, 255, 255, 0.05)',
+                            background: 'rgba(255, 255, 255, 0.7)',
                             color: 'var(--text)',
-                            borderColor: 'var(--border)',
                             ease: "power2.out"
                         });
                     });
@@ -720,27 +1012,27 @@ p {
                     btn.classList.add('active');
                     gsap.to(btn, {
                         duration: 0.3,
-                        background: 'var(--accent)',
+                        background: 'linear-gradient(to right, var(--primary), var(--secondary))',
                         color: 'white',
-                        borderColor: 'var(--accent)',
                         ease: "power2.out"
                     });
                     
                     const filter = btn.dataset.filter;
                     
                     // Filter artwork cards
-                    artworkCards.forEach(card => {
+                    artworkCards.forEach((card, index) => {
                         if (filter === 'all' || card.dataset.type === filter) {
                             gsap.to(card, {
                                 duration: 0.5,
                                 opacity: 1,
                                 scale: 1,
                                 display: 'block',
-                                ease: "power2.out"
+                                ease: "back.out(1.7)",
+                                delay: index * 0.03
                             });
                         } else {
                             gsap.to(card, {
-                                duration: 0.5,
+                                duration: 0.3,
                                 opacity: 0,
                                 scale: 0.9,
                                 display: 'none',
@@ -758,9 +1050,12 @@ p {
                 card.addEventListener('mouseenter', () => {
                     gsap.to(card, {
                         duration: 0.3,
-                        boxShadow: '0 15px 30px rgba(0, 0, 0, 0.5)',
+                        boxShadow: '0 15px 30px rgba(6, 59, 88, 0.2)',
                         ease: "power2.out"
                     });
+                    
+                    // Pause floating animation on hover
+                    gsap.to(card, {y: 0, duration: 0.3});
                 });
                 
                 card.addEventListener('mouseleave', () => {
@@ -769,149 +1064,191 @@ p {
                         boxShadow: 'var(--shadow)',
                         ease: "power2.out"
                     });
+                    
+                    // Resume floating animation
+                    gsap.effects.float(card);
                 });
             });
         }
         
+        // Play sound effect
+        function playSound(type) {
+            if (type === 'click') {
+                const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3');
+                audio.volume = 0.3;
+                audio.play();
+            } else if (type === 'open') {
+                const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-positive-interface-beep-221.mp3');
+                audio.volume = 0.2;
+                audio.play();
+            }
+        }
+        
         // Modal functions
         function openModal(title, type, url, date, description) {
-            const modal = document.getElementById('mediaModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalType = document.getElementById('modalType');
-            const modalTypeIcon = document.getElementById('modalTypeIcon');
-            const modalDate = document.getElementById('modalDate');
-            const modalDescription = document.getElementById('modalDescription');
-            const modalMediaContainer = document.getElementById('modalMediaContainer');
-            const downloadLink = document.getElementById('downloadLink');
+            // Show loading spinner
+            const spinner = document.getElementById('loadingSpinner');
+            spinner.style.display = 'flex';
             
-            // Set content
-            modalTitle.textContent = title;
-            modalType.textContent = type.toUpperCase();
-            modalDate.textContent = date;
-            modalDescription.textContent = description || "No description available for this artwork.";
-            downloadLink.href = url;
-            downloadLink.download = title + '.' + url.split('.').pop();
+            // Play open sound
+            playSound('open');
             
-            // Set icon based on media type
-            switch(type) {
-                case 'image':
-                    modalTypeIcon.className = 'fas fa-image';
-                    break;
-                case 'video':
-                    modalTypeIcon.className = 'fas fa-video';
-                    break;
-                case 'audio':
-                    modalTypeIcon.className = 'fas fa-music';
-                    break;
-                default:
-                    modalTypeIcon.className = 'fas fa-file';
-            }
-            
-            // Clear previous media
-            modalMediaContainer.innerHTML = '';
-            
-            // Add appropriate media
-            if (type === 'image') {
-                const imgContainer = document.createElement('div');
-                imgContainer.style.width = '100%';
-                imgContainer.style.height = '100%';
-                imgContainer.style.display = 'flex';
-                imgContainer.style.alignItems = 'center';
-                imgContainer.style.justifyContent = 'center';
-                imgContainer.style.overflow = 'hidden';
+            // Load content after a small delay to allow spinner to show
+            setTimeout(() => {
+                const modal = document.getElementById('mediaModal');
+                const modalTitle = document.getElementById('modalTitle');
+                const modalType = document.getElementById('modalType');
+                const modalTypeIcon = document.getElementById('modalTypeIcon');
+                const modalDate = document.getElementById('modalDate');
+                const modalDescription = document.getElementById('modalDescription');
+                const modalMediaContainer = document.getElementById('modalMediaContainer');
+                const downloadLink = document.getElementById('downloadLink');
                 
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = title;
-                img.className = 'modal-media';
-                img.style.maxWidth = '90%';
-                img.style.maxHeight = '90%';
-                img.style.objectFit = 'contain';
+                // Set content
+                modalTitle.textContent = title;
+                modalType.textContent = type.toUpperCase();
+                modalDate.textContent = date;
+                modalDescription.textContent = description || "No description available for this artwork.";
+                downloadLink.href = url;
+                downloadLink.download = title + '.' + url.split('.').pop();
                 
-                imgContainer.appendChild(img);
-                modalMediaContainer.appendChild(imgContainer);
-            } 
-            else if (type === 'video') {
-                const videoContainer = document.createElement('div');
-                videoContainer.style.width = '100%';
-                videoContainer.style.height = '100%';
-                videoContainer.style.display = 'flex';
-                videoContainer.style.alignItems = 'center';
-                videoContainer.style.justifyContent = 'center';
-                videoContainer.style.background = 'rgba(0, 0, 0, 0.7)';
+                // Set icon based on media type
+                switch(type) {
+                    case 'image':
+                        modalTypeIcon.className = 'fas fa-image';
+                        break;
+                    case 'video':
+                        modalTypeIcon.className = 'fas fa-video';
+                        break;
+                    case 'audio':
+                        modalTypeIcon.className = 'fas fa-music';
+                        break;
+                    default:
+                        modalTypeIcon.className = 'fas fa-file';
+                }
                 
-                const video = document.createElement('video');
-                video.src = url;
-                video.controls = true;
-                video.autoplay = true;
-                video.className = 'modal-media';
-                video.style.maxHeight = '90%';
-                video.style.maxWidth = '90%';
+                // Clear previous media
+                modalMediaContainer.innerHTML = '';
                 
-                videoContainer.appendChild(video);
-                modalMediaContainer.appendChild(videoContainer);
-            } 
-            else if (type === 'audio') {
-                const audioContainer = document.createElement('div');
-                audioContainer.style.textAlign = 'center';
-                audioContainer.style.padding = '2rem';
-                audioContainer.style.width = '100%';
-                audioContainer.style.height = '100%';
-                audioContainer.style.display = 'flex';
-                audioContainer.style.flexDirection = 'column';
-                audioContainer.style.alignItems = 'center';
-                audioContainer.style.justifyContent = 'center';
-                audioContainer.style.background = 'linear-gradient(135deg, var(--secondary) 0%, rgba(0, 0, 0, 0.7) 100%)';
+                // Add appropriate media
+                if (type === 'image') {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.style.width = '100%';
+                    imgContainer.style.height = '100%';
+                    imgContainer.style.display = 'flex';
+                    imgContainer.style.alignItems = 'center';
+                    imgContainer.style.justifyContent = 'center';
+                    imgContainer.style.overflow = 'hidden';
+                    
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.alt = title;
+                    img.className = 'modal-media';
+                    img.style.maxWidth = '90%';
+                    img.style.maxHeight = '90%';
+                    img.style.objectFit = 'contain';
+                    
+                    img.onload = () => {
+                        spinner.style.display = 'none';
+                    };
+                    
+                    imgContainer.appendChild(img);
+                    modalMediaContainer.appendChild(imgContainer);
+                } 
+                else if (type === 'video') {
+                    const videoContainer = document.createElement('div');
+                    videoContainer.style.width = '100%';
+                    videoContainer.style.height = '100%';
+                    videoContainer.style.display = 'flex';
+                    videoContainer.style.alignItems = 'center';
+                    videoContainer.style.justifyContent = 'center';
+                    videoContainer.style.background = 'rgba(0, 0, 0, 0.05)';
+                    
+                    const video = document.createElement('video');
+                    video.src = url;
+                    video.controls = true;
+                    video.autoplay = true;
+                    video.className = 'modal-media';
+                    video.style.maxHeight = '90%';
+                    video.style.maxWidth = '90%';
+                    video.style.borderRadius = '8px';
+                    
+                    video.oncanplay = () => {
+                        spinner.style.display = 'none';
+                    };
+                    
+                    videoContainer.appendChild(video);
+                    modalMediaContainer.appendChild(videoContainer);
+                } 
+                else if (type === 'audio') {
+                    const audioContainer = document.createElement('div');
+                    audioContainer.style.textAlign = 'center';
+                    audioContainer.style.padding = '2rem';
+                    audioContainer.style.width = '100%';
+                    audioContainer.style.height = '100%';
+                    audioContainer.style.display = 'flex';
+                    audioContainer.style.flexDirection = 'column';
+                    audioContainer.style.alignItems = 'center';
+                    audioContainer.style.justifyContent = 'center';
+                    audioContainer.style.background = 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)';
+                    
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-music audio-icon';
+                    icon.style.fontSize = '4rem';
+                    icon.style.color = 'var(--primary)';
+                    icon.style.marginBottom = '2rem';
+                    
+                    const titleElement = document.createElement('h3');
+                    titleElement.textContent = title;
+                    titleElement.style.fontFamily = "'Montserrat', sans-serif";
+                    titleElement.style.color = 'var(--text)';
+                    titleElement.style.margin = '0 0 1.5rem 0';
+                    titleElement.style.fontSize = '1.5rem';
+                    
+                    const audio = document.createElement('audio');
+                    audio.src = url;
+                    audio.controls = true;
+                    audio.style.width = '90%';
+                    audio.style.marginTop = '1rem';
+                    audio.style.borderRadius = '50px';
+                    audio.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                    
+                    audio.oncanplay = () => {
+                        spinner.style.display = 'none';
+                    };
+                    
+                    audioContainer.appendChild(icon);
+                    audioContainer.appendChild(titleElement);
+                    audioContainer.appendChild(audio);
+                    modalMediaContainer.appendChild(audioContainer);
+                } 
+                else {
+                    const unsupportedContainer = document.createElement('div');
+                    unsupportedContainer.style.width = '100%';
+                    unsupportedContainer.style.height = '100%';
+                    unsupportedContainer.style.display = 'flex';
+                    unsupportedContainer.style.alignItems = 'center';
+                    unsupportedContainer.style.justifyContent = 'center';
+                    unsupportedContainer.style.color = 'var(--text)';
+                    unsupportedContainer.style.fontFamily = "'Montserrat', sans-serif";
+                    unsupportedContainer.style.fontSize = '1.2rem';
+                    unsupportedContainer.textContent = 'Unsupported Media Type';
+                    
+                    spinner.style.display = 'none';
+                    modalMediaContainer.appendChild(unsupportedContainer);
+                }
                 
-                const icon = document.createElement('i');
-                icon.className = 'fas fa-music audio-icon';
-                icon.style.fontSize = '4rem';
-                icon.style.color = 'var(--accent)';
-                icon.style.marginBottom = '2rem';
+                // Show modal with animation
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
                 
-                const titleElement = document.createElement('h3');
-                titleElement.textContent = title;
-                titleElement.style.fontFamily = "'Montserrat', sans-serif";
-                titleElement.style.color = 'var(--text)';
-                titleElement.style.margin = '0 0 1.5rem 0';
-                titleElement.style.fontSize = '1.3rem';
-                
-                const audio = document.createElement('audio');
-                audio.src = url;
-                audio.controls = true;
-                audio.style.width = '80%';
-                audio.style.marginTop = '1rem';
-                
-                audioContainer.appendChild(icon);
-                audioContainer.appendChild(titleElement);
-                audioContainer.appendChild(audio);
-                modalMediaContainer.appendChild(audioContainer);
-            } 
-            else {
-                const unsupportedContainer = document.createElement('div');
-                unsupportedContainer.style.width = '100%';
-                unsupportedContainer.style.height = '100%';
-                unsupportedContainer.style.display = 'flex';
-                unsupportedContainer.style.alignItems = 'center';
-                unsupportedContainer.style.justifyContent = 'center';
-                unsupportedContainer.style.color = 'var(--text)';
-                unsupportedContainer.style.fontFamily = "'Montserrat', sans-serif";
-                unsupportedContainer.style.fontSize = '1.2rem';
-                unsupportedContainer.textContent = 'Unsupported Media Type';
-                
-                modalMediaContainer.appendChild(unsupportedContainer);
-            }
-            
-            // Show modal with animation
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            
-            gsap.from(".modal-content", {
-                duration: 0.5,
-                scale: 0.95,
-                opacity: 0,
-                ease: "back.out(1.7)"
-            });
+                gsap.from(".modal-content", {
+                    duration: 0.5,
+                    scale: 0.95,
+                    opacity: 0,
+                    ease: "back.out(1.7)"
+                });
+            }, 100);
         }
         
         function closeModal() {
@@ -952,7 +1289,7 @@ p {
                 btn.addEventListener('mouseenter', () => {
                     gsap.to(btn, {
                         duration: 0.2,
-                        y: -2,
+                        y: -3,
                         ease: "power2.out"
                     });
                 });
@@ -965,6 +1302,27 @@ p {
                     });
                 });
             });
+            
+            // Lazy load images
+            if ('IntersectionObserver' in window) {
+                const lazyImages = document.querySelectorAll('.media-preview[loading="lazy"]');
+                
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const image = entry.target;
+                            if (image.dataset.src) {
+                                image.src = image.dataset.src;
+                            }
+                            imageObserver.unobserve(image);
+                        }
+                    });
+                });
+                
+                lazyImages.forEach(image => {
+                    imageObserver.observe(image);
+                });
+            }
         });
     </script>
 </body>
