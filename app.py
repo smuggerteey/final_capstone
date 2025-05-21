@@ -1,4 +1,3 @@
-import random
 import re
 import os
 import string
@@ -13,9 +12,7 @@ from io import BytesIO
 from urllib.parse import urlparse
 import uuid
 
-from flask import (Flask, current_app, json, request, jsonify, render_template, redirect, send_file, send_from_directory, 
-                  session, url_for, flash, make_response)
-from flask_sqlalchemy import SQLAlchemy
+from flask import (Flask, current_app, json, request, jsonify, render_template, redirect, send_file,session, url_for, flash, make_response)
 from flask_login import (LoginManager, UserMixin, login_user, logout_user, 
                         login_required, current_user)
 from flask_mail import Mail, Message
@@ -29,18 +26,10 @@ import pymysql
 import requests
 import torch
 import imagehash
-import paypalrestsdk
-from twilio.rest import Client
-import sendgrid
-from sendgrid.helpers.mail import Mail as SendGridMail, Email, To, Content
 import ssl
 from PIL import Image
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as ReportLabImage
-from reportlab.lib.styles import getSampleStyleSheet
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from web3 import Web3
-from opt_einsum import contract
 
 # =============================================
 # INITIALIZATION AND CONFIGURATION
